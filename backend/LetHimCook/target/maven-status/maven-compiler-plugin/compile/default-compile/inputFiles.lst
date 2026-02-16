@@ -1,0 +1,16 @@
+C:\Users\Usuario\Documents\workspace-spring-tools-for-eclipse-4.32.0.RELEASE\EjercicioGestionErroresCompletoPracticaExamen\src\main\java\com\daw\ApplicationLauncher.java
+C:\Users\Usuario\Documents\workspace-spring-tools-for-eclipse-4.32.0.RELEASE\EjercicioGestionErroresCompletoPracticaExamen\src\main\java\com\daw\controllers\OperadorController.java
+C:\Users\Usuario\Documents\workspace-spring-tools-for-eclipse-4.32.0.RELEASE\EjercicioGestionErroresCompletoPracticaExamen\src\main\java\com\daw\controllers\ProductoController.java
+C:\Users\Usuario\Documents\workspace-spring-tools-for-eclipse-4.32.0.RELEASE\EjercicioGestionErroresCompletoPracticaExamen\src\main\java\com\daw\controllers\UsuarioController.java
+C:\Users\Usuario\Documents\workspace-spring-tools-for-eclipse-4.32.0.RELEASE\EjercicioGestionErroresCompletoPracticaExamen\src\main\java\com\daw\datamodel\entities\Operador.java
+C:\Users\Usuario\Documents\workspace-spring-tools-for-eclipse-4.32.0.RELEASE\EjercicioGestionErroresCompletoPracticaExamen\src\main\java\com\daw\datamodel\entities\Producto.java
+C:\Users\Usuario\Documents\workspace-spring-tools-for-eclipse-4.32.0.RELEASE\EjercicioGestionErroresCompletoPracticaExamen\src\main\java\com\daw\datamodel\entities\Usuario.java
+C:\Users\Usuario\Documents\workspace-spring-tools-for-eclipse-4.32.0.RELEASE\EjercicioGestionErroresCompletoPracticaExamen\src\main\java\com\daw\datamodel\repository\OperadorRepository.java
+C:\Users\Usuario\Documents\workspace-spring-tools-for-eclipse-4.32.0.RELEASE\EjercicioGestionErroresCompletoPracticaExamen\src\main\java\com\daw\datamodel\repository\ProductoRepository.java
+C:\Users\Usuario\Documents\workspace-spring-tools-for-eclipse-4.32.0.RELEASE\EjercicioGestionErroresCompletoPracticaExamen\src\main\java\com\daw\datamodel\repository\UsuarioRepository.java
+C:\Users\Usuario\Documents\workspace-spring-tools-for-eclipse-4.32.0.RELEASE\EjercicioGestionErroresCompletoPracticaExamen\src\main\java\com\daw\dtos\OperadorDTO.java
+C:\Users\Usuario\Documents\workspace-spring-tools-for-eclipse-4.32.0.RELEASE\EjercicioGestionErroresCompletoPracticaExamen\src\main\java\com\daw\dtos\UsuarioDTO.java
+C:\Users\Usuario\Documents\workspace-spring-tools-for-eclipse-4.32.0.RELEASE\EjercicioGestionErroresCompletoPracticaExamen\src\main\java\com\daw\exceptions\OperadorNoEncontradoException.java
+C:\Users\Usuario\Documents\workspace-spring-tools-for-eclipse-4.32.0.RELEASE\EjercicioGestionErroresCompletoPracticaExamen\src\main\java\com\daw\mappers\OperadorMapper.java
+C:\Users\Usuario\Documents\workspace-spring-tools-for-eclipse-4.32.0.RELEASE\EjercicioGestionErroresCompletoPracticaExamen\src\main\java\com\daw\mappers\UsuarioMapper.java
+C:\Users\Usuario\Documents\workspace-spring-tools-for-eclipse-4.32.0.RELEASE\EjercicioGestionErroresCompletoPracticaExamen\src\main\java\com\daw\service\Servicio.java
