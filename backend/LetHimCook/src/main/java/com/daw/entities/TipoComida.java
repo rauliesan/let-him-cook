@@ -13,6 +13,11 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 
+/**
+ * Clase para gestionar los tipos de comida que existen y poder etiquetar recetas.
+ *
+ * @author IES Almudeyne - Raúl Liébana Sánchez
+ */
 @Entity
 @Table(name = "tipo_comida")
 @Data

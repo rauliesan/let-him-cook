@@ -3,8 +3,6 @@ package com.daw.entities;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
-import org.hibernate.annotations.CreationTimestamp;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -18,6 +16,11 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
+/**
+ * Clase para gestionar las recetas creadas.
+ *
+ * @author IES Almudeyne - Raúl Liébana Sánchez
+ */
 @Entity
 @Table(name = "receta")
 @Data
@@ -36,6 +39,9 @@ public class Receta {
 	@Column(columnDefinition = "TEXT", nullable = false)
 	private String ingredientes;
 	
+	/**
+	 * Tiempo de preparación en minutos.
+	 */
 	@Column(name = "tiempo_preparacion")
 	private Integer tiempoPreparacion;
 	
@@ -51,7 +57,6 @@ public class Receta {
 	@Column(name = "es_publica")
 	private Boolean esPublica;
 	
-	@CreationTimestamp
 	@Column(name = "fecha_creacion", nullable = false, updatable = false)
 	private ZonedDateTime fechaCreacion;
 	
@@ -59,6 +64,9 @@ public class Receta {
 	@JoinColumn(name = "tipo_comida_id")
 	private TipoComida tipoComida;
 	
+	/**
+	 * Usuario creador de la receta.
+	 */
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "usuario_creador_id", nullable = false)
 	private Usuario usuario;

@@ -10,6 +10,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
 
+/**
+ * Clase para gestionar las recompensas que se pueden conseguir en la ruleta.
+ *
+ * @author IES Almudeyne - Raúl Liébana Sánchez
+ */
 @Entity
 @Table(name = "recompensa")
 @Data
@@ -25,5 +30,8 @@ public class Recompensa {
 	@Column(columnDefinition = "TEXT")
 	private String descripcion;
 
-	private Double probabilidad; // numeric en SQL (0.0 a 1.0)
+	/**
+     * Probabilidad de que este premio salga en la ruleta (0.0 a 1.0)
+     */
+	private Double probabilidad;
 }

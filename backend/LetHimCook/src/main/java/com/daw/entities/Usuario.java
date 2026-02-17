@@ -4,8 +4,7 @@ import java.time.ZonedDateTime;
 import java.util.Set;
 import java.util.UUID;
 
-import org.hibernate.annotations.CreationTimestamp;
-
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -20,6 +19,11 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 
+/**
+ * Clase para gestionar los usuarios.
+ *
+ * @author IES Almudeyne - Raúl Liébana Sánchez
+ */
 @Entity
 @Table(name = "usuario")
 @Data
@@ -35,26 +39,40 @@ public class Usuario {
 	@Column(nullable = false, unique = true)
 	private String email;
 	
+	/**
+	 * Contraseña encriptada.
+	 */
 	@Column(name = "password_hash", nullable = false)
 	private String passwordHash;
 	
+	/**
+	 * Puntos que se van acumulando cada vez que el usuario consiga un logro.
+	 */
 	@Column(nullable = false)
-	private Integer puntos;
+	private Integer puntos = 0;
 	
+	/**
+	 * Nivel que va aumentando con los puntos.
+	 */
 	@Column(nullable = false)
-	private Integer nivel;
+	private Integer nivel = 1;
 	
-	@CreationTimestamp
     @Column(name = "fecha_inscripcion", nullable = false, updatable = false)
     private ZonedDateTime fechaInscripcion;
+    
+    @Column(name = "foto_url", columnDefinition = "TEXT")
+    private String fotoUrl;
 	
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "ia_modelo_seleccionado_id", nullable = false)
 	private IaModelo iaModeloSeleccionado;
 	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "usuario")
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE , mappedBy = "usuario")
 	private Set<Receta> recetas;
 	
+	/**
+	 * Preferencias de tipos de comida del usuario.
+	 */
 	 @ManyToMany(fetch = FetchType.LAZY)
 	 @JoinTable(
 		 name = "usuario_preferencia",
@@ -70,5 +88,8 @@ public class Usuario {
 	     inverseJoinColumns = @JoinColumn(name = "amigo_id")
 	 )
 	 private Set<Usuario> amigos;
+	 
+	 @OneToMany(mappedBy = "usuario", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+	 private Set<UsuarioRecompensa> misRecompensas;
 	
 }

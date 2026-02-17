@@ -10,6 +10,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
 
+/**
+ * Clase para gestionar los supermercados.
+ * Son añadidos por un administrador.
+ * Los usuarios pueden seleccionar sus supermercados favoritos y después filtrarlos en una implementación de Google Maps en el frontend.
+ *
+ * @author IES Almudeyne - Raúl Liébana Sánchez
+ */
 @Entity
 @Table(name = "supermercado")
 @Data

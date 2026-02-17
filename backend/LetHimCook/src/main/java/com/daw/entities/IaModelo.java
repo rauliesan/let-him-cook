@@ -15,6 +15,11 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 
+/**
+ * Clase para gestionar los modelos de ia que podrá usar el usuario.
+ *
+ * @author IES Almudeyne - Raúl Liébana Sánchez
+ */
 @Entity
 @Table(name = "ia_modelo")
 @Data
@@ -27,6 +32,9 @@ public class IaModelo {
 	@Column(name = "nombre_modelo", nullable = false)
 	private String nombreModelo;
 	
+	/**
+	 * Api del modelo de ia, que contiene todo lo necesario para poder hacer la conexión.
+	 */
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "api_id", nullable = false)
 	private Api api;
