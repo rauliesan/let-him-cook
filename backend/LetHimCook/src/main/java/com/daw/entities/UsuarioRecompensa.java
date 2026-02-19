@@ -1,5 +1,6 @@
 package com.daw.entities;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
@@ -11,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -28,14 +30,29 @@ public class UsuarioRecompensa {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    /**
+     * Usuario que obtiene la recompensa.
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
+    /**
+     * Recompensa que consigue el usuario.
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recompensa_id", nullable = false)
     private Recompensa recompensa;
 
     @Column(name = "fecha_obtenida", updatable = false)
     private ZonedDateTime fechaObtenida;
+    
+    
+    @PrePersist
+	protected void onCreate() {
+	    // Solo asigna la fecha automática si el campo está vacío (es null)
+	    if (this.fechaObtenida == null) {
+	        this.fechaObtenida = ZonedDateTime.now(ZoneId.of("Europe/Madrid"));
+	    }
+	}
 }

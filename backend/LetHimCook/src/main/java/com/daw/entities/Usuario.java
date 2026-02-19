@@ -1,5 +1,6 @@
 package com.daw.entities;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Set;
 import java.util.UUID;
@@ -16,6 +17,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -91,5 +93,15 @@ public class Usuario {
 	 
 	 @OneToMany(mappedBy = "usuario", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
 	 private Set<UsuarioRecompensa> misRecompensas;
+	 
+	 
+	 
+	 @PrePersist
+		protected void onCreate() {
+		    // Solo asigna la fecha automática si el campo está vacío (es null)
+		    if (this.fechaInscripcion == null) {
+		        this.fechaInscripcion = ZonedDateTime.now(ZoneId.of("Europe/Madrid"));
+		    }
+		}
 	
 }
