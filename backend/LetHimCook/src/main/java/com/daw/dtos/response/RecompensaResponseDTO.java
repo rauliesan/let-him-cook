@@ -1,5 +1,6 @@
 package com.daw.dtos.response;
 
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import lombok.Data;
@@ -12,12 +13,14 @@ import lombok.Data;
 @Data
 public class RecompensaResponseDTO {
 	
-    private UUID id;
-    
+	private UUID id;
+	
     private String nombre;
     
     private String descripcion;
     
     private Double probabilidad;
+    
+    private ZonedDateTime fechaObtenida;
     
 }

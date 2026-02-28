@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-02-27T13:25:47+0100",
+    date = "2026-02-28T02:22:03+0100",
     comments = "version: 1.6.3, compiler: Eclipse JDT (IDE) 3.43.0.v20250819-1513, environment: Java 21.0.8 (Eclipse Adoptium)"
 )
 @Component
@@ -23,7 +23,7 @@ public class TipoComidaMapperImpl implements TipoComidaMapper {
         TipoComida tipoComida = new TipoComida();
 
         tipoComida.setDescripcion( dto.getDescripcion() );
-        tipoComida.setIcono( dto.getIcono() );
+        tipoComida.setIconoUrl( dto.getIconoUrl() );
         tipoComida.setNombre( dto.getNombre() );
 
         return tipoComida;
@@ -38,7 +38,7 @@ public class TipoComidaMapperImpl implements TipoComidaMapper {
         TipoComidaResponseDTO tipoComidaResponseDTO = new TipoComidaResponseDTO();
 
         tipoComidaResponseDTO.setDescripcion( entity.getDescripcion() );
-        tipoComidaResponseDTO.setIcono( entity.getIcono() );
+        tipoComidaResponseDTO.setIconoUrl( entity.getIconoUrl() );
         tipoComidaResponseDTO.setId( entity.getId() );
         tipoComidaResponseDTO.setNombre( entity.getNombre() );
 

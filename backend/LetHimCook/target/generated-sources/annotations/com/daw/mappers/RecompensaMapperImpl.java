@@ -3,12 +3,14 @@ package com.daw.mappers;
 import com.daw.dtos.request.RecompensaRequestDTO;
 import com.daw.dtos.response.RecompensaResponseDTO;
 import com.daw.entities.Recompensa;
+import com.daw.entities.UsuarioRecompensa;
+import java.util.UUID;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-02-27T13:25:38+0100",
+    date = "2026-02-28T02:39:50+0100",
     comments = "version: 1.6.3, compiler: Eclipse JDT (IDE) 3.43.0.v20250819-1513, environment: Java 21.0.8 (Eclipse Adoptium)"
 )
 @Component
@@ -43,5 +45,54 @@ public class RecompensaMapperImpl implements RecompensaMapper {
         recompensaResponseDTO.setProbabilidad( entity.getProbabilidad() );
 
         return recompensaResponseDTO;
+    }
+
+    @Override
+    public RecompensaResponseDTO toResponseDTO(UsuarioRecompensa entity) {
+        if ( entity == null ) {
+            return null;
+        }
+
+        RecompensaResponseDTO recompensaResponseDTO = new RecompensaResponseDTO();
+
+        recompensaResponseDTO.setId( entityRecompensaId( entity ) );
+        recompensaResponseDTO.setNombre( entityRecompensaNombre( entity ) );
+        recompensaResponseDTO.setDescripcion( entityRecompensaDescripcion( entity ) );
+        recompensaResponseDTO.setProbabilidad( entityRecompensaProbabilidad( entity ) );
+        recompensaResponseDTO.setFechaObtenida( entity.getFechaObtenida() );
+
+        return recompensaResponseDTO;
+    }
+
+    private UUID entityRecompensaId(UsuarioRecompensa usuarioRecompensa) {
+        Recompensa recompensa = usuarioRecompensa.getRecompensa();
+        if ( recompensa == null ) {
+            return null;
+        }
+        return recompensa.getId();
+    }
+
+    private String entityRecompensaNombre(UsuarioRecompensa usuarioRecompensa) {
+        Recompensa recompensa = usuarioRecompensa.getRecompensa();
+        if ( recompensa == null ) {
+            return null;
+        }
+        return recompensa.getNombre();
+    }
+
+    private String entityRecompensaDescripcion(UsuarioRecompensa usuarioRecompensa) {
+        Recompensa recompensa = usuarioRecompensa.getRecompensa();
+        if ( recompensa == null ) {
+            return null;
+        }
+        return recompensa.getDescripcion();
+    }
+
+    private Double entityRecompensaProbabilidad(UsuarioRecompensa usuarioRecompensa) {
+        Recompensa recompensa = usuarioRecompensa.getRecompensa();
+        if ( recompensa == null ) {
+            return null;
+        }
+        return recompensa.getProbabilidad();
     }
 }

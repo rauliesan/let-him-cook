@@ -35,6 +35,8 @@ public class RecetaRequestDTO {
     private String alergenos;
     
     private Boolean esPublica = true;
+    
+    private String imagenUrl;
 
     private UUID tipoComidaId;
 }

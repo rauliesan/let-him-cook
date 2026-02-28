@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-02-27T13:23:17+0100",
+    date = "2026-02-28T02:04:18+0100",
     comments = "version: 1.6.3, compiler: Eclipse JDT (IDE) 3.43.0.v20250819-1513, environment: Java 21.0.8 (Eclipse Adoptium)"
 )
 @Component
@@ -31,6 +31,7 @@ public class RecetaMapperImpl implements RecetaMapper {
         receta.setDescripcion( dto.getDescripcion() );
         receta.setDificultad( dto.getDificultad() );
         receta.setEsPublica( dto.getEsPublica() );
+        receta.setImagenUrl( dto.getImagenUrl() );
         receta.setIngredientes( dto.getIngredientes() );
         receta.setNombre( dto.getNombre() );
         receta.setTiempoPreparacion( dto.getTiempoPreparacion() );
@@ -57,6 +58,7 @@ public class RecetaMapperImpl implements RecetaMapper {
         recetaResponseDTO.setEsPublica( entity.getEsPublica() );
         recetaResponseDTO.setFechaCreacion( entity.getFechaCreacion() );
         recetaResponseDTO.setId( entity.getId() );
+        recetaResponseDTO.setImagenUrl( entity.getImagenUrl() );
         recetaResponseDTO.setIngredientes( entity.getIngredientes() );
         recetaResponseDTO.setNombre( entity.getNombre() );
         recetaResponseDTO.setTiempoPreparacion( entity.getTiempoPreparacion() );

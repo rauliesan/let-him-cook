@@ -38,7 +38,7 @@ public class Supermercado {
 	
 	private String horario;
 
-	@Column(name = "foto_url")
+	@Column(name = "foto_url", columnDefinition = "TEXT")
 	private String fotoUrl;
 
 }

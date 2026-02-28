@@ -18,6 +18,6 @@ public class TipoComidaResponseDTO {
     
     private String descripcion;
     
-    private String icono;
+    private String iconoUrl;
     
 }

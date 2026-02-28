@@ -33,7 +33,8 @@ public class TipoComida {
 	@Column(columnDefinition = "TEXT")
 	private String descripcion;
 	
-	private String icono;
+	@Column(name = "icono_url", columnDefinition = "TEXT")
+	private String iconoUrl;
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "tipoComida")
 	private Set<Receta> recetas;

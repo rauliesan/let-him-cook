@@ -1,16 +1,29 @@
 package com.daw.mappers;
 
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
+
 import com.daw.dtos.request.RecompensaRequestDTO;
 import com.daw.dtos.response.RecompensaResponseDTO;
 import com.daw.entities.Recompensa;
-import org.mapstruct.Mapper;
-import org.mapstruct.ReportingPolicy;
+import com.daw.entities.UsuarioRecompensa;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface RecompensaMapper {
 	
+	// 1. Para crear recompensas
     Recompensa toEntity(RecompensaRequestDTO dto);
     
+    // Para listar recompensas en general
     RecompensaResponseDTO toResponseDTO(Recompensa entity);
+
+    // 2. Para listar "Mis Recompensas"
+    @Mapping(target = "id", source = "recompensa.id")
+    @Mapping(target = "nombre", source = "recompensa.nombre")
+    @Mapping(target = "descripcion", source = "recompensa.descripcion")
+    @Mapping(target = "probabilidad", source = "recompensa.probabilidad")
+    @Mapping(target = "fechaObtenida", source = "fechaObtenida")
+    RecompensaResponseDTO toResponseDTO(UsuarioRecompensa entity);
     
 }

@@ -16,5 +16,5 @@ public class TipoComidaRequestDTO {
     
     private String descripcion;
     
-    private String icono;
+    private String iconoUrl;
 }

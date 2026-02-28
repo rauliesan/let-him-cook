@@ -33,6 +33,8 @@ public class RecetaResponseDTO {
     
     private Boolean esPublica;
     
+    private String imagenUrl;
+    
     private ZonedDateTime fechaCreacion;
 
     // Relaciones aplanadas
