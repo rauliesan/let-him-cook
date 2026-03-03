@@ -30,6 +30,7 @@ public class Logro {
 	@Column(columnDefinition = "TEXT")
 	private String descripcion;
 	
-	private String icono;
+	@Column(name = "icono_url", columnDefinition = "TEXT")
+	private String iconoUrl;
 	
 }

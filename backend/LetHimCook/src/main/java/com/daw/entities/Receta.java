@@ -59,6 +59,9 @@ public class Receta {
 	@Column(name = "es_publica")
 	private Boolean esPublica;
 	
+	@Column(name = "imagen_url", columnDefinition = "TEXT")
+	private String imagenUrl;
+	
 	@Column(name = "fecha_creacion", nullable = false, updatable = false)
 	private ZonedDateTime fechaCreacion;
 	
