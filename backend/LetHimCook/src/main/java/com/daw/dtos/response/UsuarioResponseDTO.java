@@ -3,6 +3,8 @@ package com.daw.dtos.response;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
+import com.daw.entities.Rol;
+
 import lombok.Data;
 
 /**
@@ -26,6 +28,8 @@ public class UsuarioResponseDTO {
     private ZonedDateTime fechaInscripcion;
     
     private String fotoUrl;
+    
+    private Rol rol;
     
     // Relación aplanada
     private UUID iaModeloSeleccionadoId;
