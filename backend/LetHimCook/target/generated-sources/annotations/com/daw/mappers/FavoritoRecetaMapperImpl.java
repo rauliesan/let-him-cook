@@ -4,13 +4,15 @@ import com.daw.dtos.request.FavoritoRecetaRequestDTO;
 import com.daw.dtos.response.FavoritoRecetaResponseDTO;
 import com.daw.entities.FavoritoReceta;
 import com.daw.entities.Receta;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-03-04T18:42:13+0100",
+    date = "2026-03-10T16:53:14+0100",
     comments = "version: 1.6.3, compiler: Eclipse JDT (IDE) 3.43.0.v20250819-1513, environment: Java 21.0.8 (Eclipse Adoptium)"
 )
 @Component
@@ -43,6 +45,20 @@ public class FavoritoRecetaMapperImpl implements FavoritoRecetaMapper {
         favoritoRecetaResponseDTO.setId( entity.getId() );
 
         return favoritoRecetaResponseDTO;
+    }
+
+    @Override
+    public List<FavoritoRecetaResponseDTO> toListDTO(List<FavoritoReceta> list) {
+        if ( list == null ) {
+            return null;
+        }
+
+        List<FavoritoRecetaResponseDTO> list1 = new ArrayList<FavoritoRecetaResponseDTO>( list.size() );
+        for ( FavoritoReceta favoritoReceta : list ) {
+            list1.add( toResponseDTO( favoritoReceta ) );
+        }
+
+        return list1;
     }
 
     protected Receta favoritoRecetaRequestDTOToReceta(FavoritoRecetaRequestDTO favoritoRecetaRequestDTO) {

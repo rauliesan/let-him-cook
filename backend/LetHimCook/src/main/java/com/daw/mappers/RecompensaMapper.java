@@ -8,13 +8,15 @@ import com.daw.dtos.request.RecompensaRequestDTO;
 import com.daw.dtos.response.RecompensaResponseDTO;
 import com.daw.entities.Recompensa;
 import com.daw.entities.UsuarioRecompensa;
+import org.springframework.data.domain.Page;
+import java.util.List;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface RecompensaMapper {
-	
-	// 1. Para crear recompensas
+
+    // 1. Para crear recompensas
     Recompensa toEntity(RecompensaRequestDTO dto);
-    
+
     // Para listar recompensas en general
     RecompensaResponseDTO toResponseDTO(Recompensa entity);
 
@@ -25,5 +27,11 @@ public interface RecompensaMapper {
     @Mapping(target = "probabilidad", source = "recompensa.probabilidad")
     @Mapping(target = "fechaObtenida", source = "fechaObtenida")
     RecompensaResponseDTO toResponseDTO(UsuarioRecompensa entity);
-    
+
+    List<RecompensaResponseDTO> toListDTO(List<Recompensa> list);
+
+    default Page<RecompensaResponseDTO> toPageDTO(Page<Recompensa> page) {
+        return page.map(this::toResponseDTO);
+    }
+
 }

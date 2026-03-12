@@ -6,6 +6,8 @@ import com.daw.entities.Comentario;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
+import org.springframework.data.domain.Page;
+import java.util.List;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ComentarioMapper {
@@ -18,4 +20,10 @@ public interface ComentarioMapper {
     @Mapping(target = "usuarioNombre", source = "usuario.nombre")
     @Mapping(target = "usuarioFotoUrl", source = "usuario.fotoUrl")
     ComentarioResponseDTO toResponseDTO(Comentario entity);
+
+    List<ComentarioResponseDTO> toListDTO(List<Comentario> list);
+
+    default Page<ComentarioResponseDTO> toPageDTO(Page<Comentario> page) {
+        return page.map(this::toResponseDTO);
+    }
 }

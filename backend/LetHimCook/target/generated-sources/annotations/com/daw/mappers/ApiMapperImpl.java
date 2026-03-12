@@ -3,12 +3,14 @@ package com.daw.mappers;
 import com.daw.dtos.request.ApiRequestDTO;
 import com.daw.dtos.response.ApiResponseDTO;
 import com.daw.entities.Api;
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-03-04T18:42:13+0100",
+    date = "2026-03-10T16:53:14+0100",
     comments = "version: 1.6.3, compiler: Eclipse JDT (IDE) 3.43.0.v20250819-1513, environment: Java 21.0.8 (Eclipse Adoptium)"
 )
 @Component
@@ -43,5 +45,19 @@ public class ApiMapperImpl implements ApiMapper {
         apiResponseDTO.setNombreServicio( entity.getNombreServicio() );
 
         return apiResponseDTO;
+    }
+
+    @Override
+    public List<ApiResponseDTO> toListDTO(List<Api> list) {
+        if ( list == null ) {
+            return null;
+        }
+
+        List<ApiResponseDTO> list1 = new ArrayList<ApiResponseDTO>( list.size() );
+        for ( Api api : list ) {
+            list1.add( toResponseDTO( api ) );
+        }
+
+        return list1;
     }
 }
