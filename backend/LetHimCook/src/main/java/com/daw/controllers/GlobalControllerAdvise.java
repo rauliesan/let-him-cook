@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -49,12 +50,22 @@ public class GlobalControllerAdvise {
     }
 
     /**
+     * Errores de Autorización (@PreAuthorize) → 403
+     */
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<MiError> handleAccessDenied(AccessDeniedException ex, jakarta.servlet.http.HttpServletRequest request) {
+        MiError error = new MiError(HttpStatus.FORBIDDEN, LocalDateTime.now(),
+                "Acceso denegado. No tienes suficientes permisos para realizar esta acción.", request.getServletPath());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+    }
+
+    /**
      * Cualquier otra excepción no controlada → 500
      */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<MiError> handleGeneral(Exception ex) {
+    public ResponseEntity<MiError> handleGeneral(Exception ex, jakarta.servlet.http.HttpServletRequest request) {
         MiError error = new MiError(HttpStatus.INTERNAL_SERVER_ERROR, LocalDateTime.now(),
-                "Error interno del servidor.", null);
+                "Error interno del servidor.", request.getServletPath());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 }

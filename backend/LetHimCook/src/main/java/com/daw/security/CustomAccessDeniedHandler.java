@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import com.daw.errors.MiError;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,6 +37,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         MiError mierror = new MiError(HttpStatus.FORBIDDEN, LocalDateTime.now(),
                 accessDeniedException.getMessage(), request.getRequestURI());
         String body = mapper.writeValueAsString(mierror);
