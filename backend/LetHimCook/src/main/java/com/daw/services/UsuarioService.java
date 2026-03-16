@@ -5,6 +5,8 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,6 +53,30 @@ public class UsuarioService {
                 .toList();
     }
 
+    public Page<UsuarioResponseDTO> buscarPaginado(String nombre, Pageable pageable) {
+        Page<Usuario> page;
+        if (nombre != null && !nombre.isBlank()) {
+            page = usuarioRepository.findByNombreContainingIgnoreCase(nombre, pageable);
+        } else {
+            page = usuarioRepository.findAll(pageable);
+        }
+        return usuarioMapper.toPageDTO(page);
+    }
+
+    /**
+     * Obtiene y devuelve el perfil del Usuario basado en el token actual.
+     * En este caso reutilizamos la búsqueda por ID pero dejamos el método
+     * semánticamente separado para futuras lógicas de Perfil Privado si las
+     * hubiese.
+     * 
+     * @param id identificador del usuario extraído del JWT
+     * @return el usuario como DTO de respuesta
+     * @throws RecursoNoEncontradoException si el usuario ya no existe
+     */
+    public UsuarioResponseDTO obtenerPerfil(UUID id) {
+        return buscarPorId(id);
+    }
+
     /**
      * Busca un usuario por su ID.
      * 
@@ -74,9 +100,12 @@ public class UsuarioService {
      *                                      existe
      */
     public UsuarioResponseDTO registrarUsuario(UsuarioRequestDTO dto) {
-        // 1. Verificar si el email ya está en uso
+        // 1. Verificar si el email o nombre ya están en uso
         if (usuarioRepository.existsByEmail(dto.getEmail())) {
             throw new RecursoDuplicadoException("El email " + dto.getEmail() + " ya está registrado.");
+        }
+        if (usuarioRepository.existsByNombreIgnoreCase(dto.getNombre())) {
+            throw new RecursoDuplicadoException("El nombre de usuario " + dto.getNombre() + " ya está en uso.");
         }
 
         // 2. Buscar el modelo de IA base que ha elegido
@@ -115,9 +144,13 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado con ID: " + id));
 
-        // Verificar si el nuevo email ya está en uso por otro usuario
+        // Verificar si el nuevo email o nombre ya están en uso por otro usuario
         if (!usuario.getEmail().equals(dto.getEmail()) && usuarioRepository.existsByEmail(dto.getEmail())) {
             throw new RecursoDuplicadoException("El email " + dto.getEmail() + " ya está registrado.");
+        }
+        if (!usuario.getNombre().equalsIgnoreCase(dto.getNombre())
+                && usuarioRepository.existsByNombreIgnoreCase(dto.getNombre())) {
+            throw new RecursoDuplicadoException("El nombre de usuario " + dto.getNombre() + " ya está en uso.");
         }
 
         usuario.setNombre(dto.getNombre());
