@@ -1,0 +1,343 @@
+:host {
+  display: block;
+}
+
+/* Scroll reveal — los elementos comienzan desplazados hacia abajo y aparecen al entrar en pantalla */
+[revela] {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+
+  &.visible {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Hero con fondo rojo terracota y texto en blanco */
+.contacto-hero {
+  background: var(--primario);
+  padding: 140px 0 72px;
+  position: relative;
+  overflow: hidden;
+
+  /* Forma ovalada que une el hero con la sección siguiente */
+  &::before {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: var(--crema);
+    clip-path: ellipse(60% 100% at 50% 100%);
+  }
+
+  /* Patrón radial decorativo */
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.06) 0%, transparent 60%);
+    pointer-events: none;
+  }
+}
+
+.contacto-hero-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 40px;
+  position: relative;
+  z-index: 1;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+
+  h1 {
+    font-size: clamp(2.2rem, 4.5vw, 3.4rem);
+    font-weight: 800;
+    color: var(--blanco);
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+
+  p {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 1rem;
+    line-height: 1.7;
+    max-width: 400px;
+  }
+}
+
+/* SVG de la burbuja de chat con animación de flotación */
+.hero-burbuja {
+  width: 140px;
+  height: 140px;
+  opacity: 0.7;
+  flex-shrink: 0;
+  animation: burbujaFlota 4s ease-in-out infinite;
+}
+
+@keyframes burbujaFlota {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33% { transform: translateY(-10px) rotate(2deg); }
+  66% { transform: translateY(-5px) rotate(-1deg); }
+}
+
+/* Los tres puntos de la burbuja parpadean en secuencia */
+.burbuja-punto {
+  animation: puntoPulse 1.6s ease-in-out infinite;
+}
+
+.burbuja-punto-2 {
+  animation-delay: 0.25s;
+}
+
+.burbuja-punto-3 {
+  animation-delay: 0.5s;
+}
+
+@keyframes puntoPulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* Sección principal de contenido */
+.contacto-cuerpo {
+  background: var(--crema);
+  padding: 80px 0 100px;
+}
+
+.contacto-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 64px;
+  align-items: start;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+}
+
+/* Columna de información de contacto */
+.contacto-info {
+  h2 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+
+  > p {
+    color: var(--gris);
+    font-size: 0.9rem;
+    line-height: 1.7;
+    margin-bottom: 36px;
+  }
+}
+
+.info-items {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Cada ítem de información con efecto de fondo y desplazamiento en hover */
+.info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: var(--radio-md);
+  border: 1px solid transparent;
+  transition: background 0.25s, border-color 0.25s, transform 0.25s;
+  cursor: default;
+
+  &:hover {
+    background: rgba(193, 62, 40, 0.06);
+    border-color: rgba(193, 62, 40, 0.15);
+    transform: translateX(4px);
+
+    .info-icono {
+      background: var(--primario);
+      color: var(--blanco);
+      transform: scale(1.08) rotate(-5deg);
+    }
+  }
+
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+
+    strong {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--negro);
+    }
+
+    span {
+      font-size: 0.85rem;
+      color: var(--gris);
+      line-height: 1.5;
+    }
+  }
+}
+
+.info-icono {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radio-md);
+  background: rgba(193, 62, 40, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--primario);
+  transition: background 0.25s, color 0.25s, transform 0.25s;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* Tarjeta del formulario con campos animados */
+.formulario-wrapper {
+  background: var(--blanco);
+  border: 1px solid var(--gris-borde);
+  border-radius: var(--radio-lg);
+  padding: 40px;
+  transition: box-shadow 0.3s;
+
+  &:hover {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.07);
+  }
+
+  @media (max-width: 600px) {
+    padding: 24px;
+  }
+
+  h3 {
+    font-size: 1.3rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+}
+
+.form-sub {
+  font-size: 0.82rem;
+  color: var(--gris);
+  margin-bottom: 28px;
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-fila {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+
+  @media (max-width: 500px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Campos con borde inferior animado al recibir foco */
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+
+  label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--negro);
+    transition: color 0.2s;
+  }
+
+  /* Cuando el campo está activo, la etiqueta se tiñe del color primario */
+  &:focus-within label {
+    color: var(--primario);
+  }
+
+  input,
+  select,
+  textarea {
+    padding: 11px 14px;
+    border: 1.5px solid var(--gris-borde);
+    border-radius: var(--radio-sm);
+    font-family: var(--fuente-base);
+    font-size: 0.9rem;
+    color: var(--negro);
+    background: var(--crema);
+    transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+    outline: none;
+
+    &:focus {
+      border-color: var(--primario);
+      background: var(--blanco);
+      box-shadow: 0 0 0 3px rgba(193, 62, 40, 0.1);
+    }
+
+    &::placeholder {
+      color: var(--gris-claro);
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+}
+
+.campo-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+
+  input[type="checkbox"] {
+    margin-top: 2px;
+    accent-color: var(--primario);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  label {
+    font-size: 0.8rem;
+    color: var(--gris);
+    cursor: pointer;
+    line-height: 1.5;
+  }
+}
+
+/* Botón de envío: la flecha se desliza hacia la derecha en hover */
+.btn-submit {
+  align-self: flex-start;
+  width: 100%;
+  justify-content: center;
+  margin-top: 4px;
+  gap: 10px;
+  overflow: hidden;
+
+  .btn-flecha {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+  }
+
+  &:hover .btn-flecha {
+    transform: translateX(5px);
+  }
+}

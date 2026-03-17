@@ -1,0 +1,9 @@
+<app-preloader [visible]="cargando()" />
+
+<div class="contenido-app" [class.visible]="!cargando()">
+  <app-navbar />
+  <main>
+    <router-outlet />
+  </main>
+  <app-footer />
+</div>

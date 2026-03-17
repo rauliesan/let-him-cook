@@ -1,0 +1,128 @@
+<!-- Hero compacto con titulo y buscador de ubicacion -->
+<section class="mapa-hero">
+  <div class="contenedor">
+    <div class="mapa-hero-inner" revela>
+      <h1>Encuentra tu <span class="acento">supermercado</span></h1>
+      <p class="mapa-subtitulo">Descubre tiendas cercanas en el mapa interactivo</p>
+
+      <!-- Buscador de ubicacion -->
+      <div class="buscador-mapa">
+        <svg class="buscador-icono" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <circle cx="9" cy="9" r="6"/>
+          <path d="M14 14l4 4"/>
+        </svg>
+        <input
+          type="text"
+          placeholder="Busca una ciudad o direccion..."
+          [ngModel]="terminoBusqueda()"
+          (ngModelChange)="terminoBusqueda.set($event)"
+          (keyup.enter)="buscarLugar()">
+        <button class="buscador-btn" (click)="buscarLugar()">Buscar</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Barra de filtros de categoria -->
+<section class="mapa-filtros">
+  <div class="contenedor mapa-filtros-inner">
+    <div class="filtros-scroll" revela [retardo]="80">
+      @for (cat of categorias; track cat.id) {
+        <button
+          class="filtro-pill"
+          [class.activo]="categoriaActiva() === cat.id"
+          (click)="seleccionarCategoria(cat.id)">
+          <span class="filtro-emoji">{{ cat.icono }}</span>
+          {{ cat.nombre }}
+        </button>
+      }
+    </div>
+
+    <!-- Contador de resultados + boton de ubicacion -->
+    <div class="mapa-estado">
+      @if (cargando()) {
+        <span class="estado-cargando">
+          <span class="spinner"></span> Buscando...
+        </span>
+      } @else {
+        <span class="estado-total">{{ totalResultados() }} tiendas encontradas</span>
+      }
+
+      <button class="btn-ubicacion" (click)="centrarEnUsuario()" title="Mi ubicacion">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+          <circle cx="10" cy="10" r="4"/>
+          <path d="M10 2v3M10 15v3M2 10h3M15 10h3"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- Contenedor principal del mapa -->
+<section class="mapa-contenedor">
+  <!-- Lienzo donde se renderiza Leaflet -->
+  <div id="mapa" class="mapa-lienzo"></div>
+
+  <!-- Panel lateral de detalles al hacer click en un supermercado -->
+  @if (panelAbierto() && supermercadoActivo(); as s) {
+    <div class="panel-detalle">
+      <button class="panel-cerrar" (click)="cerrarPanel()">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <path d="M5 5l10 10M15 5L5 15"/>
+        </svg>
+      </button>
+
+      <!-- Tipo de tienda con emoji y etiqueta -->
+      <div class="panel-tipo">
+        <span class="panel-emoji">{{ emojiTipo(s.tipo) }}</span>
+        <span class="panel-etiqueta">{{ s.tipo }}</span>
+      </div>
+
+      <h3 class="panel-nombre">{{ s.nombre }}</h3>
+
+      <!-- Filas de info: solo se muestran si hay datos reales -->
+      <div class="panel-info">
+        @if (s.direccion) {
+          <div class="panel-fila">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 2a6 6 0 0 1 6 6c0 4-6 10-6 10S4 12 4 8a6 6 0 0 1 6-6z"/>
+              <circle cx="10" cy="8" r="2"/>
+            </svg>
+            <span>{{ s.direccion }}</span>
+          </div>
+        }
+        @if (s.horario !== 'Horario no disponible') {
+          <div class="panel-fila">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="10" cy="10" r="8"/>
+              <path d="M10 5v5l3 3"/>
+            </svg>
+            <span>{{ s.horario }}</span>
+          </div>
+        }
+        @if (!s.direccion && s.horario === 'Horario no disponible') {
+          <p class="panel-sin-datos">Sin datos adicionales en OpenStreetMap</p>
+        }
+      </div>
+
+      <!-- Boton para abrir indicaciones en Google Maps -->
+      <a class="btn-direcciones"
+         [href]="'https://www.google.com/maps/dir/?api=1&destination=' + s.lat + ',' + s.lon"
+         target="_blank"
+         rel="noopener">
+        Como llegar
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" width="16" height="16">
+          <path d="M5 15L15 5M15 5H8M15 5v7"/>
+        </svg>
+      </a>
+    </div>
+  }
+
+  <!-- Mensaje de error flotante -->
+  @if (errorMsg()) {
+    <div class="mapa-error">
+      <span>{{ errorMsg() }}</span>
+      <button class="error-cerrar" (click)="errorMsg.set('')">Cerrar</button>
+    </div>
+  }
+</section>

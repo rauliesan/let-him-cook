@@ -1,0 +1,184 @@
+<!-- Cabecera del perfil con portada, avatar y estadísticas -->
+<section class="perfil-header">
+  <div class="portada">
+    <!-- Patrón decorativo de fondo que anima sutilmente -->
+    <div class="portada-patron"></div>
+  </div>
+
+  <div class="contenedor perfil-info">
+    <div class="avatar-wrapper">
+      <div class="avatar">MG</div>
+      <div class="nivel-badge">Nv.12</div>
+    </div>
+
+    <div class="perfil-datos">
+      <div class="perfil-nombre-fila">
+        <h1>María García</h1>
+        <span class="badge-titulo">Chef Expert</span>
+      </div>
+      <p class="perfil-bio">Apasionada de la cocina mediterránea. Creadora de recetas saludables. Compartiendo amor por la comida desde 2020.</p>
+
+      <div class="perfil-stats">
+        <div class="stat-item">
+          <strong>156</strong>
+          <span>Recetas</span>
+        </div>
+        <div class="stat-item">
+          <strong>24.5K</strong>
+          <span>Seguidores</span>
+        </div>
+        <div class="stat-item">
+          <strong>892</strong>
+          <span>Siguiendo</span>
+        </div>
+        <div class="stat-item">
+          <strong>4.8 ★</strong>
+          <span>Valoración</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="perfil-acciones">
+      <button class="btn-primario">Editar perfil</button>
+      <button class="btn-secundario">Compartir</button>
+    </div>
+  </div>
+
+  <!-- Barra de experiencia del usuario con animación de progreso -->
+  <div class="contenedor">
+    <div class="exp-barra-wrapper">
+      <div class="exp-info">
+        <span>Nivel 12</span>
+        <span class="exp-xp">8.450 / 10.000 XP</span>
+        <span>Nivel 13</span>
+      </div>
+      <div class="exp-barra">
+        <div class="exp-progreso"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pestañas de navegación pegajosas -->
+<div class="tabs-wrapper">
+  <div class="contenedor">
+    <nav class="tabs">
+      @for (tab of tabs; track tab.id) {
+        <button class="tab"
+                [class.activa]="tabActiva() === tab.id"
+                (click)="cambiarTab(tab.id)">
+          {{ tab.label }}
+          <span class="tab-cantidad">{{ tab.cantidad }}</span>
+        </button>
+      }
+    </nav>
+  </div>
+</div>
+
+<!-- Contenido de la pestaña activa -->
+<div class="contenedor perfil-contenido">
+
+  @if (tabActiva() === 'recetas') {
+    <div class="tab-panel">
+      <div class="panel-header" revela>
+        <h2>Mis Recetas Publicadas</h2>
+        <button class="btn-primario btn-sm">+ Nueva receta</button>
+      </div>
+      <div class="recetas-grid">
+        @for (receta of recetasUsuario; track receta.titulo; let i = $index) {
+          <div class="receta-card" revela [retardo]="i * 60">
+            <div class="receta-imagen" [style.background]="receta.color">
+              <div class="receta-imagen-overlay"></div>
+              <span class="receta-emoji" aria-hidden="true">{{ receta.emoji }}</span>
+              @if (receta.publicada) {
+                <span class="estado publicada">Publicada</span>
+              } @else {
+                <span class="estado borrador">Borrador</span>
+              }
+              <!-- Acciones que aparecen al hacer hover -->
+              <div class="receta-acciones-hover">
+                <button class="accion-btn" aria-label="Editar">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M11 2L14 5 6 13H3v-3L11 2z" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+                <button class="accion-btn" aria-label="Ver">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="8" cy="8" r="2.5"/>
+                    <path d="M1.5 8C2.5 4.5 5 2.5 8 2.5S13.5 4.5 14.5 8C13.5 11.5 11 13.5 8 13.5S2.5 11.5 1.5 8z"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div class="receta-cuerpo">
+              <h4>{{ receta.titulo }}</h4>
+              <div class="receta-meta">
+                <span>{{ receta.tipo }}</span>
+                <span class="punto">·</span>
+                <span>{{ receta.tiempo }}</span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  @if (tabActiva() === 'logros') {
+    <div class="tab-panel">
+      <div revela>
+        <h2>Logros obtenidos</h2>
+        <p class="panel-desc">{{ logros.filter(l => l.desbloqueado).length }} de {{ logros.length }} logros desbloqueados.</p>
+      </div>
+      <div class="logros-grid">
+        @for (logro of logros; track logro.nombre; let i = $index) {
+          <div class="logro-card" revela [retardo]="i * 80" [class.bloqueado]="!logro.desbloqueado" [style.--logro-color]="logro.color">
+            <div class="logro-icono" [style.background]="logro.color">
+              <span>{{ logro.icono }}</span>
+            </div>
+            <div class="logro-info">
+              <strong>{{ logro.nombre }}</strong>
+              <p>{{ logro.descripcion }}</p>
+              @if (logro.desbloqueado && logro.fecha) {
+                <span class="logro-fecha">Desbloqueado: {{ logro.fecha }}</span>
+              }
+              @if (!logro.desbloqueado && logro.progreso !== undefined) {
+                <div class="logro-progreso-wrapper">
+                  <div class="logro-barra">
+                    <div class="logro-barra-fill"
+                         [style.width]="porcentaje(logro.progreso!, logro.meta!) + '%'">
+                    </div>
+                  </div>
+                  <span class="logro-pct">{{ formatNum(logro.progreso!) }}/{{ formatNum(logro.meta!) }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  @if (tabActiva() === 'favoritos') {
+    <div class="tab-panel tab-vacio">
+      <div class="vacio-mensaje" revela>
+        <span class="vacio-icono">❤️</span>
+        <h3>Recetas favoritas</h3>
+        <p>Aquí aparecerán las recetas que guardes como favoritas mientras exploras la plataforma.</p>
+        <a routerLink="/explorar" class="btn-primario" style="text-decoration:none">Explorar recetas</a>
+      </div>
+    </div>
+  }
+
+  @if (tabActiva() === 'colecciones') {
+    <div class="tab-panel tab-vacio">
+      <div class="vacio-mensaje" revela>
+        <span class="vacio-icono">📁</span>
+        <h3>Colecciones</h3>
+        <p>Organiza tus recetas favoritas en colecciones temáticas personalizadas.</p>
+        <button class="btn-primario">Crear colección</button>
+      </div>
+    </div>
+  }
+
+</div>

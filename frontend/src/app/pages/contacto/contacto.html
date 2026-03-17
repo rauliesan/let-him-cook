@@ -1,0 +1,139 @@
+<!-- Hero con fondo terracota, título y SVG de burbuja -->
+<section class="contacto-hero">
+  <div class="contenedor contacto-hero-inner">
+    <div>
+      <h1>¿Necesitas<br>ayuda?</h1>
+      <p>Estamos aquí para escucharte. Escríbenos con tus dudas, sugerencias o comentarios y te respondemos lo antes posible.</p>
+    </div>
+    <div class="hero-deco">
+      <!-- Burbuja de chat con puntos animados -->
+      <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" class="hero-burbuja">
+        <circle cx="60" cy="60" r="55" fill="rgba(255,255,255,0.08)"/>
+        <path d="M35 50 Q35 30 60 30 Q85 30 85 50 Q85 65 70 70 L70 80 L55 70 Q35 68 35 50Z"
+              fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="48" cy="50" r="3" fill="rgba(255,255,255,0.6)" class="burbuja-punto"/>
+        <circle cx="60" cy="50" r="3" fill="rgba(255,255,255,0.6)" class="burbuja-punto burbuja-punto-2"/>
+        <circle cx="72" cy="50" r="3" fill="rgba(255,255,255,0.6)" class="burbuja-punto burbuja-punto-3"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- Bloque principal con información de contacto y formulario -->
+<section class="contacto-cuerpo">
+  <div class="contenedor contacto-grid">
+
+    <!-- Columna izquierda con datos de contacto -->
+    <div class="contacto-info">
+      <h2 revela>Hablemos</h2>
+      <p revela [retardo]="80">Completa el formulario y te responderemos lo antes posible. Tu opinión es muy importante para nosotros.</p>
+
+      <div class="info-items">
+        <div class="info-item" revela [retardo]="120">
+          <div class="info-icono">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M3 5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5z"/>
+              <path d="M3 5l7 5 7-5"/>
+            </svg>
+          </div>
+          <div>
+            <strong>Email</strong>
+            <span>hola&#64;lethimcook.com</span>
+          </div>
+        </div>
+
+        <div class="info-item" revela [retardo]="180">
+          <div class="info-icono">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M2 3a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1v3.5a1 1 0 0 1-1 1H5L3.5 9a9 9 0 0 0 7.5 7.5l1.5-1.5v-1.5a1 1 0 0 1 1-1H17a1 1 0 0 1 1 1V17a1 1 0 0 1-1 1C8.5 18 2 11.5 2 3z"/>
+            </svg>
+          </div>
+          <div>
+            <strong>Teléfono</strong>
+            <span>+34 900 123 456</span>
+          </div>
+        </div>
+
+        <div class="info-item" revela [retardo]="240">
+          <div class="info-icono">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M10 2C6.686 2 4 4.686 4 8c0 5.25 6 10 6 10s6-4.75 6-10c0-3.314-2.686-6-6-6z"/>
+              <circle cx="10" cy="8" r="2"/>
+            </svg>
+          </div>
+          <div>
+            <strong>Oficina</strong>
+            <span>Calle de la Cocina, 42<br>28001 Madrid, España</span>
+          </div>
+        </div>
+
+        <div class="info-item" revela [retardo]="300">
+          <div class="info-icono">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="10" cy="10" r="8"/>
+              <path d="M10 6v4l2.5 2.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <strong>Horario</strong>
+            <span>Lun - Vie: 9:00 - 18:00<br>Sáb - Dom: Cerrado</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Columna derecha con el formulario de contacto -->
+    <div class="formulario-wrapper" revela [retardo]="160">
+      <h3>Envíanos un mensaje</h3>
+      <p class="form-sub">Todos los campos son obligatorios.</p>
+
+      <form class="formulario">
+        <div class="form-fila">
+          <div class="campo">
+            <label>Nombre</label>
+            <input type="text" placeholder="Tu nombre" />
+          </div>
+          <div class="campo">
+            <label>Apellido</label>
+            <input type="text" placeholder="Tu apellido" />
+          </div>
+        </div>
+
+        <div class="campo">
+          <label>Email</label>
+          <input type="email" placeholder="tu&#64;email.com" />
+        </div>
+
+        <div class="campo">
+          <label>Asunto</label>
+          <select>
+            <option value="">Selecciona un asunto</option>
+            <option>Problema técnico</option>
+            <option>Sugerencia de mejora</option>
+            <option>Reporte de receta</option>
+            <option>Colaboración</option>
+            <option>Otro</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label>Mensaje</label>
+          <textarea placeholder="Cuéntanos cómo podemos ayudarte..." rows="5"></textarea>
+        </div>
+
+        <div class="campo-check">
+          <input type="checkbox" id="privacidad" />
+          <label for="privacidad">Acepto la política de privacidad y los términos de servicio.</label>
+        </div>
+
+        <button type="submit" class="btn-primario btn-submit">
+          Enviar mensaje
+          <svg class="btn-flecha" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M2 8h12M9 3l5 5-5 5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </form>
+    </div>
+
+  </div>
+</section>

@@ -1,0 +1,9 @@
+/* Contenedor principal de la aplicación que aparece tras el preloader */
+.contenido-app {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+
+  &.visible {
+    opacity: 1;
+  }
+}

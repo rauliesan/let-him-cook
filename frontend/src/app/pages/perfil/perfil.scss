@@ -1,0 +1,661 @@
+:host {
+  display: block;
+}
+
+/* Scroll reveal — los elementos comienzan desplazados hacia abajo y aparecen al entrar en pantalla */
+[revela] {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+
+  &.visible {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Cabecera completa del perfil */
+.perfil-header {
+  background: var(--crema);
+  padding-bottom: 0;
+}
+
+/* Portada con gradiente oscuro y patrón de puntos animado */
+.portada {
+  height: 220px;
+  background: linear-gradient(135deg, #1C1917 0%, #3D1A10 50%, #1C1917 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.portada-patron {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(193, 62, 40, 0.2) 1px, transparent 1px);
+  background-size: 32px 32px;
+  animation: patternDesplaza 20s linear infinite;
+}
+
+@keyframes patternDesplaza {
+  from { background-position: 0 0; }
+  to { background-position: 64px 64px; }
+}
+
+/* Fila con avatar, datos y botones de acción */
+.perfil-info {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 24px;
+  align-items: flex-end;
+  padding-top: 0;
+  padding-bottom: 32px;
+  margin-top: -52px;
+  position: relative;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    align-items: center;
+    text-align: center;
+  }
+}
+
+/* Avatar circular con anillo de pulso al hacer hover */
+.avatar-wrapper {
+  position: relative;
+  flex-shrink: 0;
+
+  &:hover .avatar {
+    box-shadow: 0 0 0 4px rgba(193, 62, 40, 0.3), var(--sombra-md);
+    transform: scale(1.04);
+  }
+}
+
+.avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: var(--primario);
+  color: var(--blanco);
+  font-size: 2rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4px solid var(--crema);
+  box-shadow: var(--sombra-md);
+  cursor: pointer;
+  transition: box-shadow 0.3s, transform 0.3s;
+}
+
+.nivel-badge {
+  position: absolute;
+  bottom: 4px;
+  right: -4px;
+  background: var(--amarillo);
+  color: var(--negro);
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: var(--radio-full);
+  border: 2px solid var(--crema);
+  animation: nivelPop 0.4s ease 0.5s both;
+}
+
+@keyframes nivelPop {
+  from { transform: scale(0) rotate(-10deg); }
+  to { transform: scale(1) rotate(0); }
+}
+
+.perfil-datos {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 56px;
+}
+
+.perfil-nombre-fila {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+
+  h1 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+}
+
+.badge-titulo {
+  background: rgba(193, 62, 40, 0.1);
+  color: var(--primario);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: var(--radio-full);
+  border: 1px solid rgba(193, 62, 40, 0.2);
+  transition: background 0.2s, border-color 0.2s;
+
+  &:hover {
+    background: rgba(193, 62, 40, 0.18);
+    border-color: rgba(193, 62, 40, 0.4);
+  }
+}
+
+.perfil-bio {
+  font-size: 0.875rem;
+  color: var(--gris);
+  max-width: 480px;
+  line-height: 1.6;
+}
+
+/* Estadísticas numéricas que se resaltan al hacer hover */
+.perfil-stats {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  cursor: default;
+  padding: 8px 14px;
+  border-radius: var(--radio-sm);
+  border: 1px solid transparent;
+  transition: background 0.2s, border-color 0.2s;
+
+  &:hover {
+    background: rgba(193, 62, 40, 0.06);
+    border-color: rgba(193, 62, 40, 0.15);
+
+    strong {
+      color: var(--primario);
+    }
+  }
+
+  strong {
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    transition: color 0.2s;
+  }
+
+  span {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--gris);
+    font-weight: 600;
+  }
+}
+
+/* Botones de acción del perfil */
+.perfil-acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 56px;
+
+  @media (max-width: 768px) {
+    flex-direction: row;
+    padding-top: 0;
+  }
+}
+
+/* Barra de experiencia con animación de relleno al cargar */
+.exp-barra-wrapper {
+  padding: 20px 0 28px;
+  max-width: 600px;
+}
+
+.exp-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--gris);
+}
+
+.exp-xp {
+  color: var(--primario);
+  font-weight: 700;
+}
+
+.exp-barra {
+  height: 8px;
+  background: var(--gris-borde);
+  border-radius: var(--radio-full);
+  overflow: hidden;
+}
+
+/* La barra se anima desde 0% hasta el valor real al cargar la página */
+.exp-progreso {
+  height: 100%;
+  background: linear-gradient(to right, var(--primario), var(--coral));
+  border-radius: var(--radio-full);
+  animation: rellenarExp 1.4s cubic-bezier(0.4, 0, 0.2, 1) 0.6s both;
+}
+
+@keyframes rellenarExp {
+  from { width: 0; }
+  to { width: 84.5%; }
+}
+
+/* Pestañas de navegación pegajosas */
+.tabs-wrapper {
+  background: var(--blanco);
+  border-bottom: 1px solid var(--gris-borde);
+  position: sticky;
+  top: 68px;
+  z-index: 10;
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.tab {
+  padding: 16px 20px;
+  border: none;
+  background: none;
+  font-family: var(--fuente-base);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--gris);
+  cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  &:hover {
+    color: var(--negro);
+    background: rgba(193, 62, 40, 0.04);
+  }
+
+  &.activa {
+    color: var(--primario);
+    border-bottom-color: var(--primario);
+    font-weight: 600;
+  }
+}
+
+.tab-cantidad {
+  background: var(--beige);
+  color: var(--gris);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: var(--radio-full);
+  transition: background 0.2s, color 0.2s;
+
+  .activa & {
+    background: rgba(193, 62, 40, 0.1);
+    color: var(--primario);
+  }
+}
+
+/* Contenido de las pestañas */
+.perfil-contenido {
+  padding-top: 40px;
+  padding-bottom: 80px;
+}
+
+.tab-panel {
+  h2 {
+    font-size: 1.3rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+}
+
+.panel-desc {
+  color: var(--gris);
+  font-size: 0.875rem;
+  margin-bottom: 28px;
+}
+
+.btn-sm {
+  padding: 8px 16px !important;
+  font-size: 0.82rem !important;
+}
+
+/* Grid de recetas del usuario con acciones en hover */
+.recetas-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+
+  @media (max-width: 900px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 580px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.receta-card {
+  border-radius: var(--radio-md);
+  overflow: hidden;
+  border: 1px solid var(--gris-borde);
+  background: var(--blanco);
+  cursor: pointer;
+  transition: box-shadow 0.25s, transform 0.25s, border-color 0.25s;
+
+  &:hover {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transform: translateY(-4px);
+    border-color: transparent;
+
+    .receta-acciones-hover {
+      opacity: 1;
+    }
+
+    .receta-imagen-overlay {
+      opacity: 1;
+    }
+
+    h4 {
+      color: var(--primario);
+    }
+  }
+}
+
+.receta-imagen {
+  height: 140px;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  padding: 10px;
+  overflow: hidden;
+}
+
+.receta-imagen-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+
+/* Emoji grande centrado en la imagen de la receta del usuario */
+.receta-emoji {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -54%);
+  font-size: 2.6rem;
+  line-height: 1;
+  pointer-events: none;
+  filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.35));
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 1;
+
+  .receta-card:hover & {
+    transform: translate(-50%, -64%) scale(1.12);
+  }
+}
+
+.estado {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--radio-full);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  position: relative;
+  z-index: 1;
+
+  &.publicada {
+    background: rgba(74, 222, 128, 0.2);
+    color: #15803D;
+  }
+
+  &.borrador {
+    background: rgba(120, 113, 108, 0.2);
+    color: var(--gris);
+  }
+}
+
+/* Botones de editar/ver que emergen en hover */
+.receta-acciones-hover {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  display: flex;
+  gap: 6px;
+  opacity: 0;
+  transition: opacity 0.25s;
+  z-index: 2;
+}
+
+.accion-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, transform 0.15s;
+  color: var(--negro);
+
+  svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  &:hover {
+    background: var(--primario);
+    color: var(--blanco);
+    transform: scale(1.1);
+  }
+}
+
+.receta-cuerpo {
+  padding: 14px;
+
+  h4 {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    transition: color 0.2s;
+  }
+}
+
+.receta-meta {
+  display: flex;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: var(--gris);
+}
+
+.punto { opacity: 0.4; }
+
+/* Grid de logros con brillo de color al hacer hover en los desbloqueados */
+.logros-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 8px;
+
+  @media (max-width: 700px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.logro-card {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 20px;
+  background: var(--blanco);
+  border: 1px solid var(--gris-borde);
+  border-radius: var(--radio-md);
+  transition: box-shadow 0.25s, transform 0.25s;
+  position: relative;
+  overflow: hidden;
+
+  /* Línea de acento en el borde izquierdo que se revela en hover */
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--logro-color, var(--primario));
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover:not(.bloqueado) {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+
+    &::before {
+      transform: scaleY(1);
+    }
+
+    .logro-icono {
+      transform: scale(1.1) rotate(5deg);
+    }
+  }
+
+  &.bloqueado {
+    opacity: 0.5;
+
+    .logro-icono {
+      filter: grayscale(1);
+    }
+  }
+}
+
+.logro-icono {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radio-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1.2rem;
+  color: var(--blanco);
+  transition: transform 0.3s;
+}
+
+.logro-info {
+  flex: 1;
+
+  strong {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  p {
+    font-size: 0.78rem;
+    color: var(--gris);
+    line-height: 1.5;
+    margin-bottom: 6px;
+  }
+}
+
+.logro-fecha {
+  font-size: 0.72rem;
+  color: var(--primario);
+  font-weight: 500;
+}
+
+.logro-progreso-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logro-barra {
+  flex: 1;
+  height: 5px;
+  background: var(--gris-borde);
+  border-radius: var(--radio-full);
+  overflow: hidden;
+}
+
+.logro-barra-fill {
+  height: 100%;
+  background: var(--primario);
+  border-radius: var(--radio-full);
+}
+
+.logro-pct {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--gris);
+  white-space: nowrap;
+}
+
+/* Estado vacío para pestañas sin contenido */
+.tab-vacio {
+  display: flex;
+  justify-content: center;
+  padding: 80px 0;
+}
+
+.vacio-mensaje {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  max-width: 320px;
+}
+
+.vacio-icono {
+  font-size: 3rem;
+  color: var(--gris-claro);
+  display: block;
+  animation: iconoFlota 3s ease-in-out infinite;
+}
+
+@keyframes iconoFlota {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.vacio-mensaje h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.vacio-mensaje p {
+  font-size: 0.875rem;
+  color: var(--gris);
+  line-height: 1.6;
+}

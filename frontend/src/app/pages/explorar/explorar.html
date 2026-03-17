@@ -1,0 +1,147 @@
+<!-- Encabezado de la página con buscador integrado -->
+<section class="explorar-hero">
+  <div class="contenedor">
+    <h1 revela>Descubre miles<br>de recetas</h1>
+    <p revela [retardo]="100">Encuentra la receta perfecta para cualquier ocasión, ingrediente o nivel de habilidad.</p>
+    <div class="buscador" revela [retardo]="200">
+      <svg class="buscador-icono" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="9" cy="9" r="6"/><path d="M13.5 13.5 L17 17" stroke-linecap="round"/>
+      </svg>
+      <input type="text" placeholder="Buscar recetas, ingredientes, chef..." />
+      <button class="buscador-btn">Buscar</button>
+    </div>
+    <div class="hero-tags" revela [retardo]="300">
+      <span class="hero-tag">Pasta</span>
+      <span class="hero-tag">Postres</span>
+      <span class="hero-tag">Vegano</span>
+      <span class="hero-tag">Sin gluten</span>
+      <span class="hero-tag">Rápido</span>
+    </div>
+  </div>
+</section>
+
+<!-- Categorías de comida con tarjetas de color -->
+<section class="categorias">
+  <div class="contenedor">
+    <h2 revela>Categorías populares</h2>
+    <p class="seccion-desc" revela [retardo]="80">Explora recetas por tipo de cocina</p>
+
+    <div class="categorias-grid">
+      @for (cat of categorias; track cat.nombre; let i = $index) {
+        <div class="categoria-card"
+             revela [retardo]="i * 60"
+             [class.activa]="filtroActivo() === cat.nombre"
+             (click)="seleccionarFiltro(cat.nombre)"
+             [style.--color-cat]="cat.color">
+          <div class="cat-fondo"></div>
+          <div class="cat-barra"></div>
+          <span class="cat-emoji" aria-hidden="true">{{ cat.emoji }}</span>
+          <div class="cat-info">
+            <span class="cat-nombre">{{ cat.nombre }}</span>
+            <span class="cat-recetas">{{ cat.recetas }} recetas</span>
+          </div>
+          <svg class="cat-flecha" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- Panel de filtros activos y resultados del grid de recetas -->
+<section class="resultados">
+  <div class="contenedor">
+
+    <!-- Barra de filtros secundarios por dificultad y tiempo -->
+    <div class="filtros-barra" revela>
+      <div class="filtros-grupo">
+        <span class="filtros-label">Dificultad:</span>
+        @for (d of dificultades; track d) {
+          <button class="filtro-pill"
+                  [class.activo]="dificultadActiva() === d"
+                  (click)="seleccionarDificultad(d)">
+            {{ d }}
+          </button>
+        }
+      </div>
+      <div class="filtros-grupo">
+        <span class="filtros-label">Tiempo:</span>
+        @for (t of tiempos; track t) {
+          <button class="filtro-pill"
+                  [class.activo]="tiempoActivo() === t"
+                  (click)="seleccionarTiempo(t)">
+            {{ t }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Cabecera del grid con contador de resultados -->
+    <div class="resultados-header" revela [retardo]="80">
+      <span class="resultados-total">{{ recetas.length }} recetas encontradas</span>
+      <select class="orden-selector">
+        <option>Más populares</option>
+        <option>Más recientes</option>
+        <option>Menor tiempo</option>
+        <option>Mejor valoradas</option>
+      </select>
+    </div>
+
+    <!-- Grid de tarjetas de recetas con puntuación -->
+    <div class="recetas-grid">
+      @for (receta of recetas; track receta.titulo; let i = $index) {
+        <article class="receta-card" revela [retardo]="i * 70">
+          <div class="receta-imagen" [style.background]="receta.color">
+            <div class="receta-overlay"></div>
+            <span class="receta-emoji" aria-hidden="true">{{ receta.emoji }}</span>
+            <span class="receta-tipo">{{ receta.tipo }}</span>
+            <button class="btn-favorito" aria-label="Guardar en favoritos">
+              <svg viewBox="0 0 20 20" fill="none" stroke="white" stroke-width="1.5">
+                <path d="M10 17.5 L2.5 10 C2.5 7 4.5 5 7 5 C8.2 5 9.2 5.5 10 6.5 C10.8 5.5 11.8 5 13 5 C15.5 5 17.5 7 17.5 10 Z"/>
+              </svg>
+            </button>
+            <!-- CTA que aparece al hacer hover sobre la tarjeta -->
+            <div class="receta-ver-cta">
+              <span>Ver receta</span>
+              <svg viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="2">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+          <div class="receta-cuerpo">
+            <h3>{{ receta.titulo }}</h3>
+            <p class="receta-autor">por {{ receta.autor }}</p>
+            <div class="receta-datos">
+              <span class="dato">
+                <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" class="dato-icono">
+                  <circle cx="7" cy="7" r="5"/><path d="M7 4v3l2 1.5" stroke-linecap="round"/>
+                </svg>
+                {{ receta.tiempo }}
+              </span>
+              <span class="dato dato-dificultad">{{ receta.dificultad }}</span>
+            </div>
+            <div class="receta-puntuacion">
+              <div class="estrellas">
+                @for (n of [1,2,3,4,5]; track n) {
+                  <span [class.llena]="n <= estrellas(receta.puntuacion)">★</span>
+                }
+              </div>
+              <span class="puntuacion-num">{{ receta.puntuacion }}</span>
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+
+    <!-- Paginación simple -->
+    <div class="paginacion" revela>
+      <button class="pag-btn" disabled>Anterior</button>
+      <button class="pag-num activo">1</button>
+      <button class="pag-num">2</button>
+      <button class="pag-num">3</button>
+      <button class="pag-btn">Siguiente</button>
+    </div>
+
+  </div>
+</section>
