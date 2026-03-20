@@ -1,4 +1,4 @@
-/* Barra de navegación fija con backdrop blur */
+/* Barra de navegación fija */
 .navbar {
   position: fixed;
   top: 0;
@@ -16,6 +16,18 @@
   }
 }
 
+/* Barra de progreso de scroll en la parte superior */
+.scroll-progreso {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 2.5px;
+  background: linear-gradient(90deg, var(--primario), var(--coral), var(--amarillo));
+  z-index: 101;
+  transition: width 0.1s linear;
+  border-radius: 0 2px 2px 0;
+}
+
 .nav-inner {
   display: flex;
   align-items: center;
@@ -23,7 +35,7 @@
   height: 68px;
 }
 
-/* Logo con animación sutil de escala al hacer hover */
+/* Logo */
 .logo {
   display: flex;
   align-items: center;
@@ -54,24 +66,36 @@
   letter-spacing: -0.02em;
 }
 
-/* Links de navegación con subrayado deslizante desde el centro */
+/* Iconos dentro de los links de navegación */
+.nav-icono {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  opacity: 0.55;
+  transition: opacity 0.2s;
+}
+
+/* Links de navegación con pill activo y subrayado en hover */
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
   margin-left: auto;
 
   a {
-    padding: 8px 14px;
+    padding: 7px 14px;
     border-radius: var(--radio-full);
-    font-size: 0.875rem;
+    font-size: 0.85rem;
     font-weight: 500;
     color: var(--gris);
     transition: color 0.2s, background 0.2s;
     text-decoration: none;
     position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 
-    /* Subrayado que se expande desde el centro al hacer hover */
+    /* Subrayado que se expande desde el centro en hover */
     &::after {
       content: '';
       position: absolute;
@@ -92,11 +116,17 @@
         left: 14px;
         right: 14px;
       }
+
+      .nav-icono { opacity: 0.8; }
     }
 
+    /* Estado activo */
     &.activo {
       color: var(--primario);
       font-weight: 600;
+      background: rgba(193, 62, 40, 0.08);
+
+      .nav-icono { opacity: 1; }
 
       &::after {
         left: 14px;
@@ -104,6 +134,12 @@
       }
     }
   }
+}
+
+/* Elementos del menú móvil, ocultos en desktop */
+.menu-movil-header,
+.menu-movil-acciones {
+  display: none;
 }
 
 /* Botones de acción a la derecha */
@@ -119,7 +155,7 @@
   font-size: 0.85rem !important;
 }
 
-/* Botón hamburguesa para pantallas pequeñas con transición a X */
+/* Botón hamburguesa que transiciona a X en móvil */
 .hamburguesa {
   display: none;
   flex-direction: column;
@@ -137,7 +173,7 @@
     height: 2px;
     background: var(--negro);
     border-radius: 2px;
-    transition: transform 0.25s, opacity 0.25s;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s;
   }
 
   &.activo span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
@@ -145,22 +181,123 @@
   &.activo span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
 }
 
+/* Backdrop oscuro detrás del menú móvil */
+.menu-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(28, 25, 23, 0.5);
+  z-index: 98;
+  animation: backdropEntra 0.25s ease;
+  backdrop-filter: blur(4px);
+}
+
+@keyframes backdropEntra {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Responsive: menú móvil */
 @media (max-width: 768px) {
   .nav-links {
-    display: none;
-    position: absolute;
-    top: 68px;
-    left: 0;
+    position: fixed;
+    top: 0;
     right: 0;
+    bottom: 0;
+    width: min(320px, 85vw);
     flex-direction: column;
+    align-items: stretch;
     background: var(--crema);
-    border-bottom: 1px solid var(--gris-borde);
-    padding: 16px 24px;
-    gap: 4px;
-    animation: menuDespliega 0.2s ease;
+    padding: 0;
+    gap: 0;
+    z-index: 99;
+    transform: translateX(100%);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: -8px 0 40px rgba(0, 0, 0, 0.15);
+    overflow-y: auto;
+
+    /* El panel se desliza desde la derecha */
+    display: flex;
 
     &.abierto {
-      display: flex;
+      transform: translateX(0);
+    }
+
+    a {
+      padding: 14px 24px;
+      border-radius: 0;
+      font-size: 0.95rem;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+
+      .nav-icono {
+        width: 18px;
+        height: 18px;
+      }
+
+      &::after { display: none; }
+
+      &.activo {
+        background: rgba(193, 62, 40, 0.06);
+        border-left: 3px solid var(--primario);
+      }
+    }
+  }
+
+  /* Cabecera del menú móvil con mini perfil */
+  .menu-movil-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 24px 24px 20px;
+    border-bottom: 1px solid var(--gris-borde);
+    margin-bottom: 8px;
+  }
+
+  .menu-movil-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--primario);
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .menu-movil-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .menu-movil-nombre {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--negro);
+  }
+
+  .menu-movil-nivel {
+    font-size: 0.72rem;
+    color: var(--gris);
+    font-weight: 500;
+  }
+
+  /* Botones de acción al fondo del menú móvil */
+  .menu-movil-acciones {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 20px 24px;
+    margin-top: auto;
+    border-top: 1px solid var(--gris-borde);
+
+    a {
+      text-align: center;
+      padding: 12px;
+      border-radius: var(--radio-md);
+      border-bottom: none;
     }
   }
 
@@ -171,9 +308,4 @@
   .hamburguesa {
     display: flex;
   }
-}
-
-@keyframes menuDespliega {
-  from { opacity: 0; transform: translateY(-8px); }
-  to { opacity: 1; transform: translateY(0); }
 }

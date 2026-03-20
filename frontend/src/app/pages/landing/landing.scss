@@ -2,7 +2,7 @@
   display: block;
 }
 
-/* Hero a pantalla completa con composición editorial.
+/* Hero a pantalla completa.
    El padding horizontal usa max() para limitar el ancho del grid a ~1200px en pantallas anchas,
    de forma que el texto y las tarjetas queden cerca en vez de separados a los extremos. */
 .hero {
@@ -15,22 +15,45 @@
   grid-template-rows: 1fr auto;
   position: relative;
   overflow: clip;
+
+  /* Valores por defecto — se sobreescriben en cada mousemove */
   --mx: 30%;
   --my: 40%;
+  --nx: 0;
+  --ny: 0;
+  --cx: 40%;
+  --cy: 45%;
 
   @media (max-width: 900px)  { grid-template-columns: 1fr 320px; padding-inline: clamp(16px, 3vw, 40px); }
   @media (max-width: 700px)  { grid-template-columns: 1fr 260px; }
   @media (max-width: 480px)  { grid-template-columns: 1fr; }
 
-  /* Spotlight que sigue al cursor del usuario — efecto sutil de luz interactiva */
+  /* Spotlight principal — más grande y visible que antes */
   &::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(600px circle at var(--mx) var(--my), rgba(193, 62, 40, 0.12), transparent 55%);
+    background: radial-gradient(800px circle at var(--mx) var(--my), rgba(193, 62, 40, 0.16), transparent 55%);
     pointer-events: none;
     z-index: 0;
+    transition: background 0.04s linear;
   }
+}
+
+/* Glow difuso que persigue el cursor a baja latencia */
+.cursor-aura {
+  position: absolute;
+  width: 560px;
+  height: 560px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(193, 62, 40, 0.09) 0%, transparent 65%);
+  top:  0;
+  left: 0;
+  transform: translate(var(--aura-x, -280px), var(--aura-y, -280px));
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(40px);
+  transition: transform 0.055s linear;
 }
 
 /* Arcos decorativos en el fondo, generados con CSS */
@@ -38,6 +61,8 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
+  translate: var(--tx-fondo, 0px) var(--ty-fondo, 0px);
+  transition: translate 0.45s ease-out;
 
   /* Trama de puntos que da textura al fondo — visible en la zona central izquierda */
   &::before {
@@ -49,7 +74,7 @@
     mask-image: radial-gradient(ellipse 80% 70% at 40% 50%, black 0%, transparent 65%);
   }
 
-  /* Franjas diagonales cálidas que se desplazan lentamente */
+  /* Franjas diagonales que se desplazan lentamente */
   &::after {
     content: '';
     position: absolute;
@@ -125,6 +150,9 @@
   padding: 0;
   position: relative;
   z-index: 1;
+  translate: var(--tx-texto, 0px) var(--ty-texto, 0px);
+  transition: translate 0.25s ease-out;
+  will-change: translate;
 }
 
 /* Etiqueta de estado con punto verde parpadeante */
@@ -149,7 +177,7 @@
   animation: pulsarVerde 2s ease-in-out infinite;
 }
 
-/* Titular enorme — el elemento que define el impacto de la página.
+/* Titular principal.
    margin-top: auto empuja el bloque h1+desc+botones hacia abajo para centrarlo */
 .hero-h1 {
   margin: 0;
@@ -179,7 +207,7 @@
   }
 }
 
-/* La última palabra lleva fondo de color, técnica tipo "sticker editorial" */
+/* La última palabra lleva fondo de color */
 .h1-invertido {
   font-size: clamp(3.5rem, 9vw, 7rem);
   font-weight: 800;
@@ -225,7 +253,7 @@
   animation: aparecerHero 0.8s ease 0.65s both;
 }
 
-/* Botones de acción del hero con estilo propio */
+/* Botones de acción del hero */
 .hero-acciones {
   display: flex;
   gap: 14px;
@@ -333,9 +361,13 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  padding: 0; /* simétrico — flex centra la pila de tarjetas */
+  padding: 0;
   z-index: 1;
   animation: aparecerPanel 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+  translate: var(--tx-panel, 0px) var(--ty-panel, 0px);
+  transition: translate 0.14s ease-out;
+  will-change: translate;
+  perspective: 900px;
 
   @media (max-width: 480px) {
     display: none;
@@ -483,7 +515,7 @@
   animation: rellenarBarra 2.5s ease 1.5s forwards;
 }
 
-/* Mini tarjetas flotantes que orbitan el panel principal */
+/* Tarjetas flotantes alrededor del panel principal */
 .receta-float {
   position: absolute;
   display: flex;
@@ -552,6 +584,8 @@
   padding: 6px 14px 6px 8px;
   z-index: 3;
   animation: flotarA 3.8s ease-in-out 0.7s infinite;
+  translate: var(--tx-logro, 0px) var(--ty-logro, 0px);
+  transition: translate 0.08s ease-out;
 
   svg {
     width: 18px;
@@ -567,12 +601,18 @@
   }
 }
 
-/* Pila de tarjetas de receta — se despliegan en abanico al hacer hover */
+/* Pila de tarjetas de receta — tilt 3D con el ratón + abanico al hacer hover */
 .receta-stack {
   position: relative;
   width: 260px;
   height: 360px;
   flex-shrink: 0;
+  /* El tilt usa rotateX/Y según la posición del ratón.
+     La sombra se desplaza en sentido contrario para reforzar el efecto de luz. */
+  transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+  transition: transform 0.08s ease-out;
+  will-change: transform;
+  transform-style: preserve-3d;
 
   /* Despliegue en abanico: las cartas traseras rotan más al hacer hover */
   &:hover {
@@ -613,7 +653,7 @@
   transform: rotate(-5deg);
 }
 
-/* Carta frontal: Mexicana — la más prominente */
+/* Carta frontal: Mexicana */
 .rstack-c1 {
   z-index: 3;
   top: 10px;
@@ -702,7 +742,7 @@
   color: var(--amarillo);
 }
 
-/* Contenedor de los anillos decorativos dentro de la foto principal */
+/* Anillos de fondo dentro de la foto principal */
 .rdeco {
   position: absolute;
   inset: 0;
@@ -1126,7 +1166,7 @@
   gap: 12px;
 }
 
-/* Fondo decorativo de la tarjeta grande */
+/* Elemento de fondo de la tarjeta grande */
 .feature-deco {
   position: absolute;
   right: -30px;
@@ -1489,7 +1529,7 @@
   }
 }
 
-/* Sección CTA con fondo de color intenso y patrón de cuadros animado */
+/* Sección CTA con fondo de color y patrón de cuadros animado */
 .cta-sec {
   background: var(--primario);
   overflow: hidden;
@@ -1625,7 +1665,7 @@
   }
 }
 
-/* Círculos decorativos de fondo en el CTA */
+/* Círculos de fondo en el CTA */
 .cta-decoracion {
   position: relative;
   width: 200px;
@@ -1711,7 +1751,7 @@
   width: fit-content;
 }
 
-/* Acordeón FAQ con animación suave de apertura */
+/* Acordeón FAQ */
 .faq-lista {
   display: flex;
   flex-direction: column;

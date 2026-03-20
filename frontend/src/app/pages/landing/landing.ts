@@ -14,16 +14,48 @@ export class Landing {
 
   constructor(private el: ElementRef<HTMLElement>) {}
 
-  /* Actualiza las variables CSS del spotlight al mover el ratón sobre el hero */
   @HostListener('mousemove', ['$event'])
   onMouseMove(e: MouseEvent) {
-    const x = (e.clientX / window.innerWidth) * 100;
-    const y = (e.clientY / window.innerHeight) * 100;
-    this.el.nativeElement.style.setProperty('--mx', `${x}%`);
-    this.el.nativeElement.style.setProperty('--my', `${y}%`);
+    const host = this.el.nativeElement;
+    const nx = (e.clientX / window.innerWidth  - 0.5) * 2; // -1..1
+    const ny = (e.clientY / window.innerHeight - 0.5) * 2;
+
+    // Spotlight existente
+    host.style.setProperty('--mx', `${(e.clientX / window.innerWidth) * 100}%`);
+    host.style.setProperty('--my', `${(e.clientY / window.innerHeight) * 100}%`);
+
+    // Parallax por capa — valores precomputados con unidades para evitar calc()
+    host.style.setProperty('--tx-fondo',  `${(nx * -22).toFixed(1)}px`);
+    host.style.setProperty('--ty-fondo',  `${(ny * -14).toFixed(1)}px`);
+    host.style.setProperty('--tx-texto',  `${(nx *   5).toFixed(1)}px`);
+    host.style.setProperty('--ty-texto',  `${(ny *   4).toFixed(1)}px`);
+    host.style.setProperty('--tx-panel',  `${(nx *  16).toFixed(1)}px`);
+    host.style.setProperty('--ty-panel',  `${(ny *  12).toFixed(1)}px`);
+    host.style.setProperty('--tx-logro',  `${(nx *  24).toFixed(1)}px`);
+    host.style.setProperty('--ty-logro',  `${(ny *  18).toFixed(1)}px`);
+
+    // Tilt 3D del card stack
+    host.style.setProperty('--tilt-x', `${(ny * -6).toFixed(2)}deg`);
+    host.style.setProperty('--tilt-y', `${(nx *  9).toFixed(2)}deg`);
+
+    // Posición del cursor-aura (relativa al hero, centrada en el punto)
+    const hero = host.querySelector('.hero') as HTMLElement;
+    const rect  = hero?.getBoundingClientRect() ?? { left: 0, top: 0 };
+    host.style.setProperty('--aura-x', `${e.clientX - rect.left - 280}px`);
+    host.style.setProperty('--aura-y', `${e.clientY - rect.top  - 280}px`);
   }
 
-  /* Círculos decorativos del fondo — regenerados aleatoriamente en cada carga */
+  @HostListener('mouseleave')
+  onMouseLeave() {
+    const host = this.el.nativeElement;
+    ['--tx-fondo','--ty-fondo','--tx-texto','--ty-texto',
+     '--tx-panel','--ty-panel','--tx-logro','--ty-logro']
+      .forEach(p => host.style.setProperty(p, '0px'));
+    host.style.setProperty('--tilt-x', '0deg');
+    host.style.setProperty('--tilt-y', '0deg');
+  }
+
+  /* Círculos del fondo — regenerados aleatoriamente en cada carga */
   orbitCirculos = Array.from(
     { length: Math.floor(Math.random() * 4) + 4 },
     () => {

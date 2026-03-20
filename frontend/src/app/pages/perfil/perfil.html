@@ -1,39 +1,61 @@
 <!-- Cabecera del perfil con portada, avatar y estadísticas -->
 <section class="perfil-header">
   <div class="portada">
-    <!-- Patrón decorativo de fondo que anima sutilmente -->
+    <!-- Patrón de fondo animado -->
     <div class="portada-patron"></div>
+    <!-- Ondas SVG en la parte inferior de la portada -->
+    <svg class="portada-ondas" viewBox="0 0 1440 60" preserveAspectRatio="none">
+      <path d="M0,40 C360,0 720,60 1080,20 S1440,40 1440,40 L1440,60 L0,60 Z" fill="var(--crema)"/>
+    </svg>
   </div>
 
   <div class="contenedor perfil-info">
     <div class="avatar-wrapper">
       <div class="avatar">MG</div>
       <div class="nivel-badge">Nv.12</div>
+      <!-- Botón de cámara para editar la foto de perfil -->
+      <button class="avatar-editar" aria-label="Cambiar foto de perfil">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="1.5" y="4.5" width="13" height="9" rx="2" stroke-linecap="round"/>
+          <path d="M5.5 4.5L6.5 2.5h3l1 2"/>
+          <circle cx="8" cy="9" r="2.5"/>
+        </svg>
+      </button>
     </div>
 
     <div class="perfil-datos">
       <div class="perfil-nombre-fila">
         <h1>María García</h1>
         <span class="badge-titulo">Chef Expert</span>
+        <!-- Estado online -->
+        <span class="badge-online">En línea</span>
       </div>
       <p class="perfil-bio">Apasionada de la cocina mediterránea. Creadora de recetas saludables. Compartiendo amor por la comida desde 2020.</p>
 
+      <!-- Preferencias de tipo de comida (usuario_preferencia) -->
+      <div class="perfil-prefs">
+        @for (pref of preferencias; track pref) {
+          <span class="pref-tag">{{ pref }}</span>
+        }
+      </div>
+
+      <!-- Estadísticas: Recetas, Amigos (usuario_amigo), Logros (usuario_logro), Valoración media -->
       <div class="perfil-stats">
         <div class="stat-item">
           <strong>156</strong>
           <span>Recetas</span>
         </div>
         <div class="stat-item">
-          <strong>24.5K</strong>
-          <span>Seguidores</span>
+          <strong>{{ amigos }}</strong>
+          <span>Amigos</span>
         </div>
         <div class="stat-item">
-          <strong>892</strong>
-          <span>Siguiendo</span>
+          <strong>34</strong>
+          <span>Logros</span>
         </div>
         <div class="stat-item">
           <strong>4.8 ★</strong>
-          <span>Valoración</span>
+          <span>Valoracion</span>
         </div>
       </div>
     </div>
@@ -44,22 +66,56 @@
     </div>
   </div>
 
-  <!-- Barra de experiencia del usuario con animación de progreso -->
+  <!-- Barra de experiencia y resumen debajo del perfil -->
   <div class="contenedor">
-    <div class="exp-barra-wrapper">
-      <div class="exp-info">
-        <span>Nivel 12</span>
-        <span class="exp-xp">8.450 / 10.000 XP</span>
-        <span>Nivel 13</span>
+    <div class="perfil-resumen-grid">
+      <!-- Barra de experiencia -->
+      <div class="resumen-card resumen-exp">
+        <div class="resumen-card-titulo">
+          <span class="resumen-icono">⚡</span>
+          Experiencia
+        </div>
+        <div class="exp-barra-wrapper">
+          <div class="exp-info">
+            <span>Nivel 12</span>
+            <span class="exp-xp">8.450 / 10.000 XP</span>
+            <span>Nivel 13</span>
+          </div>
+          <div class="exp-barra">
+            <div class="exp-progreso"></div>
+          </div>
+        </div>
       </div>
-      <div class="exp-barra">
-        <div class="exp-progreso"></div>
+
+      <!-- Modelo IA y preferencias (usuario.ia_modelo_seleccionado_id + usuario_preferencia) -->
+      <div class="resumen-card resumen-ia">
+        <div class="resumen-card-titulo">
+          <span class="resumen-icono">🤖</span>
+          Asistente IA
+        </div>
+        <div class="ia-modelo-nombre">{{ modeloIA }}</div>
+        <div class="ia-prefs-lista">
+          @for (pref of preferencias; track pref) {
+            <span class="ia-pref-chip">{{ pref }}</span>
+          }
+        </div>
+        <span class="ia-prefs-label">Preferencias de cocina</span>
       </div>
+
+      <!-- Monedas -->
+      <a routerLink="/rewards" class="resumen-card resumen-coins">
+        <div class="resumen-card-titulo">
+          <span class="resumen-icono">🪙</span>
+          Monedas
+        </div>
+        <div class="coins-grande">{{ coins | number }}</div>
+        <span class="coins-cta">Ir a Rewards →</span>
+      </a>
     </div>
   </div>
 </section>
 
-<!-- Pestañas de navegación pegajosas -->
+<!-- Pestañas de navegación -->
 <div class="tabs-wrapper">
   <div class="contenedor">
     <nav class="tabs">
@@ -67,6 +123,7 @@
         <button class="tab"
                 [class.activa]="tabActiva() === tab.id"
                 (click)="cambiarTab(tab.id)">
+          <span class="tab-icono">{{ tab.icono }}</span>
           {{ tab.label }}
           <span class="tab-cantidad">{{ tab.cantidad }}</span>
         </button>
@@ -95,7 +152,7 @@
               } @else {
                 <span class="estado borrador">Borrador</span>
               }
-              <!-- Acciones que aparecen al hacer hover -->
+              <!-- Acciones en hover -->
               <div class="receta-acciones-hover">
                 <button class="accion-btn" aria-label="Editar">
                   <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -116,6 +173,10 @@
                 <span>{{ receta.tipo }}</span>
                 <span class="punto">·</span>
                 <span>{{ receta.tiempo }}</span>
+                @if (receta.publicada && receta.likes > 0) {
+                  <span class="punto">·</span>
+                  <span class="receta-likes">❤ {{ receta.likes }}</span>
+                }
               </div>
             </div>
           </div>
@@ -160,24 +221,60 @@
   }
 
   @if (tabActiva() === 'favoritos') {
-    <div class="tab-panel tab-vacio">
-      <div class="vacio-mensaje" revela>
-        <span class="vacio-icono">❤️</span>
-        <h3>Recetas favoritas</h3>
-        <p>Aquí aparecerán las recetas que guardes como favoritas mientras exploras la plataforma.</p>
-        <a routerLink="/explorar" class="btn-primario" style="text-decoration:none">Explorar recetas</a>
-      </div>
-    </div>
-  }
+    <div class="tab-panel">
 
-  @if (tabActiva() === 'colecciones') {
-    <div class="tab-panel tab-vacio">
-      <div class="vacio-mensaje" revela>
-        <span class="vacio-icono">📁</span>
-        <h3>Colecciones</h3>
-        <p>Organiza tus recetas favoritas en colecciones temáticas personalizadas.</p>
-        <button class="btn-primario">Crear colección</button>
+      <!-- Recetas favoritas (favorito_receta → receta) -->
+      <div class="panel-header" revela>
+        <h2>Recetas favoritas</h2>
+        <a routerLink="/explorar" class="btn-secundario btn-sm" style="text-decoration:none">Explorar más</a>
       </div>
+      <div class="recetas-grid">
+        @for (receta of recetasFavoritas; track receta.titulo; let i = $index) {
+          <div class="receta-card" revela [retardo]="i * 60">
+            <div class="receta-imagen" [style.background]="receta.color">
+              <div class="receta-imagen-overlay"></div>
+              <span class="receta-emoji" aria-hidden="true">{{ receta.emoji }}</span>
+            </div>
+            <div class="receta-cuerpo">
+              <h4>{{ receta.titulo }}</h4>
+              <div class="receta-meta">
+                <span>{{ receta.tipo }}</span>
+                <span class="punto">·</span>
+                <span>{{ receta.tiempo }}</span>
+                <span class="punto">·</span>
+                <span>por {{ receta.autor }}</span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Supermercados favoritos (favorito_supermercado → supermercado) -->
+      <div class="panel-header" revela style="margin-top: 3rem">
+        <h2>Supermercados favoritos</h2>
+        <a routerLink="/mapa" class="btn-secundario btn-sm" style="text-decoration:none">Ver mapa</a>
+      </div>
+      <div class="supermercados-favoritos">
+        @for (super of favoritosSupermercados; track super.nombre; let i = $index) {
+          <div class="supermercado-fav-card" revela [retardo]="i * 80">
+            <div class="super-fav-info">
+              <strong>{{ super.nombre }}</strong>
+              <p>{{ super.descripcion }}</p>
+              <span class="super-fav-dir">
+                <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" style="width:11px;height:11px;flex-shrink:0">
+                  <circle cx="7" cy="6" r="3"/><path d="M7 14c0 0-5-4-5-8a5 5 0 0 1 10 0c0 4-5 8-5 8z" stroke-linecap="round"/>
+                </svg>
+                {{ super.direccion }}
+              </span>
+            </div>
+            <div class="super-fav-meta">
+              <span class="super-valoracion">{{ super.valoracion }} ★</span>
+              <span class="super-horario">{{ super.horario }}</span>
+            </div>
+          </div>
+        }
+      </div>
+
     </div>
   }
 

@@ -2,7 +2,7 @@
   display: block;
 }
 
-/* Scroll reveal — los elementos comienzan desplazados hacia abajo y aparecen al entrar en pantalla */
+/* Scroll reveal — los elementos aparecen al entrar en pantalla */
 [revela] {
   opacity: 0;
   transform: translateY(20px);
@@ -14,7 +14,7 @@
   }
 }
 
-/* Hero con fondo rojo terracota y texto en blanco */
+/* Hero con fondo rojo */
 .contacto-hero {
   background: var(--primario);
   padding: 140px 0 72px;
@@ -33,7 +33,7 @@
     clip-path: ellipse(60% 100% at 50% 100%);
   }
 
-  /* Patrón radial decorativo */
+  /* Patrón radial de fondo */
   &::after {
     content: '';
     position: absolute;
@@ -72,7 +72,7 @@
   }
 }
 
-/* SVG de la burbuja de chat con animación de flotación */
+/* SVG de la burbuja de chat */
 .hero-burbuja {
   width: 140px;
   height: 140px;
@@ -87,7 +87,7 @@
   66% { transform: translateY(-5px) rotate(-1deg); }
 }
 
-/* Los tres puntos de la burbuja parpadean en secuencia */
+/* Los tres puntos de la burbuja, con retrasos escalonados */
 .burbuja-punto {
   animation: puntoPulse 1.6s ease-in-out infinite;
 }
@@ -146,7 +146,7 @@
   gap: 4px;
 }
 
-/* Cada ítem de información con efecto de fondo y desplazamiento en hover */
+/* Ítem de información con desplazamiento en hover */
 .info-item {
   display: flex;
   align-items: flex-start;
@@ -206,7 +206,7 @@
   }
 }
 
-/* Tarjeta del formulario con campos animados */
+/* Tarjeta del formulario */
 .formulario-wrapper {
   background: var(--blanco);
   border: 1px solid var(--gris-borde);
@@ -252,7 +252,7 @@
   }
 }
 
-/* Campos con borde inferior animado al recibir foco */
+/* Campo de formulario */
 .campo {
   display: flex;
   flex-direction: column;
@@ -266,7 +266,7 @@
     transition: color 0.2s;
   }
 
-  /* Cuando el campo está activo, la etiqueta se tiñe del color primario */
+  /* La etiqueta cambia de color cuando el campo está activo */
   &:focus-within label {
     color: var(--primario);
   }
@@ -321,7 +321,7 @@
   }
 }
 
-/* Botón de envío: la flecha se desliza hacia la derecha en hover */
+/* Botón de envío */
 .btn-submit {
   align-self: flex-start;
   width: 100%;
