@@ -4,14 +4,16 @@ import com.daw.dtos.request.RecompensaRequestDTO;
 import com.daw.dtos.response.RecompensaResponseDTO;
 import com.daw.entities.Recompensa;
 import com.daw.entities.UsuarioRecompensa;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-02-28T02:39:50+0100",
-    comments = "version: 1.6.3, compiler: Eclipse JDT (IDE) 3.43.0.v20250819-1513, environment: Java 21.0.8 (Eclipse Adoptium)"
+    date = "2026-03-20T18:10:23+0100",
+    comments = "version: 1.6.3, compiler: Eclipse JDT (IDE) 3.45.0.v20260128-0750, environment: Java 21.0.9 (Eclipse Adoptium)"
 )
 @Component
 public class RecompensaMapperImpl implements RecompensaMapper {
@@ -62,6 +64,20 @@ public class RecompensaMapperImpl implements RecompensaMapper {
         recompensaResponseDTO.setFechaObtenida( entity.getFechaObtenida() );
 
         return recompensaResponseDTO;
+    }
+
+    @Override
+    public List<RecompensaResponseDTO> toListDTO(List<Recompensa> list) {
+        if ( list == null ) {
+            return null;
+        }
+
+        List<RecompensaResponseDTO> list1 = new ArrayList<RecompensaResponseDTO>( list.size() );
+        for ( Recompensa recompensa : list ) {
+            list1.add( toResponseDTO( recompensa ) );
+        }
+
+        return list1;
     }
 
     private UUID entityRecompensaId(UsuarioRecompensa usuarioRecompensa) {

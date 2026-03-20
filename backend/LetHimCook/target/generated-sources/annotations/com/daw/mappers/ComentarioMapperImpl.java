@@ -5,14 +5,16 @@ import com.daw.dtos.response.ComentarioResponseDTO;
 import com.daw.entities.Comentario;
 import com.daw.entities.Receta;
 import com.daw.entities.Usuario;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-02-27T13:23:26+0100",
-    comments = "version: 1.6.3, compiler: Eclipse JDT (IDE) 3.43.0.v20250819-1513, environment: Java 21.0.8 (Eclipse Adoptium)"
+    date = "2026-03-20T18:10:23+0100",
+    comments = "version: 1.6.3, compiler: Eclipse JDT (IDE) 3.45.0.v20260128-0750, environment: Java 21.0.9 (Eclipse Adoptium)"
 )
 @Component
 public class ComentarioMapperImpl implements ComentarioMapper {
@@ -50,6 +52,20 @@ public class ComentarioMapperImpl implements ComentarioMapper {
         comentarioResponseDTO.setValoracion( entity.getValoracion() );
 
         return comentarioResponseDTO;
+    }
+
+    @Override
+    public List<ComentarioResponseDTO> toListDTO(List<Comentario> list) {
+        if ( list == null ) {
+            return null;
+        }
+
+        List<ComentarioResponseDTO> list1 = new ArrayList<ComentarioResponseDTO>( list.size() );
+        for ( Comentario comentario : list ) {
+            list1.add( toResponseDTO( comentario ) );
+        }
+
+        return list1;
     }
 
     protected Receta comentarioRequestDTOToReceta(ComentarioRequestDTO comentarioRequestDTO) {

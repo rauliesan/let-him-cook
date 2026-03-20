@@ -4,14 +4,16 @@ import com.daw.dtos.request.LogroRequestDTO;
 import com.daw.dtos.response.LogroResponseDTO;
 import com.daw.entities.Logro;
 import com.daw.entities.UsuarioLogro;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-02-28T02:38:53+0100",
-    comments = "version: 1.6.3, compiler: Eclipse JDT (IDE) 3.43.0.v20250819-1513, environment: Java 21.0.8 (Eclipse Adoptium)"
+    date = "2026-03-20T18:10:23+0100",
+    comments = "version: 1.6.3, compiler: Eclipse JDT (IDE) 3.45.0.v20260128-0750, environment: Java 21.0.9 (Eclipse Adoptium)"
 )
 @Component
 public class LogroMapperImpl implements LogroMapper {
@@ -62,6 +64,20 @@ public class LogroMapperImpl implements LogroMapper {
         logroResponseDTO.setFechaObtenido( entity.getFechaObtenido() );
 
         return logroResponseDTO;
+    }
+
+    @Override
+    public List<LogroResponseDTO> toListDTO(List<Logro> list) {
+        if ( list == null ) {
+            return null;
+        }
+
+        List<LogroResponseDTO> list1 = new ArrayList<LogroResponseDTO>( list.size() );
+        for ( Logro logro : list ) {
+            list1.add( toResponseDTO( logro ) );
+        }
+
+        return list1;
     }
 
     private UUID entityLogroId(UsuarioLogro usuarioLogro) {

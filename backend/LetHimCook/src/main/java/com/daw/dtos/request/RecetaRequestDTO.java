@@ -39,4 +39,6 @@ public class RecetaRequestDTO {
     private String imagenUrl;
 
     private UUID tipoComidaId;
+    
+    private UUID iaModeloId;
 }

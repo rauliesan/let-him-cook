@@ -75,6 +75,10 @@ public class Receta {
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "usuario_creador_id", nullable = false)
 	private Usuario usuario;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "ia_modelo_id")
+	private IaModelo iaModelo;
 	
 	
 	@PrePersist

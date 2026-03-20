@@ -39,7 +39,7 @@ public class IaModelo {
 	@JoinColumn(name = "api_id", nullable = false)
 	private Api api;
 	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "iaModeloSeleccionado")
-	private Set<Usuario> usuarios;
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "iaModelo")
+	private Set<Receta> recetas;
 	
 }

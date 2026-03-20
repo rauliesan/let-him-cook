@@ -4,14 +4,16 @@ import com.daw.dtos.request.IaModeloRequestDTO;
 import com.daw.dtos.response.IaModeloResponseDTO;
 import com.daw.entities.Api;
 import com.daw.entities.IaModelo;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-02-27T13:23:50+0100",
-    comments = "version: 1.6.3, compiler: Eclipse JDT (IDE) 3.43.0.v20250819-1513, environment: Java 21.0.8 (Eclipse Adoptium)"
+    date = "2026-03-20T18:14:05+0100",
+    comments = "version: 1.6.3, compiler: Eclipse JDT (IDE) 3.45.0.v20260128-0750, environment: Java 21.0.9 (Eclipse Adoptium)"
 )
 @Component
 public class IaModeloMapperImpl implements IaModeloMapper {
@@ -46,6 +48,20 @@ public class IaModeloMapperImpl implements IaModeloMapper {
         iaModeloResponseDTO.setNombreModelo( entity.getNombreModelo() );
 
         return iaModeloResponseDTO;
+    }
+
+    @Override
+    public List<IaModeloResponseDTO> toListDTO(List<IaModelo> list) {
+        if ( list == null ) {
+            return null;
+        }
+
+        List<IaModeloResponseDTO> list1 = new ArrayList<IaModeloResponseDTO>( list.size() );
+        for ( IaModelo iaModelo : list ) {
+            list1.add( toResponseDTO( iaModelo ) );
+        }
+
+        return list1;
     }
 
     protected Api iaModeloRequestDTOToApi(IaModeloRequestDTO iaModeloRequestDTO) {
