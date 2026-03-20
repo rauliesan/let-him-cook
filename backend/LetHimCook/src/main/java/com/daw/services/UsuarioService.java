@@ -27,8 +27,6 @@ import lombok.RequiredArgsConstructor;
 /**
  * Servicio para la gestión de usuarios.
  *
- * Proporciona operaciones CRUD completas sobre la entidad {@link Usuario}.
- *
  * @author IES Almudeyne - Raúl Liébana Sánchez
  */
 @Service
@@ -47,10 +45,7 @@ public class UsuarioService {
      * @return lista de usuarios como DTOs de respuesta
      */
     public List<UsuarioResponseDTO> listarTodos() {
-        return usuarioRepository.findAll()
-                .stream()
-                .map(usuarioMapper::toResponseDTO)
-                .toList();
+    	return usuarioMapper.toListDTO(usuarioRepository.findAll());
     }
 
     public Page<UsuarioResponseDTO> buscarPaginado(String nombre, Pageable pageable) {

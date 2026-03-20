@@ -4,7 +4,6 @@ import java.util.UUID;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -15,7 +14,7 @@ import lombok.Data;
  */
 @Data
 public class UsuarioRequestDTO {
-	
+
     @NotBlank(message = "El nombre es obligatorio")
     @Size(min = 3, max = 50, message = "El nombre debe tener entre 3 y 50 caracteres")
     private String nombre;
@@ -29,7 +28,6 @@ public class UsuarioRequestDTO {
     private String password;
 
     private String fotoUrl;
-    
-    @NotNull(message = "Debe seleccionar un modelo de IA base")
+
     private UUID iaModeloSeleccionadoId;
 }
