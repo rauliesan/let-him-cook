@@ -2,6 +2,7 @@ package com.daw.mappers;
 
 import com.daw.dtos.request.RecetaRequestDTO;
 import com.daw.dtos.response.RecetaResponseDTO;
+import com.daw.entities.IaModelo;
 import com.daw.entities.Receta;
 import com.daw.entities.TipoComida;
 import com.daw.entities.Usuario;
@@ -13,8 +14,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-03-18T17:36:02+0100",
-    comments = "version: 1.6.3, compiler: Eclipse JDT (IDE) 3.45.0.v20260128-0750, environment: Java 21.0.9 (Eclipse Adoptium)"
+    date = "2026-03-20T18:18:19+0100",
+    comments = "version: 1.6.3, compiler: Eclipse JDT (IDE) 3.43.0.v20250819-1513, environment: Java 21.0.8 (Eclipse Adoptium)"
 )
 @Component
 public class RecetaMapperImpl implements RecetaMapper {
@@ -28,6 +29,7 @@ public class RecetaMapperImpl implements RecetaMapper {
         Receta receta = new Receta();
 
         receta.setTipoComida( recetaRequestDTOToTipoComida( dto ) );
+        receta.setIaModelo( recetaRequestDTOToIaModelo( dto ) );
         receta.setAlergenos( dto.getAlergenos() );
         receta.setCalorias( dto.getCalorias() );
         receta.setDescripcion( dto.getDescripcion() );
@@ -53,6 +55,7 @@ public class RecetaMapperImpl implements RecetaMapper {
         recetaResponseDTO.setTipoComidaNombre( entityTipoComidaNombre( entity ) );
         recetaResponseDTO.setUsuarioCreadorId( entityUsuarioId( entity ) );
         recetaResponseDTO.setUsuarioCreadorNombre( entityUsuarioNombre( entity ) );
+        recetaResponseDTO.setIaModeloId( entityIaModeloId( entity ) );
         recetaResponseDTO.setAlergenos( entity.getAlergenos() );
         recetaResponseDTO.setCalorias( entity.getCalorias() );
         recetaResponseDTO.setDescripcion( entity.getDescripcion() );
@@ -94,6 +97,18 @@ public class RecetaMapperImpl implements RecetaMapper {
         return tipoComida;
     }
 
+    protected IaModelo recetaRequestDTOToIaModelo(RecetaRequestDTO recetaRequestDTO) {
+        if ( recetaRequestDTO == null ) {
+            return null;
+        }
+
+        IaModelo iaModelo = new IaModelo();
+
+        iaModelo.setId( recetaRequestDTO.getIaModeloId() );
+
+        return iaModelo;
+    }
+
     private UUID entityTipoComidaId(Receta receta) {
         TipoComida tipoComida = receta.getTipoComida();
         if ( tipoComida == null ) {
@@ -124,5 +139,13 @@ public class RecetaMapperImpl implements RecetaMapper {
             return null;
         }
         return usuario.getNombre();
+    }
+
+    private UUID entityIaModeloId(Receta receta) {
+        IaModelo iaModelo = receta.getIaModelo();
+        if ( iaModelo == null ) {
+            return null;
+        }
+        return iaModelo.getId();
     }
 }

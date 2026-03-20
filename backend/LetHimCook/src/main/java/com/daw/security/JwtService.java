@@ -20,7 +20,7 @@ import io.jsonwebtoken.security.Keys;
  * tokens JWT.
  * 
  * El secreto y la expiración se configuran desde
- * {@code application.properties}:
+ * application.properties:
  * jwt.secret – clave HMAC-SHA256 codificada en Base64.
  * jwt.expiration – tiempo de vida del token en milisegundos.
  *
@@ -75,7 +75,7 @@ public class JwtService {
      *
      * @param token       token JWT a validar
      * @param userDetails datos del usuario contra el que se valida
-     * @return {@code true} si el token es válido
+     * @return true si el token es válido
      */
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);

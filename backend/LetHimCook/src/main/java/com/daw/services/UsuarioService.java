@@ -13,13 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.daw.dtos.request.UsuarioRequestDTO;
 import com.daw.dtos.response.UsuarioResponseDTO;
-import com.daw.entities.IaModelo;
 import com.daw.entities.Rol;
 import com.daw.entities.Usuario;
 import com.daw.exceptions.RecursoDuplicadoException;
 import com.daw.exceptions.RecursoNoEncontradoException;
 import com.daw.mappers.UsuarioMapper;
-import com.daw.repositories.IaModeloRepository;
 import com.daw.repositories.UsuarioRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -35,7 +33,6 @@ import lombok.RequiredArgsConstructor;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
-    private final IaModeloRepository iaModeloRepository;
     private final UsuarioMapper usuarioMapper;
     private final PasswordEncoder passwordEncoder;
 
@@ -103,16 +100,11 @@ public class UsuarioService {
             throw new RecursoDuplicadoException("El nombre de usuario " + dto.getNombre() + " ya está en uso.");
         }
 
-        // 2. Buscar el modelo de IA base que ha elegido
-        IaModelo iaModelo = iaModeloRepository.findById(dto.getIaModeloSeleccionadoId())
-                .orElseThrow(() -> new RecursoNoEncontradoException("El modelo de IA seleccionado no existe."));
-
         // 3. Mapear DTO a Entidad
         Usuario usuario = usuarioMapper.toEntity(dto);
 
         // 4. Lógica de Seguridad y Gamificación
         usuario.setPasswordHash(passwordEncoder.encode(dto.getPassword())); // Encriptación obligatoria para JWT
-        usuario.setIaModeloSeleccionado(iaModelo);
         usuario.setRol(Rol.USER); // Por defecto, es un usuario normal
         usuario.setPuntos(0);
         usuario.setNivel(1);
@@ -157,12 +149,6 @@ public class UsuarioService {
         }
 
         usuario.setFotoUrl(dto.getFotoUrl());
-
-        if (dto.getIaModeloSeleccionadoId() != null) {
-            IaModelo iaModelo = iaModeloRepository.findById(dto.getIaModeloSeleccionadoId())
-                    .orElseThrow(() -> new RecursoNoEncontradoException("El modelo de IA seleccionado no existe."));
-            usuario.setIaModeloSeleccionado(iaModelo);
-        }
 
         usuario = usuarioRepository.save(usuario);
         return usuarioMapper.toResponseDTO(usuario);

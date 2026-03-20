@@ -27,13 +27,12 @@ import lombok.RequiredArgsConstructor;
  * Configuración central de Spring Security para la aplicación.
  *
  * Aspectos clave:
- * <ul>
  * Sesiones stateless (API REST pura con JWT).
  * CORS habilitado para desarrollo frontend.
- * Rutas públicas: {@code /auth/**}, Swagger, OpenAPI docs.
- * Rutas de administrador: {@code /admin/**}.
+ * Rutas públicas: /auth/**, Swagger, OpenAPI docs.
+ * Rutas de administrador:  /admin/**.
  * Filtro JWT registrado antes de
- * {@code UsernamePasswordAuthenticationFilter}.
+ * UsernamePasswordAuthenticationFilter.
  * Manejo de errores 401/403 con handlers personalizados.
  *
  * @author IES Almudeyne - Let Him Cook

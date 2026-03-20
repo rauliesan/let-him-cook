@@ -13,12 +13,14 @@ import java.util.List;
 public interface RecetaMapper {
 
     @Mapping(target = "tipoComida.id", source = "tipoComidaId")
+    @Mapping(target = "iaModelo.id", source = "iaModeloId")
     Receta toEntity(RecetaRequestDTO dto);
 
     @Mapping(target = "tipoComidaId", source = "tipoComida.id")
     @Mapping(target = "tipoComidaNombre", source = "tipoComida.nombre")
     @Mapping(target = "usuarioCreadorId", source = "usuario.id")
     @Mapping(target = "usuarioCreadorNombre", source = "usuario.nombre")
+    @Mapping(target = "iaModeloId", source = "iaModelo.id")
     RecetaResponseDTO toResponseDTO(Receta entity);
 
     List<RecetaResponseDTO> toListDTO(List<Receta> list);

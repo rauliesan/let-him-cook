@@ -32,7 +32,7 @@ public class AuthController {
     /**
      * Registra un nuevo usuario y devuelve un token JWT para la autenticación.
      *
-     * @param dto datos del nuevo usuario (nombre, email, password, iaModeloSeleccionadoId)
+     * @param dto datos del nuevo usuario (nombre, email, password)
      * 
      * @return 201 Created con el token JWT y datos básicos del usuario
      */

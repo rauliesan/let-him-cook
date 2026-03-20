@@ -43,4 +43,6 @@ public class RecetaResponseDTO {
     
     private UUID usuarioCreadorId;
     private String usuarioCreadorNombre;
+    
+    private UUID iaModeloId;
 }

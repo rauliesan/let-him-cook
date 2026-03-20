@@ -13,11 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.daw.dtos.request.RecetaRequestDTO;
 import com.daw.dtos.response.RecetaResponseDTO;
 import com.daw.entities.Dificultad;
+import com.daw.entities.IaModelo;
 import com.daw.entities.Receta;
 import com.daw.entities.TipoComida;
 import com.daw.entities.Usuario;
 import com.daw.exceptions.RecursoNoEncontradoException;
 import com.daw.mappers.RecetaMapper;
+import com.daw.repositories.IaModeloRepository;
 import com.daw.repositories.RecetaRepository;
 import com.daw.repositories.TipoComidaRepository;
 
@@ -35,6 +37,7 @@ public class RecetaService {
 
     private final RecetaRepository recetaRepository;
     private final TipoComidaRepository tipoComidaRepository;
+    private final IaModeloRepository iaModeloRepository;
     private final RecetaMapper recetaMapper;
     private final UsuarioService usuarioService;
 
@@ -62,6 +65,14 @@ public class RecetaService {
         Usuario usuario = usuarioService.buscarEntidadPorId(usuarioCreadorId);
 
         Receta receta = recetaMapper.toEntity(dto);
+        
+        if (dto.getIaModeloId() != null) {
+            IaModelo iaModelo = iaModeloRepository.findById(dto.getIaModeloId())
+                    .orElseThrow(() -> new RecursoNoEncontradoException(
+                            "Modelo de IA no encontrado con ID: " + dto.getIaModeloId()));
+            receta.setIaModelo(iaModelo);
+        }
+        
         receta.setTipoComida(tipoComida);
         receta.setUsuario(usuario);
         receta.setFechaCreacion(ZonedDateTime.now(ZoneId.of("Europe/Madrid")));
@@ -77,6 +88,15 @@ public class RecetaService {
         TipoComida tipoComida = tipoComidaRepository.findById(dto.getTipoComidaId())
                 .orElseThrow(() -> new RecursoNoEncontradoException(
                         "Tipo de Comida no encontrado con ID: " + dto.getTipoComidaId()));
+
+        if (dto.getIaModeloId() != null) {
+            IaModelo iaModelo = iaModeloRepository.findById(dto.getIaModeloId())
+                    .orElseThrow(() -> new RecursoNoEncontradoException(
+                            "Modelo de IA no encontrado con ID: " + dto.getIaModeloId()));
+            receta.setIaModelo(iaModelo);
+        } else {
+            receta.setIaModelo(null);
+        }
 
         receta.setNombre(dto.getNombre());
         receta.setDescripcion(dto.getDescripcion());

@@ -31,8 +31,4 @@ public class UsuarioResponseDTO {
     
     private Rol rol;
     
-    // Relación aplanada
-    private UUID iaModeloSeleccionadoId;
-    private String iaModeloSeleccionadoNombre;
-    
 }

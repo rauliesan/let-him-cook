@@ -1,6 +1,5 @@
 package com.daw.dtos.request;
 
-import java.util.UUID;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -29,5 +28,4 @@ public class UsuarioRequestDTO {
 
     private String fotoUrl;
 
-    private UUID iaModeloSeleccionadoId;
 }

@@ -27,7 +27,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final UsuarioRepository usuarioRepository;
 
     /**
-     * Busca un usuario por email y lo envuelve en {@link CustomUserDetails}.
+     * Busca un usuario por email y lo envuelve en CustomUserDetails.
      *
      * @param email email del usuario (usado como username)
      * @return UserDetails del usuario encontrado

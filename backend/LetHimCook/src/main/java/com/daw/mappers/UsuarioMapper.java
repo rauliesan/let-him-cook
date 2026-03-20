@@ -12,12 +12,9 @@ import java.util.List;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface UsuarioMapper {
 
-    @Mapping(target = "iaModeloSeleccionado.id", source = "iaModeloSeleccionadoId")
     @Mapping(target = "passwordHash", ignore = true)
     Usuario toEntity(UsuarioRequestDTO dto);
 
-    @Mapping(target = "iaModeloSeleccionadoId", source = "iaModeloSeleccionado.id")
-    @Mapping(target = "iaModeloSeleccionadoNombre", source = "iaModeloSeleccionado.nombreModelo")
     UsuarioResponseDTO toResponseDTO(Usuario entity);
 
     List<UsuarioResponseDTO> toListDTO(List<Usuario> list);

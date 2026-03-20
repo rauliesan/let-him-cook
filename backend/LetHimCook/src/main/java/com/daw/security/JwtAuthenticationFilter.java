@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
  *
  * Extrae la cabecera Authorization: Bearer.
  * Obtiene el username (email) del token mediante JwtService.
- * Carga el usuario desde {@link CustomUserDetailsService}.
+ * Carga el usuario desde CustomUserDetailsService.
  * Si el token es válido, establece la autenticación en el SecurityContextHolder.
  * </ol>
  *
