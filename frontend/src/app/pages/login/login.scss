@@ -3,7 +3,7 @@
   height: 100%;
 }
 
-/* Página dividida en dos mitades: lateral decorativo y formulario */
+/* Página dividida en dos mitades: lateral y formulario */
 .login-pagina {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -14,7 +14,7 @@
   }
 }
 
-/* Mitad izquierda oscura con contenido de marca */
+/* Mitad izquierda con contenido de marca */
 .login-lateral {
   background: var(--negro);
   position: relative;
@@ -23,7 +23,7 @@
   align-items: center;
   justify-content: center;
 
-  /* Manchas de luz decorativas con animación sutil */
+  /* Manchas de luz animadas */
   &::before {
     content: '';
     position: absolute;
@@ -374,7 +374,7 @@
   }
 }
 
-/* Botones de acceso social con hover más elaborado */
+/* Botones de acceso social */
 .social-btns {
   display: flex;
   gap: 10px;

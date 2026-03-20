@@ -2,7 +2,7 @@
   display: block;
 }
 
-/* Scroll reveal — los elementos comienzan desplazados hacia abajo y aparecen al entrar en pantalla */
+/* Scroll reveal — los elementos comienzan desplazados hacia abajo */
 [revela] {
   opacity: 0;
   transform: translateY(20px);
@@ -14,31 +14,59 @@
   }
 }
 
-/* Cabecera completa del perfil */
+/* Cabecera del perfil */
 .perfil-header {
   background: var(--crema);
   padding-bottom: 0;
 }
 
-/* Portada con gradiente oscuro y patrón de puntos animado */
+/* Portada con gradiente oscuro y patrón animado */
 .portada {
-  height: 220px;
-  background: linear-gradient(135deg, #1C1917 0%, #3D1A10 50%, #1C1917 100%);
+  height: 240px;
+  background: linear-gradient(135deg, #1C1917 0%, #3D1A10 40%, #2A1208 70%, #1C1917 100%);
   position: relative;
   overflow: hidden;
+
+  /* Franja diagonal */
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      -45deg,
+      transparent 0px,
+      transparent 40px,
+      rgba(193, 62, 40, 0.04) 40px,
+      rgba(193, 62, 40, 0.04) 42px
+    );
+    pointer-events: none;
+  }
 }
 
 .portada-patron {
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(circle, rgba(193, 62, 40, 0.2) 1px, transparent 1px);
-  background-size: 32px 32px;
-  animation: patternDesplaza 20s linear infinite;
+  background-image:
+    radial-gradient(circle, rgba(193, 62, 40, 0.18) 1px, transparent 1px),
+    radial-gradient(circle, rgba(232, 184, 75, 0.08) 1px, transparent 1px);
+  background-size: 32px 32px, 48px 48px;
+  background-position: 0 0, 16px 16px;
+  animation: patternDesplaza 25s linear infinite;
 }
 
 @keyframes patternDesplaza {
-  from { background-position: 0 0; }
-  to { background-position: 64px 64px; }
+  from { background-position: 0 0, 16px 16px; }
+  to { background-position: 64px 64px, 80px 80px; }
+}
+
+/* Ondas SVG en la base de la portada */
+.portada-ondas {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 40px;
+  z-index: 1;
 }
 
 /* Fila con avatar, datos y botones de acción */
@@ -51,6 +79,7 @@
   padding-bottom: 32px;
   margin-top: -52px;
   position: relative;
+  z-index: 2;
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -59,7 +88,7 @@
   }
 }
 
-/* Avatar circular con anillo de pulso al hacer hover */
+/* Avatar circular con anillo en hover */
 .avatar-wrapper {
   position: relative;
   flex-shrink: 0;
@@ -68,15 +97,20 @@
     box-shadow: 0 0 0 4px rgba(193, 62, 40, 0.3), var(--sombra-md);
     transform: scale(1.04);
   }
+
+  &:hover .avatar-editar {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
 }
 
 .avatar {
-  width: 100px;
-  height: 100px;
+  width: 108px;
+  height: 108px;
   border-radius: 50%;
   background: var(--primario);
   color: var(--blanco);
-  font-size: 2rem;
+  font-size: 2.2rem;
   font-weight: 800;
   display: flex;
   align-items: center;
@@ -85,6 +119,31 @@
   box-shadow: var(--sombra-md);
   cursor: pointer;
   transition: box-shadow 0.3s, transform 0.3s;
+}
+
+/* Botón de editar foto que aparece en hover */
+.avatar-editar {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(28, 25, 23, 0.7);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.25s, transform 0.25s;
+  color: #fff;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
 }
 
 .nivel-badge {
@@ -99,6 +158,7 @@
   border-radius: var(--radio-full);
   border: 2px solid var(--crema);
   animation: nivelPop 0.4s ease 0.5s both;
+  z-index: 1;
 }
 
 @keyframes nivelPop {
@@ -142,6 +202,32 @@
   }
 }
 
+.badge-online {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--verde);
+  padding: 2px 8px;
+  border-radius: var(--radio-full);
+  background: rgba(74, 124, 89, 0.1);
+
+  &::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--verde);
+    animation: pulseDot 2s ease-in-out infinite;
+  }
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.5; transform: scale(0.85); }
+}
+
 .perfil-bio {
   font-size: 0.875rem;
   color: var(--gris);
@@ -149,7 +235,57 @@
   line-height: 1.6;
 }
 
-/* Estadísticas numéricas que se resaltan al hacer hover */
+/* Redes sociales */
+.perfil-redes {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.red-social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--gris);
+  padding: 4px 10px;
+  border-radius: var(--radio-full);
+  border: 1px solid var(--gris-borde);
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+
+  svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    color: var(--primario);
+    border-color: rgba(193, 62, 40, 0.25);
+    background: rgba(193, 62, 40, 0.04);
+  }
+}
+
+/* Preferencias de tipo de comida (usuario_preferencia) */
+.perfil-prefs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.pref-tag {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: var(--radio-full);
+  background: rgba(193, 62, 40, 0.08);
+  color: var(--primario);
+  border: 1px solid rgba(193, 62, 40, 0.18);
+}
+
+/* Estadísticas numéricas */
 .perfil-stats {
   display: flex;
   gap: 8px;
@@ -171,9 +307,7 @@
     background: rgba(193, 62, 40, 0.06);
     border-color: rgba(193, 62, 40, 0.15);
 
-    strong {
-      color: var(--primario);
-    }
+    strong { color: var(--primario); }
   }
 
   strong {
@@ -205,17 +339,62 @@
   }
 }
 
-/* Barra de experiencia con animación de relleno al cargar */
+/* Tarjetas de resumen debajo del header (XP, racha, monedas) */
+.perfil-resumen-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 0.7fr;
+  gap: 16px;
+  padding: 8px 0 28px;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  @media (max-width: 580px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.resumen-card {
+  background: var(--blanco);
+  border: 1px solid var(--gris-borde);
+  border-radius: var(--radio-md);
+  padding: 18px 20px;
+  transition: box-shadow 0.25s, transform 0.25s;
+
+  &:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    transform: translateY(-2px);
+  }
+}
+
+.resumen-card-titulo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--gris);
+  margin-bottom: 12px;
+}
+
+.resumen-icono {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+/* Barra de experiencia */
 .exp-barra-wrapper {
-  padding: 20px 0 28px;
-  max-width: 600px;
+  max-width: 100%;
 }
 
 .exp-info {
   display: flex;
   justify-content: space-between;
   margin-bottom: 8px;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 600;
   color: var(--gris);
 }
@@ -232,7 +411,7 @@
   overflow: hidden;
 }
 
-/* La barra se anima desde 0% hasta el valor real al cargar la página */
+/* La barra se anima desde 0% hasta el valor real al cargar */
 .exp-progreso {
   height: 100%;
   background: linear-gradient(to right, var(--primario), var(--coral));
@@ -245,7 +424,137 @@
   to { width: 84.5%; }
 }
 
-/* Pestañas de navegación pegajosas */
+/* Racha semanal */
+.racha-numero {
+  margin-left: auto;
+  color: var(--coral);
+  font-weight: 800;
+  font-size: 0.82rem;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.racha-dias {
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.racha-dia {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+
+  span {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--gris);
+    text-transform: uppercase;
+  }
+}
+
+.racha-circulo {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--gris-borde);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .racha-dia.activo & {
+    background: var(--primario);
+    border-color: var(--primario);
+    box-shadow: 0 2px 8px rgba(193, 62, 40, 0.25);
+  }
+
+  .racha-dia:hover & {
+    transform: scale(1.1);
+  }
+}
+
+/* Modelo IA seleccionado (usuario.ia_modelo_seleccionado_id) */
+.resumen-ia {
+  display: flex;
+  flex-direction: column;
+}
+
+.ia-modelo-nombre {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--negro);
+  margin-bottom: 10px;
+  letter-spacing: -0.01em;
+}
+
+.ia-prefs-lista {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.ia-pref-chip {
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radio-full);
+  background: rgba(193, 62, 40, 0.08);
+  color: var(--primario);
+  border: 1px solid rgba(193, 62, 40, 0.15);
+}
+
+.ia-prefs-label {
+  font-size: 0.7rem;
+  color: var(--gris);
+  font-weight: 500;
+  margin-top: auto;
+}
+
+/* Monedas con enlace a Rewards */
+.resumen-coins {
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  background: linear-gradient(145deg, rgba(232, 184, 75, 0.06), rgba(232, 184, 75, 0.02));
+  border-color: rgba(232, 184, 75, 0.2);
+
+  &:hover {
+    border-color: rgba(232, 184, 75, 0.4);
+    background: linear-gradient(145deg, rgba(232, 184, 75, 0.1), rgba(232, 184, 75, 0.04));
+  }
+}
+
+.coins-grande {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--amarillo);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.coins-cta {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--gris);
+  margin-top: auto;
+  padding-top: 8px;
+  transition: color 0.2s;
+
+  .resumen-coins:hover & {
+    color: var(--primario);
+  }
+}
+
+/* Pestañas de navegación */
 .tabs-wrapper {
   background: var(--blanco);
   border-bottom: 1px solid var(--gris-borde);
@@ -260,22 +569,20 @@
   overflow-x: auto;
   scrollbar-width: none;
 
-  &::-webkit-scrollbar {
-    display: none;
-  }
+  &::-webkit-scrollbar { display: none; }
 }
 
 .tab {
-  padding: 16px 20px;
+  padding: 14px 18px;
   border: none;
   background: none;
   font-family: var(--fuente-base);
-  font-size: 0.875rem;
+  font-size: 0.85rem;
   font-weight: 500;
   color: var(--gris);
   cursor: pointer;
   white-space: nowrap;
-  border-bottom: 2px solid transparent;
+  border-bottom: 2.5px solid transparent;
   margin-bottom: -1px;
   transition: color 0.2s, border-color 0.2s, background 0.2s;
   display: flex;
@@ -294,10 +601,15 @@
   }
 }
 
+.tab-icono {
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
 .tab-cantidad {
   background: var(--beige);
   color: var(--gris);
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 700;
   padding: 1px 7px;
   border-radius: var(--radio-full);
@@ -342,19 +654,14 @@
   font-size: 0.82rem !important;
 }
 
-/* Grid de recetas del usuario con acciones en hover */
+/* Grid de recetas del usuario */
 .recetas-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
 
-  @media (max-width: 900px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @media (max-width: 580px) {
-    grid-template-columns: 1fr;
-  }
+  @media (max-width: 900px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 580px) { grid-template-columns: 1fr; }
 }
 
 .receta-card {
@@ -370,17 +677,9 @@
     transform: translateY(-4px);
     border-color: transparent;
 
-    .receta-acciones-hover {
-      opacity: 1;
-    }
-
-    .receta-imagen-overlay {
-      opacity: 1;
-    }
-
-    h4 {
-      color: var(--primario);
-    }
+    .receta-acciones-hover { opacity: 1; }
+    .receta-imagen-overlay { opacity: 1; }
+    h4 { color: var(--primario); }
   }
 }
 
@@ -401,7 +700,7 @@
   transition: opacity 0.25s;
 }
 
-/* Emoji grande centrado en la imagen de la receta del usuario */
+/* Emoji centrado en la imagen de la receta */
 .receta-emoji {
   position: absolute;
   top: 50%;
@@ -440,7 +739,7 @@
   }
 }
 
-/* Botones de editar/ver que emergen en hover */
+/* Botones de editar/ver que aparecen en hover */
 .receta-acciones-hover {
   position: absolute;
   bottom: 10px;
@@ -465,10 +764,7 @@
   transition: background 0.2s, transform 0.15s;
   color: var(--negro);
 
-  svg {
-    width: 13px;
-    height: 13px;
-  }
+  svg { width: 13px; height: 13px; }
 
   &:hover {
     background: var(--primario);
@@ -495,18 +791,21 @@
   color: var(--gris);
 }
 
+.receta-likes {
+  color: var(--coral);
+  font-weight: 600;
+}
+
 .punto { opacity: 0.4; }
 
-/* Grid de logros con brillo de color al hacer hover en los desbloqueados */
+/* Grid de logros */
 .logros-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 16px;
   margin-top: 8px;
 
-  @media (max-width: 700px) {
-    grid-template-columns: 1fr;
-  }
+  @media (max-width: 700px) { grid-template-columns: 1fr; }
 }
 
 .logro-card {
@@ -521,7 +820,7 @@
   position: relative;
   overflow: hidden;
 
-  /* Línea de acento en el borde izquierdo que se revela en hover */
+  /* Línea de acento en el borde izquierdo */
   &::before {
     content: '';
     position: absolute;
@@ -539,21 +838,14 @@
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
     transform: translateY(-2px);
 
-    &::before {
-      transform: scaleY(1);
-    }
-
-    .logro-icono {
-      transform: scale(1.1) rotate(5deg);
-    }
+    &::before { transform: scaleY(1); }
+    .logro-icono { transform: scale(1.1) rotate(5deg); }
   }
 
   &.bloqueado {
     opacity: 0.5;
 
-    .logro-icono {
-      filter: grayscale(1);
-    }
+    .logro-icono { filter: grayscale(1); }
   }
 }
 
@@ -619,6 +911,77 @@
   font-weight: 700;
   color: var(--gris);
   white-space: nowrap;
+}
+
+/* Supermercados favoritos (favorito_supermercado) */
+.supermercados-favoritos {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.supermercado-fav-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  background: var(--blanco);
+  border: 1px solid var(--gris-borde);
+  border-radius: var(--radio-md);
+  transition: box-shadow 0.25s, transform 0.25s, border-color 0.25s;
+
+  &:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+    transform: translateY(-2px);
+    border-color: rgba(193, 62, 40, 0.2);
+  }
+}
+
+.super-fav-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+
+  strong {
+    font-size: 0.95rem;
+    font-weight: 700;
+  }
+
+  p {
+    font-size: 0.78rem;
+    color: var(--gris);
+    margin: 0;
+  }
+}
+
+.super-fav-dir {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  color: var(--gris);
+}
+
+.super-fav-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.super-valoracion {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--amarillo);
+}
+
+.super-horario {
+  font-size: 0.68rem;
+  color: var(--gris);
 }
 
 /* Estado vacío para pestañas sin contenido */

@@ -1,4 +1,4 @@
-<!-- Encabezado de la página con buscador integrado -->
+<!-- Encabezado con buscador -->
 <section class="explorar-hero">
   <div class="contenedor">
     <h1 revela>Descubre miles<br>de recetas</h1>
@@ -49,11 +49,11 @@
   </div>
 </section>
 
-<!-- Panel de filtros activos y resultados del grid de recetas -->
+<!-- Filtros y grid de resultados -->
 <section class="resultados">
   <div class="contenedor">
 
-    <!-- Barra de filtros secundarios por dificultad y tiempo -->
+    <!-- Filtros por dificultad y tiempo -->
     <div class="filtros-barra" revela>
       <div class="filtros-grupo">
         <span class="filtros-label">Dificultad:</span>
@@ -77,7 +77,7 @@
       </div>
     </div>
 
-    <!-- Cabecera del grid con contador de resultados -->
+    <!-- Contador de resultados y ordenador -->
     <div class="resultados-header" revela [retardo]="80">
       <span class="resultados-total">{{ recetas.length }} recetas encontradas</span>
       <select class="orden-selector">
@@ -88,7 +88,7 @@
       </select>
     </div>
 
-    <!-- Grid de tarjetas de recetas con puntuación -->
+    <!-- Grid de recetas -->
     <div class="recetas-grid">
       @for (receta of recetas; track receta.titulo; let i = $index) {
         <article class="receta-card" revela [retardo]="i * 70">
@@ -120,7 +120,17 @@
                 {{ receta.tiempo }}
               </span>
               <span class="dato dato-dificultad">{{ receta.dificultad }}</span>
+              <!-- Calorías → receta.calorias -->
+              <span class="dato dato-calorias">{{ receta.calorias }} kcal</span>
             </div>
+            <!-- Alérgenos → receta.alergenos -->
+            @if (receta.alergenos) {
+              <div class="receta-alergenos">
+                @for (a of receta.alergenos.split(','); track a) {
+                  <span class="alergen-tag">{{ a.trim() }}</span>
+                }
+              </div>
+            }
             <div class="receta-puntuacion">
               <div class="estrellas">
                 @for (n of [1,2,3,4,5]; track n) {

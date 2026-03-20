@@ -1,4 +1,4 @@
-/* Footer con fondo oscuro cálido, organizado en cuatro columnas */
+/* Footer con fondo oscuro, organizado en cuatro columnas */
 .footer {
   background: var(--negro-suave);
   color: rgba(253, 250, 243, 0.75);
@@ -57,7 +57,7 @@
   opacity: 0.8;
 }
 
-/* Columnas de navegación con listas limpias */
+/* Columnas de navegación */
 .col-nav {
   h4 {
     font-size: 0.75rem;
@@ -87,7 +87,7 @@
   }
 }
 
-/* Barra inferior con copyright y distintivo de gratuidad */
+/* Barra inferior con copyright */
 .footer-bottom {
   border-top: 1px solid rgba(253, 250, 243, 0.08);
   padding: 20px 0;

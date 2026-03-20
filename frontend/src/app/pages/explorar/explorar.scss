@@ -2,7 +2,7 @@
   display: block;
 }
 
-/* Patrón de animación scroll reveal — los elementos empiezan invisibles y se desplazan hacia arriba al entrar en pantalla */
+/* Scroll reveal — los elementos aparecen al entrar en pantalla */
 [revela] {
   opacity: 0;
   transform: translateY(20px);
@@ -14,14 +14,14 @@
   }
 }
 
-/* Cabecera con fondo oscuro y buscador prominente */
+/* Cabecera con fondo oscuro y buscador */
 .explorar-hero {
   background: var(--negro);
   padding: 140px 0 80px;
   position: relative;
   overflow: hidden;
 
-  /* Arco decorativo que separa la cabecera del contenido */
+  /* Arco que separa la cabecera del contenido */
   &::after {
     content: '';
     position: absolute;
@@ -33,7 +33,7 @@
     border-radius: 50% 50% 0 0;
   }
 
-  /* Patrón de puntos sutil en el fondo */
+  /* Patrón de puntos en el fondo */
   &::before {
     content: '';
     position: absolute;
@@ -60,7 +60,7 @@
   }
 }
 
-/* Buscador con borde animado al recibir foco */
+/* Buscador con borde al recibir foco */
 .buscador {
   display: flex;
   align-items: center;
@@ -122,7 +122,7 @@
   }
 }
 
-/* Sugerencias rápidas de búsqueda bajo el buscador */
+/* Sugerencias de búsqueda bajo el buscador */
 .hero-tags {
   display: flex;
   gap: 8px;
@@ -147,7 +147,7 @@
   }
 }
 
-/* Sección de categorías con tarjetas que se llenan de color al pasar el ratón */
+/* Sección de categorías */
 .categorias {
   background: var(--crema);
   padding: 90px 0 60px;
@@ -166,7 +166,7 @@
   margin-bottom: 32px;
 }
 
-/* Grid de 4 columnas adaptable */
+/* Grid de categorías */
 .categorias-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -181,7 +181,7 @@
   }
 }
 
-/* Tarjeta de categoría: el fondo de color se despliega desde la izquierda al hacer hover */
+/* Tarjeta de categoría: fondo de color que se despliega desde la izquierda al hacer hover */
 .categoria-card {
   background: var(--blanco);
   border: 1px solid var(--gris-borde);
@@ -339,7 +339,7 @@
   letter-spacing: 0.05em;
 }
 
-/* Pills de filtro con relleno animado al seleccionarse */
+/* Pills de filtro */
 .filtro-pill {
   padding: 5px 14px;
   border-radius: var(--radio-full);
@@ -400,7 +400,7 @@
   }
 }
 
-/* Grid de recetas — tarjetas con efecto imagen-zoom y CTA oculta */
+/* Grid de recetas */
 .recetas-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -450,7 +450,7 @@
   position: relative;
   overflow: hidden;
 
-  /* Capa oscura adicional que aparece en hover para mejorar la legibilidad del CTA */
+  /* Capa oscura que aparece en hover para que el CTA sea legible */
   &::before {
     content: '';
     position: absolute;
@@ -462,7 +462,7 @@
   }
 }
 
-/* Emoji grande centrado en la imagen de la receta */
+/* Emoji centrado en la imagen de la receta */
 .receta-emoji {
   position: absolute;
   top: 50%;
@@ -531,7 +531,7 @@
   }
 }
 
-/* Botón "Ver receta" que emerge desde abajo al hacer hover */
+/* Botón "Ver receta" que aparece desde abajo al hacer hover */
 .receta-ver-cta {
   position: absolute;
   bottom: 36px;
@@ -610,7 +610,32 @@
   color: var(--primario);
 }
 
-/* Sistema de estrellas */
+/* Calorías (receta.calorias) */
+.dato-calorias {
+  background: rgba(232, 184, 75, 0.1);
+  color: #8a6400;
+}
+
+/* Alérgenos (receta.alergenos) */
+.receta-alergenos {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.alergen-tag {
+  font-size: 0.62rem;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: var(--radio-full);
+  background: rgba(120, 113, 108, 0.1);
+  color: var(--gris);
+  border: 1px solid rgba(120, 113, 108, 0.18);
+  white-space: nowrap;
+}
+
+/* Puntuación de estrellas */
 .receta-puntuacion {
   display: flex;
   align-items: center;

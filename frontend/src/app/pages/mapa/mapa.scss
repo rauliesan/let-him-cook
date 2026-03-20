@@ -1,8 +1,4 @@
-/* ===================================================================
-   Pagina Mapa — Leaflet + Overpass + estilo editorial calido
-   =================================================================== */
-
-/* Directiva Revela: entrada con scroll reveal */
+/* Scroll reveal — los elementos aparecen al entrar en pantalla */
 [revela] {
   opacity: 0;
   transform: translateY(20px);
@@ -13,9 +9,7 @@
   transform: none;
 }
 
-/* ------------------------------------------------------------------ */
-/*  Hero compacto                                                      */
-/* ------------------------------------------------------------------ */
+/* Hero */
 
 .mapa-hero {
   background: var(--negro);
@@ -58,9 +52,7 @@
   margin-bottom: 28px;
 }
 
-/* ------------------------------------------------------------------ */
-/*  Buscador de ubicacion                                              */
-/* ------------------------------------------------------------------ */
+/* Buscador de ubicación */
 
 .buscador-mapa {
   display: flex;
@@ -122,9 +114,7 @@
   }
 }
 
-/* ------------------------------------------------------------------ */
-/*  Barra de filtros                                                   */
-/* ------------------------------------------------------------------ */
+/* Barra de filtros */
 
 .mapa-filtros {
   background: var(--negro);
@@ -246,15 +236,60 @@
   }
 }
 
-/* ------------------------------------------------------------------ */
-/*  Contenedor principal del mapa                                      */
-/* ------------------------------------------------------------------ */
+/* Toggle vista mapa / lista */
+
+.vista-toggle {
+  display: flex;
+  gap: 2px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: var(--radio-full, 9999px);
+  padding: 3px;
+}
+
+.vista-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: var(--radio-full, 9999px);
+  border: none;
+  background: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  &.activo {
+    background: var(--primario);
+    color: #fff;
+  }
+
+  &:not(.activo):hover {
+    color: rgba(255, 255, 255, 0.85);
+  }
+}
+
+/* Contenedor del mapa */
 
 .mapa-contenedor {
   position: relative;
   height: calc(100vh - 280px);
   min-height: 480px;
   background: var(--negro);
+
+  &.oculto {
+    height: 0;
+    min-height: 0;
+    overflow: hidden;
+    visibility: hidden;
+  }
 }
 
 .mapa-lienzo {
@@ -262,9 +297,7 @@
   height: 100%;
 }
 
-/* ------------------------------------------------------------------ */
-/*  Marcadores custom (pin terracota con emoji)                        */
-/* ------------------------------------------------------------------ */
+/* Marcadores con pin y emoji */
 
 .marcador-custom {
   background: none !important;
@@ -280,7 +313,7 @@
   justify-content: center;
   cursor: pointer;
 
-  /* Forma de gota / pin invertido */
+  /* Forma de pin invertido */
   &::before {
     content: '';
     position: absolute;
@@ -310,9 +343,7 @@
   pointer-events: none;
 }
 
-/* ------------------------------------------------------------------ */
-/*  Panel lateral de detalles                                          */
-/* ------------------------------------------------------------------ */
+/* Panel lateral de detalles */
 
 .panel-detalle {
   position: absolute;
@@ -442,6 +473,15 @@
   }
 }
 
+/* Enlace dentro del panel (teléfono, web) */
+.panel-enlace {
+  color: var(--primario, #C13E28);
+  text-decoration: none;
+  font-weight: 500;
+
+  &:hover { text-decoration: underline; }
+}
+
 /* Boton de indicaciones */
 .btn-direcciones {
   display: inline-flex;
@@ -469,9 +509,7 @@
   }
 }
 
-/* ------------------------------------------------------------------ */
-/*  Mensaje de error flotante                                          */
-/* ------------------------------------------------------------------ */
+/* Mensaje de error flotante */
 
 .mapa-error {
   position: absolute;
@@ -505,9 +543,7 @@
   }
 }
 
-/* ------------------------------------------------------------------ */
-/*  Override de controles nativos de Leaflet                            */
-/* ------------------------------------------------------------------ */
+/* Override de controles de Leaflet */
 
 .leaflet-control-zoom {
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
@@ -545,9 +581,7 @@
   }
 }
 
-/* ------------------------------------------------------------------ */
-/*  Responsive                                                         */
-/* ------------------------------------------------------------------ */
+/* Responsive */
 
 @media (max-width: 700px) {
   .mapa-hero {
@@ -582,4 +616,142 @@
     padding: 8px 16px;
     font-size: 0.82rem;
   }
+}
+
+/* Vista lista de resultados */
+
+.lista-seccion {
+  background: var(--crema);
+  min-height: calc(100vh - 280px);
+  padding: 32px 0 60px;
+}
+
+.municipio-grupo {
+  margin-bottom: 40px;
+}
+
+.municipio-titulo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--primario);
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(193, 62, 40, 0.2);
+}
+
+.municipio-nombre {
+  flex: 1;
+}
+
+.municipio-contador {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--texto-suave, #78716C);
+  background: rgba(193, 62, 40, 0.08);
+  border-radius: 20px;
+  padding: 2px 8px;
+}
+
+.lista-vacia {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 80px 0;
+  color: var(--gris);
+  font-size: 0.95rem;
+  text-align: center;
+
+  span { font-size: 2.5rem; }
+}
+
+.lista-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.lista-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  background: var(--blanco);
+  border: 1px solid var(--gris-borde);
+  border-radius: var(--radio-md);
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
+
+  &:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+    transform: translateY(-2px);
+    border-color: rgba(193, 62, 40, 0.2);
+
+    .lista-card-flecha { opacity: 1; transform: translateX(3px); }
+  }
+}
+
+.lista-card-icono {
+  font-size: 1.8rem;
+  line-height: 1;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  background: rgba(193, 62, 40, 0.06);
+  border-radius: var(--radio-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lista-card-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lista-card-tipo {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--primario);
+}
+
+.lista-card-nombre {
+  font-size: 0.95rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lista-card-dir {
+  font-size: 0.78rem;
+  color: var(--gris);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lista-card-horario {
+  font-size: 0.72rem;
+  color: var(--verde);
+  font-weight: 500;
+}
+
+.lista-card-flecha {
+  width: 18px;
+  height: 18px;
+  color: var(--gris);
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
 }

@@ -12,5 +12,6 @@ export const routes: Routes = [
   { path: 'contacto', component: Contacto },
   { path: 'login', component: Login },
   { path: 'mapa', loadComponent: () => import('./pages/mapa/mapa').then(m => m.Mapa) },
+  { path: 'rewards', loadComponent: () => import('./pages/rewards/rewards').then(m => m.Rewards) },
   { path: '**', redirectTo: '' }
 ];

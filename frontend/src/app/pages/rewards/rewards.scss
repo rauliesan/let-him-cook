@@ -1,0 +1,765 @@
+/* Scroll reveal — los elementos aparecen al entrar en pantalla */
+[revela] {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+[revela].visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Hero */
+
+.rewards-hero {
+  background: var(--negro);
+  padding: 120px 0 48px;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(232, 184, 75, 0.08) 1px, transparent 1px);
+    background-size: 28px 28px;
+    pointer-events: none;
+  }
+}
+
+.rewards-hero-inner {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  position: relative;
+  z-index: 1;
+
+  h1 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.15;
+    margin-bottom: 4px;
+  }
+
+  .acento { color: var(--amarillo, #E8B84B); }
+}
+
+.rewards-subtitulo {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1.05rem;
+}
+
+/* Indicador de monedas */
+.coins-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(232, 184, 75, 0.12);
+  border: 1.5px solid rgba(232, 184, 75, 0.25);
+  border-radius: var(--radio-full, 9999px);
+  padding: 10px 20px;
+  white-space: nowrap;
+}
+
+.coins-icono { font-size: 1.3rem; line-height: 1; }
+
+.coins-cantidad {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--amarillo, #E8B84B);
+}
+
+.coins-label {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+/* Zona de la ruleta */
+
+.ruleta-seccion {
+  background:
+    radial-gradient(ellipse at 50% 30%, rgba(232, 184, 75, 0.04) 0%, transparent 60%),
+    var(--negro);
+  padding: 48px 0 72px;
+}
+
+.ruleta-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 36px;
+}
+
+/* Contenedor de la ruleta con flecha */
+.ruleta-zona {
+  position: relative;
+  width: 420px;
+  height: 420px;
+
+  /* Resplandor detrás de la ruleta */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -40px;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgba(232, 184, 75, 0.12) 0%,
+      rgba(193, 62, 40, 0.06) 40%,
+      transparent 70%
+    );
+    pointer-events: none;
+    animation: pulsoAmbiente 3s ease-in-out infinite;
+  }
+
+  @media (max-width: 480px) {
+    width: 320px;
+    height: 320px;
+  }
+}
+
+@keyframes pulsoAmbiente {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50%      { opacity: 1;   transform: scale(1.05); }
+}
+
+/* Flecha indicadora fija arriba */
+.ruleta-flecha {
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  filter: drop-shadow(0 4px 12px rgba(193, 62, 40, 0.5));
+
+  svg {
+    width: 36px;
+    height: 28px;
+  }
+}
+
+/* Disco giratorio */
+.ruleta-disco {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  position: relative;
+
+  /* Segmentos con conic-gradient */
+  background: conic-gradient(
+    from 0deg,
+    #D4A020 0deg 45deg,
+    #C84830 45deg 90deg,
+    #B8922A 90deg 135deg,
+    #3D6B4A 135deg 180deg,
+    #B07E1E 180deg 225deg,
+    #4A4540 225deg 270deg,
+    #9E8828 270deg 315deg,
+    #9A2818 315deg 360deg
+  );
+
+  /* Sombra multicapa */
+  box-shadow:
+    0 0 0 5px #1a1512,
+    0 0 0 8px rgba(232, 184, 75, 0.45),
+    0 0 0 10px #1a1512,
+    0 0 0 13px rgba(232, 184, 75, 0.2),
+    0 8px 40px rgba(0, 0, 0, 0.5),
+    inset 0 0 60px rgba(0, 0, 0, 0.2);
+
+  /* Líneas divisorias entre segmentos */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: repeating-conic-gradient(
+      from 0deg,
+      transparent 0deg 44.5deg,
+      rgba(255, 255, 255, 0.12) 44.5deg 45.5deg
+    );
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  /* Gradiente radial de profundidad */
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at 40% 35%,
+      rgba(255, 255, 255, 0.08) 0%,
+      transparent 50%,
+      rgba(0, 0, 0, 0.2) 100%
+    );
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  /* Transicion del giro — solo se aplica cuando esta girando */
+  &.girando {
+    transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+  }
+
+  /* Sin transicion al resetear el angulo a 0 */
+  &.reseteando {
+    transition: none !important;
+  }
+}
+
+/* Anillo exterior con LEDs simulados */
+.ruleta-borde {
+  position: absolute;
+  inset: -16px;
+  border-radius: 50%;
+  border: 4px solid #1a1512;
+  pointer-events: none;
+
+  /* Anillo de luces con dots radiales */
+  background-image: radial-gradient(circle at 50% 4%, rgba(232, 184, 75, 0.7) 2.5px, transparent 3px),
+                     radial-gradient(circle at 85% 15%, rgba(232, 184, 75, 0.5) 2.5px, transparent 3px),
+                     radial-gradient(circle at 96% 50%, rgba(232, 184, 75, 0.7) 2.5px, transparent 3px),
+                     radial-gradient(circle at 85% 85%, rgba(232, 184, 75, 0.5) 2.5px, transparent 3px),
+                     radial-gradient(circle at 50% 96%, rgba(232, 184, 75, 0.7) 2.5px, transparent 3px),
+                     radial-gradient(circle at 15% 85%, rgba(232, 184, 75, 0.5) 2.5px, transparent 3px),
+                     radial-gradient(circle at 4% 50%, rgba(232, 184, 75, 0.7) 2.5px, transparent 3px),
+                     radial-gradient(circle at 15% 15%, rgba(232, 184, 75, 0.5) 2.5px, transparent 3px);
+  animation: parpadeoLeds 2s ease-in-out infinite alternate;
+
+  /* Segundo anillo exterior */
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 2px solid rgba(232, 184, 75, 0.12);
+    box-shadow: 0 0 20px rgba(232, 184, 75, 0.06);
+  }
+}
+
+@keyframes parpadeoLeds {
+  0%   { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+/* Cada item de la ruleta posicionado con rotacion */
+.ruleta-item {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  transform: rotate(var(--seg-angulo)) translateY(-130px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  pointer-events: none;
+  z-index: 2;
+
+  @media (max-width: 480px) {
+    transform: rotate(var(--seg-angulo)) translateY(-100px);
+  }
+}
+
+.ruleta-item-emoji {
+  font-size: 1.8rem;
+  line-height: 1;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.45));
+
+  @media (max-width: 480px) { font-size: 1.4rem; }
+}
+
+.ruleta-item-nombre {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7), 0 0 8px rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
+  max-width: 72px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+
+/* Centro de la ruleta */
+.ruleta-centro {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 40% 35%,
+    #3a3530 0%,
+    #1C1917 60%,
+    #0f0d0b 100%
+  );
+  border: 3px solid rgba(232, 184, 75, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.5),
+    inset 0 2px 8px rgba(232, 184, 75, 0.1),
+    0 0 0 6px #1a1512,
+    0 0 0 8px rgba(232, 184, 75, 0.2);
+  z-index: 3;
+
+  @media (max-width: 480px) {
+    width: 58px;
+    height: 58px;
+    font-size: 1.3rem;
+  }
+}
+
+/* Botón de girar */
+
+.ruleta-acciones {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-girar {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 48px;
+  border-radius: var(--radio-full, 9999px);
+  border: none;
+  background: linear-gradient(135deg, var(--primario, #C13E28), var(--coral, #E05533));
+  color: #fff;
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+  box-shadow: 0 6px 24px rgba(193, 62, 40, 0.35);
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 32px rgba(193, 62, 40, 0.45);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+}
+
+.btn-girar-coste {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: var(--radio-full, 9999px);
+  background: rgba(255, 255, 255, 0.15);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.spinner-girar {
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid rgba(255, 255, 255, 0.25);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: girar 0.6s linear infinite;
+}
+
+@keyframes girar {
+  to { transform: rotate(360deg); }
+}
+
+.sin-coins {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+/* Overlay de premio ganado */
+
+.premio-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: overlayFade 0.3s ease;
+}
+
+@keyframes overlayFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.premio-card {
+  position: relative;
+  background: var(--crema, #FDFAF3);
+  border-radius: var(--radio-lg, 20px);
+  padding: 48px 40px 36px;
+  text-align: center;
+  max-width: 360px;
+  width: 90%;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.4);
+  animation: premioAparece 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
+}
+
+@keyframes premioAparece {
+  from {
+    opacity: 0;
+    transform: scale(0.5) translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Brillo que se mueve detrás de la tarjeta */
+.premio-brillo {
+  position: absolute;
+  top: -60%;
+  left: -60%;
+  width: 220%;
+  height: 220%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    rgba(232, 184, 75, 0.08) 40deg,
+    transparent 80deg,
+    rgba(232, 184, 75, 0.06) 160deg,
+    transparent 200deg,
+    rgba(232, 184, 75, 0.08) 280deg,
+    transparent 320deg
+  );
+  animation: brilloGira 4s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes brilloGira {
+  to { transform: rotate(360deg); }
+}
+
+.premio-emoji {
+  display: block;
+  font-size: 3.5rem;
+  line-height: 1;
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 1;
+  animation: emojiBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+}
+
+@keyframes emojiBounce {
+  from { transform: scale(0) rotate(-20deg); }
+  to   { transform: scale(1) rotate(0deg); }
+}
+
+.premio-nombre {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--negro, #1C1917);
+  margin-bottom: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+.premio-desc {
+  color: var(--gris, #78716C);
+  font-size: 0.92rem;
+  margin-bottom: 24px;
+  position: relative;
+  z-index: 1;
+}
+
+.btn-recoger {
+  display: inline-block;
+  padding: 12px 48px;
+  border-radius: var(--radio-full, 9999px);
+  border: none;
+  background: var(--primario, #C13E28);
+  color: #fff;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  position: relative;
+  z-index: 1;
+
+  &:hover {
+    background: var(--coral, #E05533);
+    transform: scale(1.04);
+  }
+}
+
+/* Confetti */
+
+.confetti-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.confetti {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  animation: confettiExplode 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+
+  /* Cada partícula tiene un ángulo, color y delay distintos */
+  --angulo: calc(var(--i) * 30deg);
+  --distancia: calc(80px + var(--i) * 18px);
+  --color-conf: hsl(calc(var(--i) * 30), 70%, 55%);
+  background: var(--color-conf);
+  animation-delay: calc(var(--i) * 0.04s);
+}
+
+@keyframes confettiExplode {
+  0% {
+    opacity: 1;
+    transform: rotate(var(--angulo)) translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(var(--angulo)) translateY(calc(var(--distancia) * -1)) scale(0.3) rotate(720deg);
+  }
+}
+
+/* Rarezas */
+
+.premio-rareza, .historial-rareza, .catalogo-rareza {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: var(--radio-full, 9999px);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  position: relative;
+  z-index: 1;
+}
+
+.rareza-comun {
+  background: rgba(120, 113, 108, 0.12);
+  color: #78716C;
+}
+
+.rareza-raro {
+  background: rgba(224, 85, 51, 0.12);
+  color: #E05533;
+}
+
+.rareza-epico {
+  background: rgba(74, 124, 89, 0.15);
+  color: #4A7C59;
+}
+
+.rareza-legendario {
+  background: rgba(232, 184, 75, 0.15);
+  color: #C9952E;
+}
+
+/* Historial de premios */
+
+.historial-seccion {
+  background: var(--beige, #F5EFE0);
+  padding: 72px 0;
+}
+
+.seccion-titulo {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: var(--negro, #1C1917);
+  margin-bottom: 32px;
+}
+
+.historial-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.historial-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: var(--crema, #FDFAF3);
+  border-radius: var(--radio-md, 12px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--sombra-md, 0 4px 16px rgba(0, 0, 0, 0.1));
+  }
+}
+
+.historial-icono {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radio-md, 12px);
+  background: rgba(0, 0, 0, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+  border-left: 3px solid var(--premio-color, var(--primario));
+}
+
+.historial-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+
+.historial-nombre {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--negro, #1C1917);
+}
+
+.historial-fecha {
+  font-size: 0.78rem;
+  color: var(--gris, #78716C);
+  flex-shrink: 0;
+}
+
+.historial-vacio {
+  color: var(--gris, #78716C);
+  font-size: 0.95rem;
+}
+
+/* Catálogo de premios */
+
+.catalogo-seccion {
+  background: var(--crema, #FDFAF3);
+  padding: 72px 0 96px;
+}
+
+.catalogo-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+
+  @media (max-width: 900px)  { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 600px)  { grid-template-columns: repeat(2, 1fr); }
+}
+
+.catalogo-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 28px 16px 20px;
+  background: #fff;
+  border-radius: var(--radio-lg, 20px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  transition: transform 0.25s, box-shadow 0.25s;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.catalogo-emoji {
+  font-size: 2.2rem;
+  line-height: 1;
+  margin-bottom: 12px;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  .catalogo-card:hover & {
+    transform: scale(1.15) rotate(-5deg);
+  }
+}
+
+.catalogo-nombre {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--negro, #1C1917);
+  margin-bottom: 6px;
+}
+
+.catalogo-prob {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: rgba(120, 113, 108, 0.7);
+  margin-top: 4px;
+
+  &::before {
+    content: '⚡ ';
+  }
+}
+
+.catalogo-desc {
+  font-size: 0.78rem;
+  color: var(--gris, #78716C);
+  line-height: 1.4;
+  margin: 8px 0 0;
+}
+
+/* Responsive */
+
+@media (max-width: 700px) {
+  .rewards-hero {
+    padding: 100px 0 32px;
+  }
+
+  .rewards-hero-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .seccion-titulo {
+    font-size: 1.4rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .btn-girar {
+    padding: 14px 36px;
+    font-size: 1rem;
+  }
+
+  .premio-card {
+    padding: 36px 24px 28px;
+  }
+
+  .premio-emoji {
+    font-size: 2.8rem;
+  }
+}

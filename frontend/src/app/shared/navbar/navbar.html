@@ -1,4 +1,7 @@
 <header class="navbar" [class.con-sombra]="scrolled()">
+  <!-- Barra de progreso de scroll en la parte superior -->
+  <div class="scroll-progreso" [style.width.%]="scrollPorcentaje()"></div>
+
   <div class="contenedor nav-inner">
 
     <!-- Logotipo y nombre de la app -->
@@ -16,11 +19,44 @@
 
     <!-- Navegación principal para escritorio -->
     <nav class="nav-links" [class.abierto]="menuAbierto()">
-      <a routerLink="/" routerLinkActive="activo" [routerLinkActiveOptions]="{exact:true}">Inicio</a>
-      <a routerLink="/explorar" routerLinkActive="activo">Explorar</a>
-      <a routerLink="/mapa" routerLinkActive="activo">Mapa</a>
-      <a routerLink="/perfil" routerLinkActive="activo">Mi Perfil</a>
-      <a routerLink="/contacto" routerLinkActive="activo">Contacto</a>
+      <!-- En movil: cabecera del menu con mini perfil -->
+      <div class="menu-movil-header">
+        <div class="menu-movil-avatar">MG</div>
+        <div class="menu-movil-info">
+          <span class="menu-movil-nombre">María García</span>
+          <span class="menu-movil-nivel">Nivel 12 · Chef Expert</span>
+        </div>
+      </div>
+
+      <a routerLink="/" routerLinkActive="activo" [routerLinkActiveOptions]="{exact:true}" (click)="cerrarMenu()">
+        <svg class="nav-icono" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 10L10 3l7 7M5 8.5V16a1 1 0 001 1h3v-4h2v4h3a1 1 0 001-1V8.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Inicio
+      </a>
+      <a routerLink="/explorar" routerLinkActive="activo" (click)="cerrarMenu()">
+        <svg class="nav-icono" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="9" r="5.5"/><path d="M13 13l4 4" stroke-linecap="round"/></svg>
+        Explorar
+      </a>
+      <a routerLink="/mapa" routerLinkActive="activo" (click)="cerrarMenu()">
+        <svg class="nav-icono" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2C6.7 2 4 4.7 4 8c0 4.5 6 10 6 10s6-5.5 6-10c0-3.3-2.7-6-6-6z" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="8" r="2"/></svg>
+        Mapa
+      </a>
+      <a routerLink="/rewards" routerLinkActive="activo" (click)="cerrarMenu()">
+        <svg class="nav-icono" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2l2.5 5 5.5.8-4 3.9.9 5.3L10 14.5 5.1 17l.9-5.3-4-3.9 5.5-.8z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Rewards
+      </a>
+      <a routerLink="/perfil" routerLinkActive="activo" (click)="cerrarMenu()">
+        <svg class="nav-icono" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="7" r="3.5"/><path d="M3.5 17.5c0-3.5 3-5.5 6.5-5.5s6.5 2 6.5 5.5" stroke-linecap="round"/></svg>
+        Mi Perfil
+      </a>
+      <a routerLink="/contacto" routerLinkActive="activo" (click)="cerrarMenu()">
+        <svg class="nav-icono" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5h14a1 1 0 011 1v8a1 1 0 01-1 1H3a1 1 0 01-1-1V6a1 1 0 011-1z"/><path d="M2 5l8 6 8-6" stroke-linecap="round"/></svg>
+        Contacto
+      </a>
+
+      <!-- En movil: botones de accion al final del menu -->
+      <div class="menu-movil-acciones">
+        <a routerLink="/login" class="btn-primario" (click)="cerrarMenu()">Entrar</a>
+      </div>
     </nav>
 
     <!-- Acciones del lado derecho -->
@@ -38,3 +74,8 @@
 
   </div>
 </header>
+
+<!-- Backdrop oscuro para el menu movil -->
+@if (menuAbierto()) {
+  <div class="menu-backdrop" (click)="cerrarMenu()"></div>
+}

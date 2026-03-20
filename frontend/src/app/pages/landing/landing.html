@@ -1,7 +1,10 @@
-<!-- Hero a pantalla completa con tipografía editorial dominante -->
+<!-- Hero a pantalla completa -->
 <section class="hero">
 
-  <!-- Fondo: arcos estáticos + círculos animados generados aleatoriamente -->
+  <!-- Glow suave que persigue al cursor, distinto del spotlight del ::before -->
+  <div class="cursor-aura" aria-hidden="true"></div>
+
+  <!-- Fondo: arcos y círculos animados generados aleatoriamente -->
   <div class="hero-fondo" aria-hidden="true">
     <div class="arco arco-1"></div>
     <div class="arco arco-2"></div>
@@ -22,7 +25,7 @@
 
   <div class="hero-contenido">
 
-      <!-- Titular principal en tres líneas con peso visual distinto -->
+      <!-- Titular principal en tres líneas -->
       <h1 class="hero-h1">
         <span class="h1-normal">¿Qué</span>
         <span class="h1-normal">cocinamos</span>
@@ -60,7 +63,7 @@
 
     </div>
 
-    <!-- Panel derecho: pila de tarjetas de receta con efecto de mazo -->
+    <!-- Panel derecho: pila de tarjetas de receta -->
     <div class="hero-panel">
 
       <div class="receta-stack">
@@ -90,7 +93,7 @@
         <!-- Carta principal: Mexicana (frente) -->
         <div class="rstack-card rstack-c1">
           <div class="rstack-photo rstack-photo-main" style="background: linear-gradient(145deg, #C13E28 0%, #7A1E10 100%)">
-            <!-- Anillos decorativos -->
+            <!-- Anillos de fondo -->
             <div class="rdeco">
               <div class="rdeco-ring rdeco-r1"></div>
               <div class="rdeco-ring rdeco-r2"></div>
@@ -101,7 +104,7 @@
               <span class="rstack-ia-dot"></span>
               IA · match 94%
             </span>
-            <!-- Etiqueta y rating en la base de la foto -->
+            <!-- Categoría y rating en la base de la foto -->
             <div class="rstack-photo-footer">
               <span class="rstack-kicker">Mexicana</span>
               <span class="rstack-rating">4.8 ★</span>
@@ -127,7 +130,7 @@
 
       </div>
 
-      <!-- Badge de logro flotante -->
+      <!-- Badge de logro -->
       <div class="logro-float">
         <svg viewBox="0 0 18 18"><circle cx="9" cy="9" r="8" fill="#E8B84B"/><path d="M9 3 L10.5 7 L15 7.4 L11.7 10.2 L12.7 14.6 L9 12.4 L5.3 14.6 L6.3 10.2 L3 7.4 L7.5 7Z" fill="white"/></svg>
         <span>Logro desbloqueado</span>
@@ -135,7 +138,7 @@
 
     </div>
 
-  <!-- Indicador de scroll con doble chevron animado -->
+  <!-- Indicador de scroll -->
   <div class="scroll-indicador" aria-hidden="true">
     <span class="scroll-hint">scroll</span>
     <div class="scroll-chevrons">
@@ -150,7 +153,7 @@
 
 </section>
 
-<!-- Barra de estadísticas con números grandes -->
+<!-- Barra de estadísticas -->
 <div class="stats-banda">
   <div class="contenedor stats-fila">
     <div class="stat-grande" revela [retardo]="0">
@@ -186,7 +189,7 @@
 
     <div class="features-grid">
 
-      <!-- Tarjeta grande: generación con IA -->
+      <!-- Tarjeta de generación con IA -->
       <div class="feature feature-grande" revela [retardo]="0">
         <div class="feature-icono-wrapper fondo-rojo">
           <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
@@ -283,7 +286,7 @@
   </div>
 </section>
 
-<!-- CTA de registro con fondo de color -->
+<!-- Sección CTA de registro -->
 <section class="cta-sec" revela>
   <div class="contenedor cta-inner">
     <div class="cta-texto">
