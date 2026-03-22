@@ -1,12 +1,15 @@
 package com.daw.entities;
 
+import java.util.Set;
 import java.util.UUID;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -40,5 +43,8 @@ public class Supermercado {
 
 	@Column(name = "foto_url", columnDefinition = "TEXT")
 	private String fotoUrl;
+
+	@OneToMany(mappedBy = "supermercado", cascade = CascadeType.REMOVE)
+	private Set<FavoritoSupermercado> favoritosSupermercados;
 
 }

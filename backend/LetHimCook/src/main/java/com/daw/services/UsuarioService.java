@@ -15,6 +15,7 @@ import com.daw.dtos.request.UsuarioRequestDTO;
 import com.daw.dtos.response.UsuarioResponseDTO;
 import com.daw.entities.Rol;
 import com.daw.entities.Usuario;
+import com.daw.exceptions.OperacionInvalidaException;
 import com.daw.exceptions.RecursoDuplicadoException;
 import com.daw.exceptions.RecursoNoEncontradoException;
 import com.daw.mappers.UsuarioMapper;
@@ -163,6 +164,12 @@ public class UsuarioService {
     public void eliminar(UUID id) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado con ID: " + id));
+        
+        // REGLA DE NEGOCIO: No permitir borrar al último Administrador
+        if (usuario.getRol().equals(Rol.ADMIN) && usuarioRepository.countByRol(Rol.ADMIN) <= 1) {
+            throw new OperacionInvalidaException("No se puede eliminar al único administrador del sistema.");
+        }
+
         usuarioRepository.delete(usuario);
     }
 

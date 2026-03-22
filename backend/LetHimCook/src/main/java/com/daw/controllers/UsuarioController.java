@@ -116,7 +116,7 @@ public class UsuarioController {
      * @param id identificador del usuario a eliminar
      * @return 204 No Content
      */
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.usuario.id")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable UUID id) {
         usuarioService.eliminar(id);

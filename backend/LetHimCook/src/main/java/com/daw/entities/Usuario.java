@@ -87,6 +87,18 @@ public class Usuario {
 	@OneToMany(mappedBy = "usuario", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
 	private Set<UsuarioRecompensa> misRecompensas;
 
+	@OneToMany(mappedBy = "usuario", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+	private Set<Comentario> comentarios;
+
+	@OneToMany(mappedBy = "usuario", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+	private Set<FavoritoReceta> favoritosRecetas;
+
+	@OneToMany(mappedBy = "usuario", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+	private Set<FavoritoSupermercado> favoritosSupermercados;
+
+	@OneToMany(mappedBy = "usuario", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+	private Set<UsuarioLogro> misLogros;
+
 	@PrePersist
 	protected void onCreate() {
 		// Solo asigna la fecha automática si el campo está vacío (es null)

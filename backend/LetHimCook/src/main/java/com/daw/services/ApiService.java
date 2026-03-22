@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.daw.dtos.request.ApiRequestDTO;
 import com.daw.dtos.response.ApiResponseDTO;
 import com.daw.entities.Api;
+import com.daw.exceptions.RecursoDuplicadoException;
 import com.daw.exceptions.RecursoNoEncontradoException;
 import com.daw.mappers.ApiMapper;
 import com.daw.repositories.ApiRepository;
@@ -59,6 +60,11 @@ public class ApiService {
      * @return la API creada como DTO de respuesta
      */
     public ApiResponseDTO crear(ApiRequestDTO dto) {
+        // REGLA DE NEGOCIO: No permitir URLs de endpoint duplicadas
+        if (apiRepository.existsByEndpointUrl(dto.getEndpointUrl())) {
+            throw new RecursoDuplicadoException("La URL de endpoint '" + dto.getEndpointUrl() + "' ya está registrada.");
+        }
+
         Api api = apiMapper.toEntity(dto);
         api = apiRepository.save(api);
         return apiMapper.toResponseDTO(api);
@@ -75,6 +81,11 @@ public class ApiService {
     public ApiResponseDTO actualizar(UUID id, ApiRequestDTO dto) {
         Api api = apiRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("API no encontrada con ID: " + id));
+
+        // REGLA DE NEGOCIO: No permitir URLs de endpoint duplicadas (si cambia)
+        if (!api.getEndpointUrl().equals(dto.getEndpointUrl()) && apiRepository.existsByEndpointUrl(dto.getEndpointUrl())) {
+            throw new RecursoDuplicadoException("La URL de endpoint '" + dto.getEndpointUrl() + "' ya está registrada por otra API.");
+        }
 
         api.setNombreServicio(dto.getNombreServicio());
         api.setEndpointUrl(dto.getEndpointUrl());

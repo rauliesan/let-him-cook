@@ -13,6 +13,7 @@ import com.daw.dtos.response.ComentarioResponseDTO;
 import com.daw.entities.Comentario;
 import com.daw.entities.Receta;
 import com.daw.entities.Usuario;
+import com.daw.exceptions.OperacionInvalidaException;
 import com.daw.exceptions.RecursoNoEncontradoException;
 import com.daw.mappers.ComentarioMapper;
 import com.daw.repositories.ComentarioRepository;
@@ -85,6 +86,11 @@ public class ComentarioService {
                         () -> new RecursoNoEncontradoException("Receta no encontrada con ID: " + dto.getRecetaId()));
 
         Usuario usuario = usuarioService.buscarEntidadPorId(usuarioId);
+
+        // REGLA DE NEGOCIO: No puedes comentar/valorar tu propia receta
+        if (receta.getUsuario().getId().equals(usuarioId)) {
+            throw new OperacionInvalidaException("No puedes comentar o valorar tu propia receta.");
+        }
 
         Comentario comentario = comentarioMapper.toEntity(dto);
         comentario.setReceta(receta);

@@ -13,7 +13,7 @@ import com.daw.dtos.response.FavoritoSupermercadoResponseDTO;
 import com.daw.entities.FavoritoSupermercado;
 import com.daw.entities.Supermercado;
 import com.daw.entities.Usuario;
-
+import com.daw.exceptions.RecursoDuplicadoException;
 import com.daw.exceptions.RecursoNoEncontradoException;
 import com.daw.mappers.FavoritoSupermercadoMapper;
 import com.daw.repositories.FavoritoSupermercadoRepository;
@@ -64,6 +64,11 @@ public class FavoritoSupermercadoService {
                         "Supermercado no encontrado con ID: " + dto.getSupermercadoId()));
 
         Usuario usuario = usuarioService.buscarEntidadPorId(usuarioId);
+
+        // REGLA DE NEGOCIO: No añadir duplicados
+        if (favoritoSupermercadoRepository.existsByUsuarioIdAndSupermercadoId(usuarioId, dto.getSupermercadoId())) {
+            throw new RecursoDuplicadoException("Este supermercado ya está en tus favoritos.");
+        }
 
         FavoritoSupermercado favorito = favoritoSupermercadoMapper.toEntity(dto);
         favorito.setSupermercado(supermercado);
