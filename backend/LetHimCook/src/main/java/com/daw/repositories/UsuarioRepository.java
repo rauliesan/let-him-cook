@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.daw.entities.Rol;
 import com.daw.entities.Usuario;
 
 @Repository
@@ -21,4 +22,5 @@ public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
 
     Page<Usuario> findByNombreContainingIgnoreCase(String nombre, Pageable pageable);
 
+    long countByRol(Rol rol);
 }

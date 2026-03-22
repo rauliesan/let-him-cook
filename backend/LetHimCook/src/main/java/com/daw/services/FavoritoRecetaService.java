@@ -14,6 +14,8 @@ import com.daw.entities.FavoritoReceta;
 import com.daw.entities.Receta;
 import com.daw.entities.Usuario;
 
+import com.daw.exceptions.OperacionInvalidaException;
+import com.daw.exceptions.RecursoDuplicadoException;
 import com.daw.exceptions.RecursoNoEncontradoException;
 import com.daw.mappers.FavoritoRecetaMapper;
 import com.daw.repositories.FavoritoRecetaRepository;
@@ -83,6 +85,16 @@ public class FavoritoRecetaService {
                         () -> new RecursoNoEncontradoException("Receta no encontrada con ID: " + dto.getRecetaId()));
 
         Usuario usuario = usuarioService.buscarEntidadPorId(usuarioId);
+
+        // REGLA DE NEGOCIO: No puedes marcar como favorita tu propia receta
+        if (receta.getUsuario().getId().equals(usuarioId)) {
+            throw new OperacionInvalidaException("No puedes añadir tu propia receta a favoritos.");
+        }
+
+        // Comprobar si ya es favorito
+        if (favoritoRecetaRepository.existsByUsuarioIdAndRecetaId(usuarioId, dto.getRecetaId())) {
+            throw new RecursoDuplicadoException("Esta receta ya está en tus favoritos.");
+        }
 
         FavoritoReceta favorito = favoritoRecetaMapper.toEntity(dto);
         favorito.setReceta(receta);

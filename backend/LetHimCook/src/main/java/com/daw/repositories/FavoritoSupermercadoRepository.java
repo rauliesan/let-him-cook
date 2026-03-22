@@ -11,5 +11,7 @@ import java.util.UUID;
 public interface FavoritoSupermercadoRepository extends JpaRepository<FavoritoSupermercado, UUID> {
     Page<FavoritoSupermercado> findByUsuarioId(UUID usuarioId, Pageable pageable);
 
+    boolean existsByUsuarioIdAndSupermercadoId(UUID usuarioId, UUID supermercadoId);
+
     boolean existsByIdAndUsuarioId(UUID id, UUID usuarioId);
 }

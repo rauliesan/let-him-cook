@@ -5,11 +5,13 @@ import java.time.LocalDateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.daw.errors.MiError;
+import com.daw.exceptions.OperacionInvalidaException;
 import com.daw.exceptions.RecursoDuplicadoException;
 import com.daw.exceptions.RecursoNoEncontradoException;
 
@@ -57,6 +59,26 @@ public class GlobalControllerAdvise {
         MiError error = new MiError(HttpStatus.FORBIDDEN, LocalDateTime.now(),
                 "Acceso denegado. No tienes suficientes permisos para realizar esta acción.", request.getServletPath());
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+    }
+
+    /**
+     * Credenciales incorrectas en el login → 401
+     */
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<MiError> handleBadCredentials(BadCredentialsException ex, jakarta.servlet.http.HttpServletRequest request) {
+        MiError error = new MiError(HttpStatus.UNAUTHORIZED, LocalDateTime.now(),
+                "Credenciales incorrectas.", request.getServletPath());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+    }
+
+    /**
+     * Operación no permitida por lógica de negocio → 400
+     */
+    @ExceptionHandler(OperacionInvalidaException.class)
+    public ResponseEntity<MiError> handleOperacionInvalida(OperacionInvalidaException ex, jakarta.servlet.http.HttpServletRequest request) {
+        MiError error = new MiError(HttpStatus.BAD_REQUEST, LocalDateTime.now(),
+                ex.getMessage(), request.getServletPath());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
     /**

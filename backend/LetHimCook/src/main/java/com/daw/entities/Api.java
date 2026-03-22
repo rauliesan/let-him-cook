@@ -3,6 +3,7 @@ package com.daw.entities;
 import java.util.Set;
 import java.util.UUID;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -36,7 +37,7 @@ public class Api {
 	@Column(name = "api_key", columnDefinition = "TEXT")
 	private String apiKey;
 	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "api")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "api", cascade = CascadeType.REMOVE)
 	private Set<IaModelo> modelos;
 	
 }
