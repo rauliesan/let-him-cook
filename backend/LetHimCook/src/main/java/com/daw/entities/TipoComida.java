@@ -33,8 +33,13 @@ public class TipoComida {
 	@Column(columnDefinition = "TEXT")
 	private String descripcion;
 	
+	/* Emoji de la categoría (antes se almacenaba una ruta de imagen) */
 	@Column(name = "icono_url", columnDefinition = "TEXT")
 	private String iconoUrl;
+
+	/* Color base de la categoría en formato hex (#RRGGBB) */
+	@Column(name = "color_hex", length = 7)
+	private String colorHex;
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "tipoComida")
 	private Set<Receta> recetas;

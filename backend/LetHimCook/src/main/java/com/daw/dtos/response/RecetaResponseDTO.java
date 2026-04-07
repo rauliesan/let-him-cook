@@ -14,35 +14,40 @@ import lombok.Data;
  */
 @Data
 public class RecetaResponseDTO {
-	
+
     private UUID id;
-    
+
     private String nombre;
-    
+
     private String descripcion;
-    
+
     private String ingredientes;
-    
+
     private Integer tiempoPreparacion;
-    
+
     private Dificultad dificultad;
-    
+
     private Integer calorias;
-    
+
     private String alergenos;
-    
+
     private Boolean esPublica;
-    
+
     private String imagenUrl;
-    
+
     private ZonedDateTime fechaCreacion;
 
-    // Relaciones aplanadas
+    // Relaciones aplanadas — hasta 3 categorías por receta
     private UUID tipoComidaId;
     private String tipoComidaNombre;
-    
+    private String tipoComida2Nombre;
+    private String tipoComida3Nombre;
+
     private UUID usuarioCreadorId;
     private String usuarioCreadorNombre;
-    
+
     private UUID iaModeloId;
+
+    /* Total de usuarios que han marcado esta receta como favorita */
+    private long totalLikes;
 }

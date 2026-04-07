@@ -1,7 +1,13 @@
+# Maven compiled output
 target/
 *.class
 *.jar
 *.war
+
+# IDE
 .idea/
 *.iml
+.classpath
+.project
+.settings/
 .vscode/

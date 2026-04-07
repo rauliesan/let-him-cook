@@ -1,7 +1,11 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Revela } from '../../shared/revela/revela';
+import { AuthService } from '../../services/auth.service';
+import { UsuarioService, UsuarioResponse } from '../../services/usuario.service';
+import { LogroService, UsuarioLogroResponse } from '../../services/logro.service';
+import { RecompensaService, UsuarioRecompensaResponse } from '../../services/recompensa.service';
 
 @Component({
   selector: 'app-perfil',
@@ -9,69 +13,100 @@ import { Revela } from '../../shared/revela/revela';
   templateUrl: './perfil.html',
   styleUrl: './perfil.scss',
 })
-export class Perfil {
-  tabActiva = signal('recetas');
+export class Perfil implements OnInit {
 
-  /* Solo tres tabs — 'colecciones' eliminado porque no existe tabla en la base de datos */
-  tabs = [
-    { id: 'recetas',   label: 'Mis Recetas', cantidad: 156, icono: '📝' },
-    { id: 'favoritos', label: 'Favoritos',   cantidad: 89,  icono: '❤️' },
-    { id: 'logros',    label: 'Logros',      cantidad: 34,  icono: '🏆' },
-  ];
+  /* Datos cargados desde la API */
+  usuario        = signal<UsuarioResponse | null>(null);
+  misLogros      = signal<UsuarioLogroResponse[]>([]);
+  misRecompensas = signal<UsuarioRecompensaResponse[]>([]);
 
-  recetasUsuario = [
-    { titulo: 'Tortellini al Pesto', tipo: 'Italiana', tiempo: '30 min', emoji: '🍝', color: 'linear-gradient(145deg,#B83520,#6E1A0C)', publicada: true,  likes: 342 },
-    { titulo: 'Ceviche de Gambas',   tipo: 'Mariscos', tiempo: '20 min', emoji: '🦐', color: 'linear-gradient(145deg,#285A80,#122A40)', publicada: true,  likes: 128 },
-    { titulo: 'Tarta de Manzana',    tipo: 'Postres',  tiempo: '75 min', emoji: '🍎', color: 'linear-gradient(145deg,#B87A10,#6E4808)', publicada: false, likes: 0 },
-    { titulo: 'Gazpacho Andaluz',    tipo: 'Española', tiempo: '15 min', emoji: '🍅', color: 'linear-gradient(145deg,#A02818,#5A100C)', publicada: true,  likes: 567 },
-    { titulo: 'Pad Thai Casero',     tipo: 'Asiática', tiempo: '40 min', emoji: '🍜', color: 'linear-gradient(145deg,#2A6040,#152E1E)', publicada: true,  likes: 89 },
-    { titulo: 'Focaccia Romero',     tipo: 'Italiana', tiempo: '90 min', emoji: '🌿', color: 'linear-gradient(145deg,#5C3D2E,#2E1A0E)', publicada: false, likes: 0 },
-  ];
+  /* Estado de carga */
+  cargando   = signal(true);
+  errorCarga = signal<string | null>(null);
 
-  /* Logros → tablas 'logro' y 'usuario_logro'. El campo 'icono' representa icono_url en formato emoji. */
-  logros = [
-    { nombre: 'Primer Plato',      descripcion: 'Publicaste tu primera receta',              desbloqueado: true,  fecha: '15 Ene 2025', color: '#E8B84B', icono: '⭐' },
-    { nombre: 'Chef Estrella',     descripcion: 'Alcanzaste 4.5+ de valoracion media',       desbloqueado: true,  fecha: '3 Mar 2025',  color: '#E87B2A', icono: '👨‍🍳' },
-    { nombre: 'En Llamas',         descripcion: '10 recetas en tendencia',                   desbloqueado: true,  fecha: '22 Jun 2025', color: '#E05533', icono: '🔥' },
-    { nombre: 'Maestro Culinario', descripcion: 'Publica 200 recetas',                       desbloqueado: false, progreso: 78,  meta: 200, color: '#9A9A9A', icono: '🏆' },
-    { nombre: 'Gran Anfitrian',    descripcion: 'Consigue 50 amigos en la plataforma',       desbloqueado: false, progreso: 47,  meta: 50,  color: '#9A9A9A', icono: '🤝' },
-    { nombre: 'Perfeccion',        descripcion: 'Mantén valoracion 5.0 en 50 recetas',      desbloqueado: false, progreso: 12,  meta: 50,  color: '#9A9A9A', icono: '💎' },
-  ];
+  /* Tab activa */
+  tabActiva = signal('logros');
 
-  /* Puntos/monedas del usuario — mapeado a usuario.puntos en la base de datos */
-  coins = 1250;
+  constructor(
+    public auth: AuthService,
+    private usuarioService: UsuarioService,
+    private logroService: LogroService,
+    private recompensaService: RecompensaService,
+  ) {}
 
-  /* Numero de amigos — mapeado a usuario_amigo en la base de datos */
-  amigos = 47;
-
-  /* Modelo de IA seleccionado — mapeado a usuario.ia_modelo_seleccionado_id → ia_modelo */
-  modeloIA = 'Groq Llama 3';
-
-  /* Preferencias de tipo de comida — mapeado a usuario_preferencia → tipo_comida */
-  preferencias = ['Italiana', 'Japonesa', 'Saludable'];
-
-  /* Recetas guardadas como favoritas — mapeado a favorito_receta → receta */
-  recetasFavoritas = [
-    { titulo: 'Pasta Carbonara Autentica', autor: 'Marco R.',  tipo: 'Italiana', tiempo: '25 min', emoji: '🍝', color: 'linear-gradient(145deg,#B83520,#6E1A0C)' },
-    { titulo: 'Paella Valenciana',         autor: 'Carmen L.', tipo: 'Española', tiempo: '55 min', emoji: '🥘', color: 'linear-gradient(145deg,#A02818,#5A100C)' },
-    { titulo: 'Sushi Casero Facil',        autor: 'Yuki T.',   tipo: 'Japonesa', tiempo: '45 min', emoji: '🍱', color: 'linear-gradient(145deg,#2A6040,#152E1E)' },
-  ];
-
-  /* Supermercados favoritos — mapeado a favorito_supermercado → supermercado */
-  favoritosSupermercados = [
-    { nombre: 'Mercadona', descripcion: 'Supermercado de confianza', valoracion: 4.2, direccion: 'Av. Principal 12', horario: 'Lun-Sab 09:00-21:00' },
-    { nombre: 'Lidl',      descripcion: 'Productos frescos y ofertas', valoracion: 4.0, direccion: 'C/ Mayor 5',     horario: 'Lun-Dom 08:00-22:00' },
-  ];
-
-  cambiarTab(id: string) {
-    this.tabActiva.set(id);
+  ngOnInit() {
+    this.cargarDatos();
   }
 
-  porcentaje(progreso: number, meta: number) {
-    return Math.round((progreso / meta) * 100);
+  cargarDatos() {
+    this.cargando.set(true);
+    this.errorCarga.set(null);
+
+    /* Carga el perfil primero y luego logros y recompensas en paralelo */
+    this.usuarioService.getMe().subscribe({
+      next: (u) => {
+        this.usuario.set(u);
+
+        this.logroService.getMisLogros().subscribe({
+          next: (p) => this.misLogros.set(p.content),
+          error: () => this.misLogros.set([]),
+        });
+
+        this.recompensaService.getMisRecompensas().subscribe({
+          next: (p) => this.misRecompensas.set(p.content),
+          error: () => this.misRecompensas.set([]),
+        });
+
+        this.cargando.set(false);
+      },
+      error: () => {
+        this.errorCarga.set('No se pudieron cargar los datos del perfil.');
+        this.cargando.set(false);
+      },
+    });
   }
 
-  formatNum(n: number) {
-    return n >= 1000 ? (n / 1000).toFixed(1) + 'K' : n.toString();
+  /* Tabs con cantidades reales */
+  tabs = computed(() => [
+    { id: 'logros',      label: 'Logros',     cantidad: this.misLogros().length,      icono: '🏆' },
+    { id: 'recompensas', label: 'Recompensas', cantidad: this.misRecompensas().length, icono: '🎁' },
+  ]);
+
+  /* Iniciales para el avatar */
+  iniciales = computed(() => {
+    const nombre = this.usuario()?.nombre ?? '';
+    return nombre.split(' ').map(p => p[0]).join('').toUpperCase().slice(0, 2) || '?';
+  });
+
+  /* Título según nivel */
+  tituloPorNivel = computed(() => {
+    const nivel = this.usuario()?.nivel ?? 0;
+    if (nivel >= 20) return 'Chef Maestro';
+    if (nivel >= 15) return 'Chef Expert';
+    if (nivel >= 10) return 'Chef Avanzado';
+    if (nivel >= 5)  return 'Cocinero';
+    return 'Aprendiz';
+  });
+
+  /* Porcentaje de la barra de experiencia */
+  progresoPuntos = computed(() => {
+    const puntos = this.usuario()?.puntos ?? 0;
+    const nivel  = Math.max(1, this.usuario()?.nivel ?? 1);
+    const puntosPorNivel = nivel * 100;
+    return Math.min(100, Math.round(((puntos % puntosPorNivel) / puntosPorNivel) * 100));
+  });
+
+  /* Formatea números grandes: 1500 → "1.5k" */
+  formatNum(n: number): string {
+    if (n >= 1000) return (n / 1000).toFixed(1) + 'k';
+    return String(n);
+  }
+
+  /* Fecha ISO → "12 ene 2025" */
+  formatearFecha(iso: string | null | undefined): string {
+    if (!iso) return '—';
+    return new Date(iso).toLocaleDateString('es-ES', {
+      day: '2-digit', month: 'short', year: 'numeric',
+    });
   }
 }

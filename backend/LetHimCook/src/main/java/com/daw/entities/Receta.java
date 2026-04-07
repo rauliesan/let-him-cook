@@ -21,6 +21,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Data;
+import org.hibernate.annotations.Formula;
 
 /**
  * Clase para gestionar las recetas creadas.
@@ -69,9 +70,19 @@ public class Receta {
 	@Column(name = "fecha_creacion", nullable = false, updatable = false)
 	private ZonedDateTime fechaCreacion;
 	
+	/* Categoría principal — determina el color de la tarjeta */
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "tipo_comida_id")
 	private TipoComida tipoComida;
+
+	/* Hasta dos categorías adicionales opcionales */
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "tipo_comida2_id")
+	private TipoComida tipoComida2;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "tipo_comida3_id")
+	private TipoComida tipoComida3;
 	
 	/**
 	 * Usuario creador de la receta.
@@ -91,6 +102,11 @@ public class Receta {
 	private Set<FavoritoReceta> favoritosRecetas;
 	
 	
+	/* Número de usuarios que han marcado esta receta como favorita.
+	   Se calcula mediante subconsulta SQL — no es una columna real en la BD. */
+	@Formula("(SELECT COUNT(*) FROM favorito_receta fr WHERE fr.receta_id = id)")
+	private long totalLikes;
+
 	@PrePersist
 	protected void onCreate() {
 	    // Solo asigna la fecha automática si el campo está vacío (es null)

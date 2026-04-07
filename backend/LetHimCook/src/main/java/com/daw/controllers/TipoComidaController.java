@@ -23,7 +23,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Controlador para la gestión de Tipos de Comida.
+ * Controlador para la gestión de tipos de comida (categorías).
+ * Los GET son públicos. POST/PUT/DELETE requieren rol ADMIN.
  *
  * @author IES Almudeyne - Raúl Liébana Sánchez
  */
@@ -36,26 +37,25 @@ public class TipoComidaController {
 
     @GetMapping
     public ResponseEntity<List<TipoComidaResponseDTO>> listarTodos() {
-        return ResponseEntity.ok().body(tipoComidaService.listarTodos());
+        return ResponseEntity.ok(tipoComidaService.listarTodos());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<TipoComidaResponseDTO> buscarPorId(@PathVariable UUID id) {
-        return ResponseEntity.ok().body(tipoComidaService.buscarPorId(id));
+        return ResponseEntity.ok(tipoComidaService.buscarPorId(id));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<TipoComidaResponseDTO> crear(@Valid @RequestBody TipoComidaRequestDTO dto) {
-        TipoComidaResponseDTO response = tipoComidaService.crear(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(tipoComidaService.crear(dto));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<TipoComidaResponseDTO> actualizar(@PathVariable UUID id,
             @Valid @RequestBody TipoComidaRequestDTO dto) {
-        return ResponseEntity.ok().body(tipoComidaService.actualizar(id, dto));
+        return ResponseEntity.ok(tipoComidaService.actualizar(id, dto));
     }
 
     @PreAuthorize("hasRole('ADMIN')")

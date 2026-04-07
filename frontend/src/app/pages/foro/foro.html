@@ -1,0 +1,199 @@
+<!-- Cabecera del foro -->
+<section class="foro-hero">
+  <div class="contenedor foro-hero-inner">
+    <div class="foro-hero-texto" revela>
+      <span class="etiqueta etiqueta-roja">Comunidad</span>
+      <h1>El foro de<br>los cocineros</h1>
+      <p>Comparte recetas, fotos, trucos o simplemente habla con otros apasionados de la cocina.</p>
+    </div>
+    @if (auth.estaAutenticado()) {
+      <button class="btn-nuevo-post" (click)="mostrarFormPost.set(true)" revela [retardo]="120">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <path d="M10 4v12M4 10h12"/>
+        </svg>
+        Nuevo post
+      </button>
+    } @else {
+      <a routerLink="/login" class="btn-nuevo-post btn-nuevo-ghost" revela [retardo]="120">
+        Únete para participar
+      </a>
+    }
+  </div>
+</section>
+
+<!-- Modal / panel de nuevo post -->
+@if (mostrarFormPost()) {
+  <div class="foro-modal-fondo" (click)="cerrarForm()">
+    <div class="foro-modal" (click)="$event.stopPropagation()">
+      <div class="foro-modal-cabecera">
+        <h3>Nuevo post</h3>
+        <button class="foro-modal-cerrar" (click)="cerrarForm()">✕</button>
+      </div>
+
+      @if (errorPost()) {
+        <p class="foro-error">{{ errorPost() }}</p>
+      }
+
+      <label class="foro-label">Título</label>
+      <input class="foro-input"
+             type="text"
+             placeholder="¿De qué quieres hablar?"
+             [(ngModel)]="nuevoTitulo"
+             maxlength="120" />
+
+      <label class="foro-label">Contenido</label>
+      <textarea class="foro-textarea"
+                placeholder="Comparte tu receta, foto, consejo o lo que quieras..."
+                [(ngModel)]="nuevoContenido"
+                rows="5"></textarea>
+
+      <div class="foro-modal-footer">
+        <button class="btn-secundario btn-sm" (click)="cerrarForm()">Cancelar</button>
+        <button class="btn-primario btn-sm"
+                (click)="publicarPost()"
+                [disabled]="enviandoPost()">
+          {{ enviandoPost() ? 'Publicando...' : 'Publicar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Lista de posts -->
+<section class="foro-lista">
+  <div class="contenedor">
+
+    @if (cargando()) {
+      <div class="foro-cargando">
+        @for (n of [1,2,3,4]; track n) {
+          <div class="post-skeleton"></div>
+        }
+      </div>
+    }
+
+    @if (!cargando() && errorCarga()) {
+      <div class="estado-error">
+        <p>{{ errorCarga() }}</p>
+        <button class="btn-primario btn-sm" (click)="cargarPosts()">Reintentar</button>
+      </div>
+    }
+
+    @if (!cargando() && !errorCarga() && posts().length === 0) {
+      <div class="foro-vacio">
+        <p>Aún no hay posts. ¡Sé el primero en publicar algo!</p>
+      </div>
+    }
+
+    @for (post of posts(); track post.id; let i = $index) {
+      <article class="post-card" revela [retardo]="i * 50">
+
+        <!-- Cabecera del post -->
+        <div class="post-cabecera" (click)="togglePost(post.id)">
+          <div class="post-avatar">
+            {{ iniciales(post.usuarioNombre) }}
+          </div>
+          <div class="post-meta">
+            <span class="post-autor">{{ post.usuarioNombre }}</span>
+            <span class="post-fecha">{{ formatearFecha(post.fechaCreacion) }}</span>
+          </div>
+          @if (post.recetaVinculadaNombre) {
+            <span class="post-receta-tag">
+              <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" width="12" height="12">
+                <circle cx="7" cy="5" r="3"/><path d="M4 13c0-2 1.3-3.5 3-3.5s3 1.5 3 3.5" stroke-linecap="round"/>
+              </svg>
+              {{ post.recetaVinculadaNombre }}
+            </span>
+          }
+          <!-- Controles del autor -->
+          @if (esAutor(post.usuarioNombre)) {
+            <button class="post-eliminar"
+                    (click)="eliminarPost(post.id, $event)"
+                    aria-label="Eliminar post">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+                <path d="M3 4h10M6 4V2.5h4V4M5.5 4l.5 9h4l.5-9"/>
+              </svg>
+            </button>
+          }
+          <div class="post-toggle-icon" [class.abierto]="postAbierto() === post.id">
+            <svg viewBox="0 0 16 9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <path d="M1 1.5L8 7.5L15 1.5"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Título y preview del contenido -->
+        <div class="post-cuerpo" (click)="togglePost(post.id)">
+          <h3 class="post-titulo">{{ post.titulo }}</h3>
+          <p class="post-preview">{{ post.contenido | slice:0:200 }}{{ post.contenido.length > 200 ? '...' : '' }}</p>
+          <div class="post-stats">
+            <span class="post-stat">
+              <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13">
+                <path d="M2 2h10v8H8l-3 2v-2H2z" stroke-linejoin="round"/>
+              </svg>
+              {{ post.totalComentarios }} {{ post.totalComentarios === 1 ? 'respuesta' : 'respuestas' }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Hilo de comentarios (se despliega al hacer click) -->
+        @if (postAbierto() === post.id) {
+          <div class="post-hilo">
+
+            @if (cargandoComentarios()) {
+              <div class="hilo-cargando">Cargando respuestas...</div>
+            }
+
+            @if (!cargandoComentarios() && comentariosDelPost().length === 0) {
+              <p class="hilo-vacio">Nadie ha respondido aún. ¡Sé el primero!</p>
+            }
+
+            @for (com of comentariosDelPost(); track com.id) {
+              <div class="hilo-comentario">
+                <div class="hilo-avatar">{{ iniciales(com.usuarioNombre) }}</div>
+                <div class="hilo-cuerpo">
+                  <div class="hilo-meta">
+                    <span class="hilo-autor">{{ com.usuarioNombre }}</span>
+                    <span class="hilo-fecha">{{ formatearFecha(com.fechaCreacion) }}</span>
+                    @if (esAutor(com.usuarioNombre)) {
+                      <button class="hilo-eliminar" (click)="eliminarComentario(com.id)" aria-label="Eliminar respuesta">
+                        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+                          <path d="M2.5 3.5h9M5 3.5V2h4v1.5M4.5 3.5l.5 8h4l.5-8"/>
+                        </svg>
+                      </button>
+                    }
+                  </div>
+                  <p class="hilo-texto">{{ com.contenido }}</p>
+                </div>
+              </div>
+            }
+
+            <!-- Caja de respuesta -->
+            @if (auth.estaAutenticado()) {
+              <div class="hilo-reply">
+                <div class="hilo-avatar">{{ iniciales(auth.sesion()?.nombre ?? '?') }}</div>
+                <div class="hilo-reply-form">
+                  <textarea class="hilo-reply-input"
+                            placeholder="Escribe una respuesta..."
+                            [(ngModel)]="nuevoComentario"
+                            rows="2"></textarea>
+                  <button class="btn-reply"
+                          (click)="publicarComentario()"
+                          [disabled]="enviandoComentario() || !nuevoComentario.trim()">
+                    {{ enviandoComentario() ? '...' : 'Responder' }}
+                  </button>
+                </div>
+              </div>
+            } @else {
+              <p class="hilo-login-hint">
+                <a routerLink="/login">Inicia sesión</a> para responder.
+              </p>
+            }
+
+          </div>
+        }
+
+      </article>
+    }
+
+  </div>
+</section>

@@ -1321,6 +1321,38 @@
   }
 }
 
+/* Esqueletos de carga mientras llegan las recetas de la API */
+.recetas-cargando {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+
+  @media (max-width: 900px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 580px) { grid-template-columns: 1fr; }
+}
+
+.receta-skeleton {
+  height: 320px;
+  border-radius: var(--radio-lg);
+  background: linear-gradient(90deg, #e8e0d4 25%, #f0e8dc 50%, #e8e0d4 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Mensaje cuando la BD no devuelve recetas */
+.sin-recetas-landing {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--gris);
+  font-size: 0.95rem;
+  padding: 40px 0;
+}
+
 /* Grid de recetas 3x2 */
 .recetas-grid {
   display: grid;
@@ -1496,6 +1528,71 @@
   font-size: 0.75rem;
   color: var(--primario);
   font-weight: 500;
+}
+
+/* Parte derecha del pie de tarjeta — likes + botón */
+.receta-pie-derecha {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Contador de likes */
+.receta-likes {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.72rem;
+  color: var(--gris);
+  font-weight: 500;
+
+  &.tiene-likes {
+    color: var(--primario);
+  }
+}
+
+/* Botón activo (like dado) — el svg hereda currentColor */
+.btn-guardar.activo {
+  color: var(--primario);
+  border-color: var(--primario);
+
+  svg {
+    color: var(--primario);
+    fill: var(--primario);
+  }
+}
+
+/* Botón en plena animación de like */
+.btn-guardar {
+  position: relative;
+  overflow: visible;
+
+  &.animando {
+    animation: guardianPop 0.55s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      border: 2px solid var(--primario);
+      animation: guardianRing 0.55s ease forwards;
+      pointer-events: none;
+    }
+  }
+}
+
+@keyframes guardianPop {
+  0%   { transform: scale(1); }
+  20%  { transform: scale(1.6) rotate(-10deg); }
+  40%  { transform: scale(0.85) rotate(5deg); }
+  65%  { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+
+@keyframes guardianRing {
+  0%   { transform: scale(0.8); opacity: 1; }
+  100% { transform: scale(2.8); opacity: 0; }
 }
 
 /* Botón de guardar receta con efecto de relleno del corazón */

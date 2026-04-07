@@ -1,62 +1,278 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Revela } from '../../shared/revela/revela';
+import { CountUp } from '../../shared/countup/countup';
+import { RecetaService, RecetaResponse, TipoComidaResponse } from '../../services/receta.service';
+import { FavoritoService } from '../../services/favorito.service';
+
+/* Agrupación de categorías en el acordeón — los nombres deben coincidir con la BD */
+const GRUPOS: { nombre: string; emoji: string; cats: string[] }[] = [
+  {
+    nombre: 'Cocinas del Mundo', emoji: '🌍',
+    cats: [
+      'Italiana', 'Española', 'Japonesa', 'Mexicana', 'China', 'Francesa',
+      'India', 'Americana', 'Griega', 'Tailandesa', 'Árabe', 'Peruana',
+      'Coreana', 'Vietnamita', 'Marroquí', 'Turca', 'Brasileña', 'Alemana',
+      'Mediterránea', 'Asiática', 'Fusión',
+    ],
+  },
+  {
+    nombre: 'Tipo de Plato', emoji: '🍽️',
+    cats: [
+      'Sopas', 'Ensaladas', 'Pastas', 'Arroces', 'Postres', 'Panadería',
+      'Aperitivos', 'Bebidas', 'Desayunos', 'Fast Food', 'Horneado', 'A la plancha',
+    ],
+  },
+  {
+    nombre: 'Proteína Principal', emoji: '🥩',
+    cats: ['Carnes', 'Aves', 'Cerdo', 'Ternera', 'Pescado', 'Mariscos', 'Legumbres'],
+  },
+  {
+    nombre: 'Estilo y Dieta', emoji: '🥗',
+    cats: [
+      'Vegana', 'Vegetariana', 'Saludable', 'Sin gluten', 'Sin lactosa',
+      'Alto en proteína', 'Bajo en calorías', 'Rápido', 'Económico',
+      'Para niños', 'Picante',
+    ],
+  },
+];
+
+const COLOR_FALLBACK = '#B83520';
 
 @Component({
   selector: 'app-explorar',
-  imports: [CommonModule, Revela],
+  imports: [CommonModule, Revela, CountUp],
   templateUrl: './explorar.html',
   styleUrl: './explorar.scss',
 })
-export class Explorar {
-  filtroActivo = signal('Todas');
+export class Explorar implements OnInit {
+
+  readonly grupos = GRUPOS;
+
+  /* Datos de la API */
+  categorias   = signal<TipoComidaResponse[]>([]);
+  todasRecetas = signal<RecetaResponse[]>([]);
+
+  private categoriasMapa = computed(() =>
+    new Map(this.categorias().map(c => [c.nombre, c]))
+  );
+
+  /* IDs de recetas en favoritos */
+  favoritosIds  = signal<Set<string>>(new Set());
+  likesAnimando = signal<Set<string>>(new Set());
+
+  /* Estado de carga */
+  cargando   = signal(true);
+  errorCarga = signal<string | null>(null);
+
+  /* Filtros activos */
+  /* Set de categorías activas — vacío significa "Todas" */
+  filtrosActivos   = signal<Set<string>>(new Set());
   dificultadActiva = signal('Cualquiera');
-  tiempoActivo = signal('Cualquiera');
 
-  /* Categorias — mapeadas a la tabla 'tipo_comida' (nombre, descripcion, icono_url).
-     El campo 'emoji' representa el icono_url en formato emoji para el mock. */
-  categorias = [
-    { nombre: 'Italiana',  recetas: 234, color: '#C13E28', emoji: '🍝', descripcion: 'Pasta, risotto y mucho mas' },
-    { nombre: 'Española',  recetas: 189, color: '#A02818', emoji: '🥘', descripcion: 'Tradicion y sabor mediterraneo' },
-    { nombre: 'Japonesa',  recetas: 156, color: '#2D6040', emoji: '🍱', descripcion: 'Sushi, ramen y cocina oriental' },
-    { nombre: 'Mexicana',  recetas: 142, color: '#B87010', emoji: '🌮', descripcion: 'Tacos, guacamole y picante' },
-    { nombre: 'Postres',   recetas: 321, color: '#C88A10', emoji: '🍰', descripcion: 'Dulces, tartas y reposteria' },
-    { nombre: 'Saludable', recetas: 278, color: '#1E5A7A', emoji: '🥗', descripcion: 'Recetas nutritivas y equilibradas' },
-    { nombre: 'Fast Food', recetas: 167, color: '#7A3ABE', emoji: '🍔', descripcion: 'Rapido, sabroso y sin complicaciones' },
-    { nombre: 'Francesa',  recetas: 198, color: '#3A2010', emoji: '🥐', descripcion: 'Gastronomia refinada y clasica' },
-  ];
+  /**
+   * 'OR' (defecto): mostrar recetas que tengan AL MENOS UNA categoría seleccionada.
+   * 'AND': mostrar solo recetas que tengan TODAS las categorías seleccionadas.
+   */
+  modoFiltro = signal<'OR' | 'AND'>('OR');
 
-  dificultades = ['Cualquiera', 'Fácil', 'Media', 'Difícil'];
-  tiempos = ['Cualquiera', '< 30 min', '30-60 min', '> 60 min'];
+  /* Grupos del acordeón abiertos */
+  gruposAbiertos = signal<Set<string>>(new Set());
 
-  /* Recetas — mapeadas a la tabla 'receta'.
-     calorias → receta.calorias, alergenos → receta.alergenos.
-     La puntuación es el promedio de comentario.valoracion para cada receta. */
-  recetas = [
-    { titulo: 'Pasta Carbonara Autentica',  autor: 'Marco R.',  tiempo: '25 min',  dificultad: 'Media',   tipo: 'Italiana',  puntuacion: 4.8, emoji: '🍝', color: 'linear-gradient(145deg,#B83520,#6E1A0C)', calorias: 520, alergenos: 'Gluten, Huevo, Lacteos' },
-    { titulo: 'Paella Valenciana',           autor: 'Carmen L.', tiempo: '55 min',  dificultad: 'Dificil', tipo: 'Española',  puntuacion: 4.9, emoji: '🥘', color: 'linear-gradient(145deg,#A02818,#5A100C)', calorias: 410, alergenos: 'Marisco, Gluten' },
-    { titulo: 'Sushi Casero Facil',          autor: 'Yuki T.',   tiempo: '45 min',  dificultad: 'Media',   tipo: 'Japonesa',  puntuacion: 4.7, emoji: '🍱', color: 'linear-gradient(145deg,#2A6040,#152E1E)', calorias: 320, alergenos: 'Pescado, Soja' },
-    { titulo: 'Guacamole Fresco',            autor: 'Miguel P.', tiempo: '10 min',  dificultad: 'Facil',   tipo: 'Mexicana',  puntuacion: 4.6, emoji: '🥑', color: 'linear-gradient(145deg,#2D7A30,#163A18)', calorias: 180, alergenos: '' },
-    { titulo: 'Cheesecake de Frutos Rojos',  autor: 'Laura B.',  tiempo: '90 min',  dificultad: 'Media',   tipo: 'Postres',   puntuacion: 4.9, emoji: '🍰', color: 'linear-gradient(145deg,#B87A10,#6E4808)', calorias: 380, alergenos: 'Lacteos, Huevo, Gluten' },
-    { titulo: 'Buddha Bowl de Quinoa',       autor: 'Ana M.',    tiempo: '20 min',  dificultad: 'Facil',   tipo: 'Saludable', puntuacion: 4.5, emoji: '🥗', color: 'linear-gradient(145deg,#285A80,#122A40)', calorias: 290, alergenos: 'Soja' },
-    { titulo: 'Croissant Mantequilla',       autor: 'Pierre D.', tiempo: '180 min', dificultad: 'Dificil', tipo: 'Francesa',  puntuacion: 4.8, emoji: '🥐', color: 'linear-gradient(145deg,#5C2E1A,#2E1208)', calorias: 340, alergenos: 'Gluten, Lacteos, Huevo' },
-    { titulo: 'Ramen de Cerdo',              autor: 'Kenji S.',  tiempo: '120 min', dificultad: 'Dificil', tipo: 'Japonesa',  puntuacion: 4.9, emoji: '🍜', color: 'linear-gradient(145deg,#2A4A60,#101E30)', calorias: 560, alergenos: 'Gluten, Soja, Huevo' },
-    { titulo: 'Tortilla Española',           autor: 'Pilar G.',  tiempo: '30 min',  dificultad: 'Media',   tipo: 'Española',  puntuacion: 4.7, emoji: '🍳', color: 'linear-gradient(145deg,#985808,#4E2C04)', calorias: 240, alergenos: 'Huevo' },
-  ];
+  dificultades = ['Cualquiera', 'BAJA', 'MEDIA', 'ALTA'];
 
+  constructor(
+    private recetaService: RecetaService,
+    private favoritoService: FavoritoService,
+  ) {}
+
+  ngOnInit() {
+    this.cargarDatos();
+  }
+
+  cargarDatos() {
+    this.cargando.set(true);
+    this.errorCarga.set(null);
+
+    this.recetaService.getCategorias().subscribe({
+      next: (cats) => this.categorias.set(cats.filter(c => c.colorHex)),
+      error: () => this.categorias.set([]),
+    });
+
+    this.recetaService.getTodas().subscribe({
+      next: (r) => {
+        this.todasRecetas.set(r);
+        this.cargando.set(false);
+      },
+      error: () => {
+        this.errorCarga.set('No se pudieron cargar las recetas.');
+        this.cargando.set(false);
+      },
+    });
+
+    this.favoritoService.getMisFavoritos().subscribe({
+      next: (favs) => this.favoritosIds.set(new Set(favs.map(f => f.recetaId))),
+      error: () => this.favoritosIds.set(new Set()),
+    });
+  }
+
+  /* Recetas filtradas — una receta aparece si cualquiera de sus 3 categorías
+     está en el set de filtros activos (OR entre categorías seleccionadas) */
+  recetasFiltradas = computed(() => {
+    let lista = this.todasRecetas();
+    const filtros = this.filtrosActivos();
+    if (filtros.size > 0) {
+      if (this.modoFiltro() === 'AND') {
+        lista = lista.filter(r => {
+          const cats = new Set([r.tipoComidaNombre, r.tipoComida2Nombre, r.tipoComida3Nombre].filter(Boolean) as string[]);
+          return [...filtros].every(f => cats.has(f));
+        });
+      } else {
+        lista = lista.filter(r =>
+          filtros.has(r.tipoComidaNombre  ?? '') ||
+          filtros.has(r.tipoComida2Nombre ?? '') ||
+          filtros.has(r.tipoComida3Nombre ?? '')
+        );
+      }
+    }
+    if (this.dificultadActiva() !== 'Cualquiera') {
+      lista = lista.filter(r => r.dificultad === this.dificultadActiva());
+    }
+    return lista;
+  });
+
+  /* Toggle de una categoría — si ya está activa la quita, si no la añade */
   seleccionarFiltro(nombre: string) {
-    this.filtroActivo.set(nombre);
+    if (nombre === 'Todas') {
+      this.filtrosActivos.set(new Set());
+      return;
+    }
+    this.filtrosActivos.update(s => {
+      const n = new Set(s);
+      n.has(nombre) ? n.delete(nombre) : n.add(nombre);
+      return n;
+    });
   }
 
-  seleccionarDificultad(d: string) {
-    this.dificultadActiva.set(d);
+  seleccionarDificultad(d: string) { this.dificultadActiva.set(d); }
+
+  toggleGrupo(nombre: string) {
+    this.gruposAbiertos.update(s => {
+      const n = new Set(s);
+      n.has(nombre) ? n.delete(nombre) : n.add(nombre);
+      return n;
+    });
   }
 
-  seleccionarTiempo(t: string) {
-    this.tiempoActivo.set(t);
+  /* Categorías cargadas de la API que pertenecen al grupo */
+  categoriasDeGrupo(nombres: string[]): TipoComidaResponse[] {
+    const mapa = this.categoriasMapa();
+    return nombres.filter(n => mapa.has(n)).map(n => mapa.get(n)!);
   }
 
-  estrellas(puntuacion: number) {
-    return Math.round(puntuacion);
+  /* Primeros 4 emojis del grupo — se muestran en el header colapsado */
+  previewEmojisGrupo(nombres: string[]): string[] {
+    return this.categoriasDeGrupo(nombres).slice(0, 5).map(c => c.iconoUrl ?? '🍽️');
+  }
+
+  /* True si alguno de los filtros activos pertenece a este grupo */
+  grupoContieneFiltro(nombres: string[]): boolean {
+    const f = this.filtrosActivos();
+    return nombres.some(n => f.has(n));
+  }
+
+  esFavorito(recetaId: string): boolean {
+    return this.favoritosIds().has(recetaId);
+  }
+
+  toggleFavorito(recetaId: string, event: Event) {
+    event.stopPropagation();
+    const delta = this.esFavorito(recetaId) ? -1 : 1;
+
+    this.todasRecetas.update(lista =>
+      lista.map(r => r.id === recetaId
+        ? { ...r, totalLikes: Math.max(0, r.totalLikes + delta) }
+        : r
+      )
+    );
+
+    this.likesAnimando.update(s => new Set([...s, recetaId]));
+    setTimeout(() => {
+      this.likesAnimando.update(s => { const n = new Set(s); n.delete(recetaId); return n; });
+    }, 650);
+
+    this.lanzarCorazonFx(event.currentTarget as HTMLElement);
+
+    if (delta === -1) {
+      this.favoritosIds.update(s => { const n = new Set(s); n.delete(recetaId); return n; });
+      this.favoritoService.eliminar(recetaId).subscribe({
+        error: () => {
+          this.todasRecetas.update(l => l.map(r => r.id === recetaId ? { ...r, totalLikes: r.totalLikes + 1 } : r));
+          this.favoritosIds.update(s => new Set([...s, recetaId]));
+        },
+      });
+    } else {
+      this.favoritosIds.update(s => new Set([...s, recetaId]));
+      this.favoritoService.agregar(recetaId).subscribe({
+        error: () => {
+          this.todasRecetas.update(l => l.map(r => r.id === recetaId ? { ...r, totalLikes: Math.max(0, r.totalLikes - 1) } : r));
+          this.favoritosIds.update(s => { const n = new Set(s); n.delete(recetaId); return n; });
+        },
+      });
+    }
+  }
+
+  private lanzarCorazonFx(boton: HTMLElement) {
+    const fx = document.createElement('span');
+    fx.className = 'like-fx-heart';
+    fx.textContent = '♥';
+    boton.appendChild(fx);
+    setTimeout(() => fx.remove(), 700);
+  }
+
+  /* Emoji desde la BD */
+  emojiCategoria(nombre: string): string {
+    return this.categoriasMapa().get(nombre)?.iconoUrl ?? '🍽️';
+  }
+
+  /* Emojis de todas las categorías de una receta (hasta 3) */
+  emojisReceta(receta: RecetaResponse): string[] {
+    return [receta.tipoComidaNombre, receta.tipoComida2Nombre, receta.tipoComida3Nombre]
+      .filter((c): c is string => !!c)
+      .map(c => this.emojiCategoria(c));
+  }
+
+  colorCategoria(catNombre: string): string {
+    return this.categoriasMapa().get(catNombre)?.colorHex ?? COLOR_FALLBACK;
+  }
+
+  colorReceta(tipoComidaNombre: string | null, idx: number): string {
+    const hex = this.categoriasMapa().get(tipoComidaNombre ?? '')?.colorHex ?? COLOR_FALLBACK;
+    const variaciones = [0, -10, +8, -5];
+    const offset = variaciones[idx % variaciones.length];
+    const claro = this.ajustarBrillo(hex, offset);
+    const oscuro = this.ajustarBrillo(hex, offset - 28);
+    return `linear-gradient(145deg, ${claro}, ${oscuro})`;
+  }
+
+  private ajustarBrillo(hex: string, delta: number): string {
+    const n = parseInt(hex.replace('#', ''), 16);
+    const r = Math.max(0, Math.min(255, ((n >> 16) & 255) + delta));
+    const g = Math.max(0, Math.min(255, ((n >> 8)  & 255) + delta));
+    const b = Math.max(0, Math.min(255, ((n)       & 255) + delta));
+    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+  }
+
+  formatearTiempo(minutos: number | null): string {
+    if (!minutos) return '—';
+    if (minutos < 60) return `${minutos} min`;
+    const h = Math.floor(minutos / 60);
+    const m = minutos % 60;
+    return m > 0 ? `${h}h ${m}min` : `${h}h`;
+  }
+
+  etiquetaDificultad(d: string | null): string {
+    const mapa: Record<string, string> = { BAJA: 'Fácil', MEDIA: 'Media', ALTA: 'Difícil' };
+    return d ? (mapa[d] ?? d) : '—';
   }
 }

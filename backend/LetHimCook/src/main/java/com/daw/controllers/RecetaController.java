@@ -30,7 +30,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Controlador para la gestión de Recetas.
+ * Controlador para la gestión de recetas.
+ * Los endpoints GET son públicos. POST y DELETE requieren autenticación.
  *
  * @author IES Almudeyne - Raúl Liébana Sánchez
  */
@@ -41,17 +42,26 @@ public class RecetaController {
 
     private final RecetaService recetaService;
 
+    /** Lista todas las recetas sin paginar (usado por el frontend de explorar). */
     @GetMapping("/todas")
-    public ResponseEntity<List<RecetaResponseDTO>> listarTodos() {
-        return ResponseEntity.ok().body(recetaService.listarTodos());
+    public ResponseEntity<List<RecetaResponseDTO>> listarTodas() {
+        return ResponseEntity.ok(recetaService.listarTodas());
     }
 
+    /** Lista paginada con filtros opcionales por nombre y dificultad. */
     @GetMapping
     public ResponseEntity<Page<RecetaResponseDTO>> buscarPaginado(
             @RequestParam(defaultValue = "") String nombre,
             @RequestParam(required = false) Dificultad dificultad,
             @PageableDefault(size = 10) Pageable pageable) {
         return ResponseEntity.ok().body(recetaService.buscarPaginado(nombre, dificultad, pageable));
+    }
+
+    /** Lista paginada simple (sin filtros). */
+    @GetMapping("/pagina")
+    public ResponseEntity<Page<RecetaResponseDTO>> listarPaginado(
+            @PageableDefault(size = 12, sort = "fechaCreacion") Pageable pageable) {
+        return ResponseEntity.ok(recetaService.listarPaginado(pageable));
     }
 
     @GetMapping("/{id}")
@@ -64,8 +74,7 @@ public class RecetaController {
             @Valid @RequestBody RecetaRequestDTO dto,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         UUID usuarioId = userDetails.getUsuario().getId();
-        RecetaResponseDTO response = recetaService.crear(dto, usuarioId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(recetaService.crear(dto, usuarioId));
     }
 
     @PreAuthorize("hasRole('ADMIN') or @recetaRepository.existsByIdAndUsuarioId(#id, authentication.principal.usuario.id)")
@@ -75,7 +84,6 @@ public class RecetaController {
         return ResponseEntity.ok().body(recetaService.actualizar(id, dto));
     }
 
-    @PreAuthorize("hasRole('ADMIN') or @recetaRepository.existsByIdAndUsuarioId(#id, authentication.principal.usuario.id)")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable UUID id) {
         recetaService.eliminar(id);

@@ -20,31 +20,71 @@
   </div>
 </section>
 
-<!-- Categorías de comida con tarjetas de color -->
+<!-- Categorías agrupadas en acordeón -->
 <section class="categorias">
   <div class="contenedor">
-    <h2 revela>Categorías populares</h2>
-    <p class="seccion-desc" revela [retardo]="80">Explora recetas por tipo de cocina</p>
+    <h2 revela>Categorías</h2>
+    <p class="seccion-desc" revela [retardo]="80">Filtra por tipo, cocina o estilo</p>
 
-    <div class="categorias-grid">
-      @for (cat of categorias; track cat.nombre; let i = $index) {
-        <div class="categoria-card"
-             revela [retardo]="i * 60"
-             [class.activa]="filtroActivo() === cat.nombre"
-             (click)="seleccionarFiltro(cat.nombre)"
-             [style.--color-cat]="cat.color">
-          <div class="cat-fondo"></div>
-          <div class="cat-barra"></div>
-          <span class="cat-emoji" aria-hidden="true">{{ cat.emoji }}</span>
-          <div class="cat-info">
-            <span class="cat-nombre">{{ cat.nombre }}</span>
-            <span class="cat-recetas">{{ cat.recetas }} recetas</span>
-          </div>
-          <svg class="cat-flecha" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 8h10M9 4l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+    <div class="categorias-acordeon" revela [retardo]="120">
+
+      <!-- "Todas" siempre visible -->
+      <div class="cat-todas"
+           [class.activa]="filtrosActivos().size === 0"
+           (click)="seleccionarFiltro('Todas')">
+        <span class="cat-todas-emoji">🍽️</span>
+        <span class="cat-todas-nombre">Todas las recetas</span>
+        <span class="cat-todas-count">{{ todasRecetas().length }}</span>
+      </div>
+
+      <!-- Un bloque plegable por grupo -->
+      @for (grupo of grupos; track grupo.nombre) {
+        <div class="cat-grupo">
+
+          <button class="cat-grupo-header"
+                  (click)="toggleGrupo(grupo.nombre)"
+                  [class.abierto]="gruposAbiertos().has(grupo.nombre)"
+                  [class.tiene-activa]="grupoContieneFiltro(grupo.cats)">
+            <span class="cat-grupo-emoji">{{ grupo.emoji }}</span>
+            <span class="cat-grupo-nombre">{{ grupo.nombre }}</span>
+            <!-- Miniaturas de emojis cuando el grupo está cerrado -->
+            @if (!gruposAbiertos().has(grupo.nombre)) {
+              <span class="cat-grupo-preview">
+                @for (e of previewEmojisGrupo(grupo.cats); track $index) {
+                  <span>{{ e }}</span>
+                }
+              </span>
+            }
+            <span class="cat-grupo-count">{{ categoriasDeGrupo(grupo.cats).length }}</span>
+            <svg class="cat-grupo-flecha" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 6l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+
+          @if (gruposAbiertos().has(grupo.nombre)) {
+            <div class="cat-grupo-grid">
+              @for (cat of categoriasDeGrupo(grupo.cats); track cat.id) {
+                <div class="categoria-card"
+                     [class.activa]="filtrosActivos().has(cat.nombre)"
+                     (click)="seleccionarFiltro(cat.nombre)"
+                     [style.--color-cat]="colorCategoria(cat.nombre)">
+                  <div class="cat-fondo"></div>
+                  <div class="cat-barra"></div>
+                  <span class="cat-emoji" aria-hidden="true">{{ emojiCategoria(cat.nombre) }}</span>
+                  <div class="cat-info">
+                    <span class="cat-nombre">{{ cat.nombre }}</span>
+                  </div>
+                  <svg class="cat-flecha" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 8h10M9 4l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+              }
+            </div>
+          }
+
         </div>
       }
+
     </div>
   </div>
 </section>
@@ -53,105 +93,146 @@
 <section class="resultados">
   <div class="contenedor">
 
-    <!-- Filtros por dificultad y tiempo -->
+    <!-- Filtros por dificultad + chips de categorías activas -->
     <div class="filtros-barra" revela>
-      <div class="filtros-grupo">
-        <span class="filtros-label">Dificultad:</span>
-        @for (d of dificultades; track d) {
-          <button class="filtro-pill"
-                  [class.activo]="dificultadActiva() === d"
-                  (click)="seleccionarDificultad(d)">
-            {{ d }}
+      <div class="filtros-fila-superior">
+        <div class="filtros-grupo">
+          <span class="filtros-label">Dificultad:</span>
+          @for (d of dificultades; track d) {
+            <button class="filtro-pill"
+                    [class.activo]="dificultadActiva() === d"
+                    (click)="seleccionarDificultad(d)">
+              {{ d === 'Cualquiera' ? 'Cualquiera' : etiquetaDificultad(d) }}
+            </button>
+          }
+        </div>
+
+        @if (filtrosActivos().size > 1) {
+          <button class="filtro-modo-toggle"
+                  [class.and-activo]="modoFiltro() === 'AND'"
+                  (click)="modoFiltro.set(modoFiltro() === 'OR' ? 'AND' : 'OR')"
+                  [attr.title]="modoFiltro() === 'OR' ? 'Modo OR: recetas con cualquiera de las categorías' : 'Modo AND: solo recetas con todas las categorías'">
+            <span class="modo-opcion" [class.activo]="modoFiltro() === 'OR'">cualquiera</span>
+            <span class="modo-separador"></span>
+            <span class="modo-opcion" [class.activo]="modoFiltro() === 'AND'">todas</span>
           </button>
         }
       </div>
-      <div class="filtros-grupo">
-        <span class="filtros-label">Tiempo:</span>
-        @for (t of tiempos; track t) {
-          <button class="filtro-pill"
-                  [class.activo]="tiempoActivo() === t"
-                  (click)="seleccionarTiempo(t)">
-            {{ t }}
-          </button>
-        }
-      </div>
-    </div>
 
-    <!-- Contador de resultados y ordenador -->
-    <div class="resultados-header" revela [retardo]="80">
-      <span class="resultados-total">{{ recetas.length }} recetas encontradas</span>
-      <select class="orden-selector">
-        <option>Más populares</option>
-        <option>Más recientes</option>
-        <option>Menor tiempo</option>
-        <option>Mejor valoradas</option>
-      </select>
-    </div>
-
-    <!-- Grid de recetas -->
-    <div class="recetas-grid">
-      @for (receta of recetas; track receta.titulo; let i = $index) {
-        <article class="receta-card" revela [retardo]="i * 70">
-          <div class="receta-imagen" [style.background]="receta.color">
-            <div class="receta-overlay"></div>
-            <span class="receta-emoji" aria-hidden="true">{{ receta.emoji }}</span>
-            <span class="receta-tipo">{{ receta.tipo }}</span>
-            <button class="btn-favorito" aria-label="Guardar en favoritos">
-              <svg viewBox="0 0 20 20" fill="none" stroke="white" stroke-width="1.5">
-                <path d="M10 17.5 L2.5 10 C2.5 7 4.5 5 7 5 C8.2 5 9.2 5.5 10 6.5 C10.8 5.5 11.8 5 13 5 C15.5 5 17.5 7 17.5 10 Z"/>
+      <!-- Chips de categorías activas con botón de quitar -->
+      @if (filtrosActivos().size > 0) {
+        <div class="filtros-grupo filtros-cats-activas">
+          @for (cat of filtrosActivos(); track cat) {
+            <button class="filtro-cat-chip" (click)="seleccionarFiltro(cat)">
+              {{ emojiCategoria(cat) }} {{ cat }}
+              <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M2 2l6 6M8 2l-6 6" stroke-linecap="round"/>
               </svg>
             </button>
-            <!-- CTA que aparece al hacer hover sobre la tarjeta -->
-            <div class="receta-ver-cta">
-              <span>Ver receta</span>
-              <svg viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="2">
-                <path d="M3 8h10M9 4l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </div>
-          </div>
-          <div class="receta-cuerpo">
-            <h3>{{ receta.titulo }}</h3>
-            <p class="receta-autor">por {{ receta.autor }}</p>
-            <div class="receta-datos">
-              <span class="dato">
-                <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" class="dato-icono">
-                  <circle cx="7" cy="7" r="5"/><path d="M7 4v3l2 1.5" stroke-linecap="round"/>
-                </svg>
-                {{ receta.tiempo }}
-              </span>
-              <span class="dato dato-dificultad">{{ receta.dificultad }}</span>
-              <!-- Calorías → receta.calorias -->
-              <span class="dato dato-calorias">{{ receta.calorias }} kcal</span>
-            </div>
-            <!-- Alérgenos → receta.alergenos -->
-            @if (receta.alergenos) {
-              <div class="receta-alergenos">
-                @for (a of receta.alergenos.split(','); track a) {
-                  <span class="alergen-tag">{{ a.trim() }}</span>
-                }
-              </div>
-            }
-            <div class="receta-puntuacion">
-              <div class="estrellas">
-                @for (n of [1,2,3,4,5]; track n) {
-                  <span [class.llena]="n <= estrellas(receta.puntuacion)">★</span>
-                }
-              </div>
-              <span class="puntuacion-num">{{ receta.puntuacion }}</span>
-            </div>
-          </div>
-        </article>
+          }
+          <button class="filtro-limpiar" (click)="seleccionarFiltro('Todas')">Limpiar</button>
+        </div>
       }
     </div>
 
-    <!-- Paginación simple -->
-    <div class="paginacion" revela>
-      <button class="pag-btn" disabled>Anterior</button>
-      <button class="pag-num activo">1</button>
-      <button class="pag-num">2</button>
-      <button class="pag-num">3</button>
-      <button class="pag-btn">Siguiente</button>
+    <!-- Contador de resultados -->
+    <div class="resultados-header" revela [retardo]="80">
+      <span class="resultados-total">{{ recetasFiltradas().length }} recetas encontradas</span>
+      <select class="orden-selector">
+        <option>Más recientes</option>
+        <option>Menor tiempo</option>
+      </select>
     </div>
+
+    <!-- Estado de carga -->
+    @if (cargando()) {
+      <div class="estado-carga">
+        <div class="carga-spinner"></div>
+        <p>Cargando recetas...</p>
+      </div>
+    }
+
+    <!-- Error -->
+    @if (!cargando() && errorCarga()) {
+      <div class="estado-error">
+        <p>{{ errorCarga() }}</p>
+        <button class="btn-primario btn-sm" (click)="cargarDatos()">Reintentar</button>
+      </div>
+    }
+
+    <!-- Grid de recetas desde la BD -->
+    @if (!cargando() && !errorCarga()) {
+      @if (recetasFiltradas().length === 0) {
+        <div class="sin-resultados">
+          <p>No hay recetas con los filtros seleccionados.</p>
+          <button class="btn-secundario btn-sm" (click)="seleccionarFiltro('Todas')">Ver todas</button>
+        </div>
+      } @else {
+        <div class="recetas-grid">
+          @for (receta of recetasFiltradas(); track receta.id; let i = $index) {
+            <article class="receta-card" revela [retardo]="i * 70">
+              <div class="receta-imagen" [style.background]="colorReceta(receta.tipoComidaNombre, i)">
+                <div class="receta-overlay"></div>
+                <!-- Emojis de hasta 3 categorías -->
+                <div class="receta-emojis" aria-hidden="true">
+                  @for (emoji of emojisReceta(receta); track $index; let ej = $index) {
+                    <span class="receta-emoji" [class.receta-emoji-sec]="ej > 0">{{ emoji }}</span>
+                  }
+                </div>
+                <span class="receta-tipo">{{ receta.tipoComidaNombre ?? 'Sin categoría' }}</span>
+                <button class="btn-favorito"
+                        [class.activo]="esFavorito(receta.id)"
+                        [class.animando]="likesAnimando().has(receta.id)"
+                        (click)="toggleFavorito(receta.id, $event)"
+                        [attr.aria-label]="esFavorito(receta.id) ? 'Quitar de favoritos' : 'Guardar en favoritos'">
+                  <svg viewBox="0 0 20 20" stroke="white" stroke-width="1.5"
+                       [attr.fill]="esFavorito(receta.id) ? 'white' : 'none'">
+                    <path d="M10 17.5 L2.5 10 C2.5 7 4.5 5 7 5 C8.2 5 9.2 5.5 10 6.5 C10.8 5.5 11.8 5 13 5 C15.5 5 17.5 7 17.5 10 Z"/>
+                  </svg>
+                </button>
+                <div class="receta-ver-cta">
+                  <span>Ver receta</span>
+                  <svg viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="2">
+                    <path d="M3 8h10M9 4l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="receta-cuerpo">
+                <div class="receta-cabecera-cuerpo">
+                  <h3>{{ receta.nombre }}</h3>
+                  <span class="receta-likes-badge" [class.con-likes]="receta.totalLikes > 0">
+                    <svg viewBox="0 0 14 14" fill="currentColor" width="11" height="11">
+                      <path d="M7 12.5 L1.2 7 C1.2 4.8 2.8 3.5 4.5 3.5 C5.4 3.5 6.1 3.9 7 4.8 C7.9 3.9 8.6 3.5 9.5 3.5 C11.2 3.5 12.8 4.8 12.8 7 Z"/>
+                    </svg>
+                    <span [countUp]="receta.totalLikes"></span>
+                  </span>
+                </div>
+                <p class="receta-autor">por {{ receta.usuarioCreadorNombre }}</p>
+                <div class="receta-datos">
+                  <span class="dato">
+                    <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" class="dato-icono">
+                      <circle cx="7" cy="7" r="5"/><path d="M7 4v3l2 1.5" stroke-linecap="round"/>
+                    </svg>
+                    {{ formatearTiempo(receta.tiempoPreparacion) }}
+                  </span>
+                  <span class="dato dato-dificultad">{{ etiquetaDificultad(receta.dificultad) }}</span>
+                  @if (receta.calorias) {
+                    <span class="dato dato-calorias">{{ receta.calorias }} kcal</span>
+                  }
+                </div>
+                @if (receta.alergenos) {
+                  <div class="receta-alergenos">
+                    @for (a of receta.alergenos.split(','); track a) {
+                      <span class="alergen-tag">{{ a.trim() }}</span>
+                    }
+                  </div>
+                }
+              </div>
+            </article>
+          }
+        </div>
+      }
+    }
 
   </div>
 </section>

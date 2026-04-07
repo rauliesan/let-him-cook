@@ -22,11 +22,12 @@ import com.daw.mappers.RecetaMapper;
 import com.daw.repositories.IaModeloRepository;
 import com.daw.repositories.RecetaRepository;
 import com.daw.repositories.TipoComidaRepository;
+import com.daw.repositories.UsuarioRepository;
 
 import lombok.RequiredArgsConstructor;
 
 /**
- * Servicio para la gestión de Recetas.
+ * Servicio para la gestión de recetas.
  *
  * @author IES Almudeyne - Raúl Liébana Sánchez
  */
@@ -35,59 +36,73 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RecetaService {
 
-    private final RecetaRepository recetaRepository;
-    private final TipoComidaRepository tipoComidaRepository;
-    private final IaModeloRepository iaModeloRepository;
-    private final RecetaMapper recetaMapper;
-    private final UsuarioService usuarioService;
+    private final RecetaRepository      recetaRepository;
+    private final TipoComidaRepository  tipoComidaRepository;
+    private final IaModeloRepository    iaModeloRepository;
+    private final UsuarioRepository     usuarioRepository;
+    private final RecetaMapper          recetaMapper;
 
-    public List<RecetaResponseDTO> listarTodos() {
+    /** Lista todas las recetas (sin paginar — usado por el frontend). */
+    @Transactional(readOnly = true)
+    public List<RecetaResponseDTO> listarTodas() {
         return recetaMapper.toListDTO(recetaRepository.findAll());
     }
 
+    /** Lista paginada con filtros opcionales. */
+    @Transactional(readOnly = true)
+    public Page<RecetaResponseDTO> buscarPaginado(String nombre, Dificultad dificultad, Pageable pageable) {
+        Page<Receta> page = recetaRepository.findByNombreContainingIgnoreCaseAndDificultad(nombre, dificultad, pageable);
+        return recetaMapper.toPageDTO(page);
+    }
+
+    /** Lista paginada simple sin filtros. */
+    @Transactional(readOnly = true)
+    public Page<RecetaResponseDTO> listarPaginado(Pageable pageable) {
+        return recetaMapper.toPageDTO(recetaRepository.findAll(pageable));
+    }
+
+    @Transactional(readOnly = true)
     public RecetaResponseDTO buscarPorId(UUID id) {
         Receta receta = recetaRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Receta no encontrada con ID: " + id));
         return recetaMapper.toResponseDTO(receta);
     }
 
-    public Page<RecetaResponseDTO> buscarPaginado(String nombre, Dificultad dificultad, Pageable pageable) {
-        Page<Receta> page = recetaRepository.findByNombreContainingIgnoreCaseAndDificultad(nombre, dificultad,
-                pageable);
-        return recetaMapper.toPageDTO(page);
-    }
-
     public RecetaResponseDTO crear(RecetaRequestDTO dto, UUID usuarioCreadorId) {
-        TipoComida tipoComida = tipoComidaRepository.findById(dto.getTipoComidaId())
-                .orElseThrow(() -> new RecursoNoEncontradoException(
-                        "Tipo de Comida no encontrado con ID: " + dto.getTipoComidaId()));
-
-        Usuario usuario = usuarioService.buscarEntidadPorId(usuarioCreadorId);
+        Usuario usuario = usuarioRepository.findById(usuarioCreadorId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado."));
 
         Receta receta = recetaMapper.toEntity(dto);
-        
+        receta.setUsuario(usuario);
+        receta.setFechaCreacion(ZonedDateTime.now(ZoneId.of("Europe/Madrid")));
+
+        if (dto.getTipoComidaId() != null) {
+            TipoComida tipoComida = tipoComidaRepository.findById(dto.getTipoComidaId())
+                    .orElseThrow(() -> new RecursoNoEncontradoException(
+                            "Tipo de Comida no encontrado con ID: " + dto.getTipoComidaId()));
+            receta.setTipoComida(tipoComida);
+        }
+
         if (dto.getIaModeloId() != null) {
             IaModelo iaModelo = iaModeloRepository.findById(dto.getIaModeloId())
                     .orElseThrow(() -> new RecursoNoEncontradoException(
                             "Modelo de IA no encontrado con ID: " + dto.getIaModeloId()));
             receta.setIaModelo(iaModelo);
         }
-        
-        receta.setTipoComida(tipoComida);
-        receta.setUsuario(usuario);
-        receta.setFechaCreacion(ZonedDateTime.now(ZoneId.of("Europe/Madrid")));
 
-        receta = recetaRepository.save(receta);
-        return recetaMapper.toResponseDTO(receta);
+        return recetaMapper.toResponseDTO(recetaRepository.save(receta));
     }
 
     public RecetaResponseDTO actualizar(UUID id, RecetaRequestDTO dto) {
         Receta receta = recetaRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Receta no encontrada con ID: " + id));
 
-        TipoComida tipoComida = tipoComidaRepository.findById(dto.getTipoComidaId())
-                .orElseThrow(() -> new RecursoNoEncontradoException(
-                        "Tipo de Comida no encontrado con ID: " + dto.getTipoComidaId()));
+        if (dto.getTipoComidaId() != null) {
+            TipoComida tipoComida = tipoComidaRepository.findById(dto.getTipoComidaId())
+                    .orElseThrow(() -> new RecursoNoEncontradoException(
+                            "Tipo de Comida no encontrado con ID: " + dto.getTipoComidaId()));
+            receta.setTipoComida(tipoComida);
+        }
 
         if (dto.getIaModeloId() != null) {
             IaModelo iaModelo = iaModeloRepository.findById(dto.getIaModeloId())
@@ -107,15 +122,14 @@ public class RecetaService {
         receta.setAlergenos(dto.getAlergenos());
         receta.setEsPublica(dto.getEsPublica());
         receta.setImagenUrl(dto.getImagenUrl());
-        receta.setTipoComida(tipoComida);
 
-        receta = recetaRepository.save(receta);
-        return recetaMapper.toResponseDTO(receta);
+        return recetaMapper.toResponseDTO(recetaRepository.save(receta));
     }
 
     public void eliminar(UUID id) {
-        Receta receta = recetaRepository.findById(id)
-                .orElseThrow(() -> new RecursoNoEncontradoException("Receta no encontrada con ID: " + id));
-        recetaRepository.delete(receta);
+        if (!recetaRepository.existsById(id)) {
+            throw new RecursoNoEncontradoException("Receta no encontrada con ID: " + id);
+        }
+        recetaRepository.deleteById(id);
     }
 }

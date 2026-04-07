@@ -113,15 +113,12 @@
     } @else {
       <div class="historial-grid">
         @for (entry of historial(); track $index; let i = $index) {
-          <div class="historial-card"
-               revela [retardo]="i * 70"
-               [style.--premio-color]="entry.premio.color">
+          <div class="historial-card" revela [retardo]="i * 70">
             <div class="historial-icono">
-              <span>{{ entry.premio.emoji }}</span>
+              <span>{{ entry.emoji }}</span>
             </div>
             <div class="historial-info">
-              <span class="historial-nombre">{{ entry.premio.nombre }}</span>
-              <span class="historial-rareza rareza-{{ entry.premio.rareza }}">{{ etiquetaRareza(entry.premio.rareza) }}</span>
+              <span class="historial-nombre">{{ entry.nombre }}</span>
             </div>
             <span class="historial-fecha">{{ entry.fecha }}</span>
           </div>

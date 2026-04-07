@@ -155,6 +155,17 @@
   font-size: 0.85rem !important;
 }
 
+/* Nombre del usuario autenticado en la barra de escritorio */
+.nav-usuario-nombre {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--negro);
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* Botón hamburguesa que transiciona a X en móvil */
 .hamburguesa {
   display: none;

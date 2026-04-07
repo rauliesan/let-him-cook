@@ -157,18 +157,18 @@
 <div class="stats-banda">
   <div class="contenedor stats-fila">
     <div class="stat-grande" revela [retardo]="0">
-      <strong>10K+</strong>
+      <strong [countUp]="totalRecetasRaw()" [formato]="formatearMetrica"></strong>
       <span>Recetas</span>
     </div>
     <div class="stat-divisor"></div>
     <div class="stat-grande" revela [retardo]="80">
-      <strong>50K+</strong>
+      <strong [countUp]="totalUsuariosRaw()" [formato]="formatearMetrica"></strong>
       <span>Cocineros</span>
     </div>
     <div class="stat-divisor"></div>
     <div class="stat-grande" revela [retardo]="160">
-      <strong>1M+</strong>
-      <span>Platos preparados</span>
+      <strong [countUp]="totalRecetasRaw()" [formato]="formatearMetrica"></strong>
+      <span>Recetas creadas</span>
     </div>
     <div class="stat-divisor"></div>
     <div class="stat-grande" revela [retardo]="240">
@@ -253,36 +253,70 @@
       <a routerLink="/explorar" class="btn-secundario">Ver todas</a>
     </div>
 
-    <div class="recetas-grid">
-      @for (receta of recetas; track receta.titulo; let i = $index) {
-        <article class="receta-card" revela [retardo]="i * 60">
-          <div class="receta-imagen" [style.background]="receta.color">
-            <div class="receta-imagen-overlay"></div>
-            <span class="receta-emoji" aria-hidden="true">{{ receta.emoji }}</span>
-            <span class="receta-tipo-badge">{{ receta.tipo }}</span>
-            <div class="receta-hover-cta">Ver receta</div>
-          </div>
-          <div class="receta-datos">
-            <h4>{{ receta.titulo }}</h4>
-            <div class="receta-meta">
-              <span>{{ receta.tiempo }}</span>
-              <span class="sep">·</span>
-              <span>{{ receta.dificultad }}</span>
-              <span class="sep">·</span>
-              <span>{{ receta.calorias }} kcal</span>
+    <!-- Estado de carga mientras llegan las recetas de la BD -->
+    @if (cargandoRecetas()) {
+      <div class="recetas-cargando">
+        @for (n of [1,2,3,4,5,6]; track n) {
+          <div class="receta-skeleton"></div>
+        }
+      </div>
+    }
+
+    <!-- Recetas reales de la BD (las 6 más recientes y públicas) -->
+    @if (!cargandoRecetas()) {
+      <div class="recetas-grid">
+        @for (receta of recetasPopulares(); track receta.id; let i = $index) {
+          <article class="receta-card" revela [retardo]="i * 60">
+            <div class="receta-imagen" [style.background]="colorReceta(receta.tipoComidaNombre, i)">
+              <div class="receta-imagen-overlay"></div>
+              <span class="receta-emoji" aria-hidden="true">{{ emojiCategoria(receta.tipoComidaNombre ?? '') }}</span>
+              <span class="receta-tipo-badge">{{ receta.tipoComidaNombre ?? 'Sin categoría' }}</span>
+              <div class="receta-hover-cta">Ver receta</div>
             </div>
-            <div class="receta-pie">
-              <span class="receta-autor">por {{ receta.autor }}</span>
-              <button class="btn-guardar" aria-label="Guardar receta">
-                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-                  <path d="M8 14 L1.5 8 C1.5 5.5 3.2 4 5.2 4 C6.2 4 7 4.4 8 5.4 C9 4.4 9.8 4 10.8 4 C12.8 4 14.5 5.5 14.5 8 Z"/>
-                </svg>
-              </button>
+            <div class="receta-datos">
+              <h4>{{ receta.nombre }}</h4>
+              <div class="receta-meta">
+                <span>{{ formatearTiempo(receta.tiempoPreparacion) }}</span>
+                <span class="sep">·</span>
+                <span>{{ etiquetaDificultad(receta.dificultad) }}</span>
+                @if (receta.calorias) {
+                  <span class="sep">·</span>
+                  <span>{{ receta.calorias }} kcal</span>
+                }
+              </div>
+              <div class="receta-pie">
+                <span class="receta-autor">por {{ receta.usuarioCreadorNombre }}</span>
+                <div class="receta-pie-derecha">
+                  <span class="receta-likes" [class.tiene-likes]="receta.totalLikes > 0">
+                    <svg viewBox="0 0 14 14" fill="currentColor" width="12" height="12">
+                      <path d="M7 12.5 L1.2 7 C1.2 4.8 2.8 3.5 4.5 3.5 C5.4 3.5 6.1 3.9 7 4.8 C7.9 3.9 8.6 3.5 9.5 3.5 C11.2 3.5 12.8 4.8 12.8 7 Z"/>
+                    </svg>
+                    <span [countUp]="receta.totalLikes"></span>
+                  </span>
+                  @if (auth.estaAutenticado()) {
+                    <button class="btn-guardar"
+                            [class.activo]="esFavorito(receta.id)"
+                            [class.animando]="likesAnimando().has(receta.id)"
+                            (click)="toggleFavorito(receta.id, $event)"
+                            [attr.aria-label]="esFavorito(receta.id) ? 'Quitar de favoritos' : 'Guardar receta'">
+                      <svg viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"
+                           [attr.fill]="esFavorito(receta.id) ? 'currentColor' : 'none'">
+                        <path d="M8 14 L1.5 8 C1.5 5.5 3.2 4 5.2 4 C6.2 4 7 4.4 8 5.4 C9 4.4 9.8 4 10.8 4 C12.8 4 14.5 5.5 14.5 8 Z"/>
+                      </svg>
+                    </button>
+                  }
+                </div>
+              </div>
             </div>
-          </div>
-        </article>
-      }
-    </div>
+          </article>
+        }
+
+        <!-- Si la BD no devuelve recetas (BD vacía), mostrar mensaje discreto -->
+        @if (recetasPopulares().length === 0) {
+          <p class="sin-recetas-landing">Aún no hay recetas publicadas. ¡Sé el primero!</p>
+        }
+      </div>
+    }
   </div>
 </section>
 

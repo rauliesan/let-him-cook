@@ -75,6 +75,11 @@ public class SecurityConfig {
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/error").permitAll()
 
+                        // Lectura pública de recetas, categorías y posts del foro
+                        .requestMatchers(HttpMethod.GET, "/recetas", "/recetas/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/tipos-comida", "/tipos-comida/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/posts", "/posts/**").permitAll()
+
                         // Rutas exclusivas de ADMIN
                         .requestMatchers("/admin/**").hasRole("ADMIN")
 

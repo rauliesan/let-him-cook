@@ -1,281 +1,227 @@
-<!-- Cabecera del perfil con portada, avatar y estadísticas -->
-<section class="perfil-header">
-  <div class="portada">
-    <!-- Patrón de fondo animado -->
-    <div class="portada-patron"></div>
-    <!-- Ondas SVG en la parte inferior de la portada -->
-    <svg class="portada-ondas" viewBox="0 0 1440 60" preserveAspectRatio="none">
-      <path d="M0,40 C360,0 720,60 1080,20 S1440,40 1440,40 L1440,60 L0,60 Z" fill="var(--crema)"/>
-    </svg>
+<!-- Estado de carga inicial -->
+@if (cargando()) {
+  <div class="estado-carga">
+    <div class="carga-spinner"></div>
+    <p>Cargando perfil...</p>
   </div>
+}
 
-  <div class="contenedor perfil-info">
-    <div class="avatar-wrapper">
-      <div class="avatar">MG</div>
-      <div class="nivel-badge">Nv.12</div>
-      <!-- Botón de cámara para editar la foto de perfil -->
-      <button class="avatar-editar" aria-label="Cambiar foto de perfil">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-          <rect x="1.5" y="4.5" width="13" height="9" rx="2" stroke-linecap="round"/>
-          <path d="M5.5 4.5L6.5 2.5h3l1 2"/>
-          <circle cx="8" cy="9" r="2.5"/>
-        </svg>
-      </button>
+<!-- Error al cargar -->
+@if (!cargando() && errorCarga()) {
+  <div class="estado-error">
+    <p>{{ errorCarga() }}</p>
+    <button class="btn-primario btn-sm" (click)="cargarDatos()">Reintentar</button>
+  </div>
+}
+
+<!-- Contenido principal del perfil -->
+@if (!cargando() && !errorCarga() && usuario()) {
+
+  <!-- Cabecera del perfil con portada y avatar -->
+  <section class="perfil-header">
+    <div class="portada">
+      <div class="portada-patron"></div>
+      <svg class="portada-ondas" viewBox="0 0 1440 60" preserveAspectRatio="none">
+        <path d="M0,40 C360,0 720,60 1080,20 S1440,40 1440,40 L1440,60 L0,60 Z" fill="var(--crema)"/>
+      </svg>
     </div>
 
-    <div class="perfil-datos">
-      <div class="perfil-nombre-fila">
-        <h1>María García</h1>
-        <span class="badge-titulo">Chef Expert</span>
-        <!-- Estado online -->
-        <span class="badge-online">En línea</span>
-      </div>
-      <p class="perfil-bio">Apasionada de la cocina mediterránea. Creadora de recetas saludables. Compartiendo amor por la comida desde 2020.</p>
-
-      <!-- Preferencias de tipo de comida (usuario_preferencia) -->
-      <div class="perfil-prefs">
-        @for (pref of preferencias; track pref) {
-          <span class="pref-tag">{{ pref }}</span>
+    <div class="contenedor perfil-info">
+      <div class="avatar-wrapper">
+        <!-- Foto si existe, iniciales si no -->
+        @if (usuario()?.fotoUrl) {
+          <img class="avatar avatar-img" [src]="usuario()!.fotoUrl!" [alt]="usuario()!.nombre" />
+        } @else {
+          <div class="avatar">{{ iniciales() }}</div>
         }
-      </div>
-
-      <!-- Estadísticas: Recetas, Amigos (usuario_amigo), Logros (usuario_logro), Valoración media -->
-      <div class="perfil-stats">
-        <div class="stat-item">
-          <strong>156</strong>
-          <span>Recetas</span>
-        </div>
-        <div class="stat-item">
-          <strong>{{ amigos }}</strong>
-          <span>Amigos</span>
-        </div>
-        <div class="stat-item">
-          <strong>34</strong>
-          <span>Logros</span>
-        </div>
-        <div class="stat-item">
-          <strong>4.8 ★</strong>
-          <span>Valoracion</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="perfil-acciones">
-      <button class="btn-primario">Editar perfil</button>
-      <button class="btn-secundario">Compartir</button>
-    </div>
-  </div>
-
-  <!-- Barra de experiencia y resumen debajo del perfil -->
-  <div class="contenedor">
-    <div class="perfil-resumen-grid">
-      <!-- Barra de experiencia -->
-      <div class="resumen-card resumen-exp">
-        <div class="resumen-card-titulo">
-          <span class="resumen-icono">⚡</span>
-          Experiencia
-        </div>
-        <div class="exp-barra-wrapper">
-          <div class="exp-info">
-            <span>Nivel 12</span>
-            <span class="exp-xp">8.450 / 10.000 XP</span>
-            <span>Nivel 13</span>
-          </div>
-          <div class="exp-barra">
-            <div class="exp-progreso"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Modelo IA y preferencias (usuario.ia_modelo_seleccionado_id + usuario_preferencia) -->
-      <div class="resumen-card resumen-ia">
-        <div class="resumen-card-titulo">
-          <span class="resumen-icono">🤖</span>
-          Asistente IA
-        </div>
-        <div class="ia-modelo-nombre">{{ modeloIA }}</div>
-        <div class="ia-prefs-lista">
-          @for (pref of preferencias; track pref) {
-            <span class="ia-pref-chip">{{ pref }}</span>
-          }
-        </div>
-        <span class="ia-prefs-label">Preferencias de cocina</span>
-      </div>
-
-      <!-- Monedas -->
-      <a routerLink="/rewards" class="resumen-card resumen-coins">
-        <div class="resumen-card-titulo">
-          <span class="resumen-icono">🪙</span>
-          Monedas
-        </div>
-        <div class="coins-grande">{{ coins | number }}</div>
-        <span class="coins-cta">Ir a Rewards →</span>
-      </a>
-    </div>
-  </div>
-</section>
-
-<!-- Pestañas de navegación -->
-<div class="tabs-wrapper">
-  <div class="contenedor">
-    <nav class="tabs">
-      @for (tab of tabs; track tab.id) {
-        <button class="tab"
-                [class.activa]="tabActiva() === tab.id"
-                (click)="cambiarTab(tab.id)">
-          <span class="tab-icono">{{ tab.icono }}</span>
-          {{ tab.label }}
-          <span class="tab-cantidad">{{ tab.cantidad }}</span>
+        <div class="nivel-badge">Nv.{{ usuario()?.nivel }}</div>
+        <button class="avatar-editar" aria-label="Cambiar foto de perfil">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="1.5" y="4.5" width="13" height="9" rx="2" stroke-linecap="round"/>
+            <path d="M5.5 4.5L6.5 2.5h3l1 2"/>
+            <circle cx="8" cy="9" r="2.5"/>
+          </svg>
         </button>
-      }
-    </nav>
+      </div>
+
+      <div class="perfil-datos">
+        <div class="perfil-nombre-fila">
+          <h1>{{ usuario()?.nombre }}</h1>
+          <span class="badge-titulo">{{ tituloPorNivel() }}</span>
+          <span class="badge-online">En línea</span>
+        </div>
+        <p class="perfil-bio">{{ usuario()?.email }}</p>
+
+        <!-- Modelo IA seleccionado como etiqueta si existe -->
+        @if (usuario()?.iaModeloSeleccionadoNombre) {
+          <div class="perfil-prefs">
+            <span class="pref-tag">🤖 {{ usuario()?.iaModeloSeleccionadoNombre }}</span>
+          </div>
+        }
+
+        <!-- Estadísticas reales: puntos y logros -->
+        <div class="perfil-stats">
+          <div class="stat-item">
+            <strong>{{ formatNum(usuario()?.puntos ?? 0) }}</strong>
+            <span>Puntos</span>
+          </div>
+          <div class="stat-item">
+            <strong>{{ misLogros().length }}</strong>
+            <span>Logros</span>
+          </div>
+          <div class="stat-item">
+            <strong>{{ misRecompensas().length }}</strong>
+            <span>Recompensas</span>
+          </div>
+          <div class="stat-item">
+            <strong>Nv.{{ usuario()?.nivel }}</strong>
+            <span>Nivel</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="perfil-acciones">
+        <button class="btn-secundario">Compartir</button>
+      </div>
+    </div>
+
+    <!-- Barra de experiencia -->
+    <div class="contenedor">
+      <div class="perfil-resumen-grid">
+        <div class="resumen-card resumen-exp">
+          <div class="resumen-card-titulo">
+            <span class="resumen-icono">⚡</span>
+            Experiencia
+          </div>
+          <div class="exp-barra-wrapper">
+            <div class="exp-info">
+              <span>Nivel {{ usuario()?.nivel }}</span>
+              <span class="exp-xp">{{ usuario()?.puntos }} puntos totales</span>
+              <span>Nivel {{ (usuario()?.nivel ?? 0) + 1 }}</span>
+            </div>
+            <div class="exp-barra">
+              <!-- Ancho controlado desde Angular, no desde CSS -->
+              <div class="exp-progreso" [style.width.%]="progresoPuntos()"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modelo IA configurado -->
+        <div class="resumen-card resumen-ia">
+          <div class="resumen-card-titulo">
+            <span class="resumen-icono">🤖</span>
+            Asistente IA
+          </div>
+          <div class="ia-modelo-nombre">
+            {{ usuario()?.iaModeloSeleccionadoNombre ?? 'Sin modelo asignado' }}
+          </div>
+          <span class="ia-prefs-label">Modelo de generación de recetas</span>
+        </div>
+
+        <!-- Enlace a rewards con total de recompensas -->
+        <a routerLink="/rewards" class="resumen-card resumen-coins">
+          <div class="resumen-card-titulo">
+            <span class="resumen-icono">🎁</span>
+            Recompensas
+          </div>
+          <div class="coins-grande">{{ misRecompensas().length }}</div>
+          <span class="coins-cta">Ir a Rewards →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pestañas -->
+  <div class="tabs-wrapper">
+    <div class="contenedor">
+      <nav class="tabs">
+        @for (tab of tabs(); track tab.id) {
+          <button class="tab"
+                  [class.activa]="tabActiva() === tab.id"
+                  (click)="tabActiva.set(tab.id)">
+            <span class="tab-icono">{{ tab.icono }}</span>
+            {{ tab.label }}
+            <span class="tab-cantidad">{{ tab.cantidad }}</span>
+          </button>
+        }
+      </nav>
+    </div>
   </div>
-</div>
 
-<!-- Contenido de la pestaña activa -->
-<div class="contenedor perfil-contenido">
+  <!-- Contenido de cada tab -->
+  <div class="contenedor perfil-contenido">
 
-  @if (tabActiva() === 'recetas') {
-    <div class="tab-panel">
-      <div class="panel-header" revela>
-        <h2>Mis Recetas Publicadas</h2>
-        <button class="btn-primario btn-sm">+ Nueva receta</button>
-      </div>
-      <div class="recetas-grid">
-        @for (receta of recetasUsuario; track receta.titulo; let i = $index) {
-          <div class="receta-card" revela [retardo]="i * 60">
-            <div class="receta-imagen" [style.background]="receta.color">
-              <div class="receta-imagen-overlay"></div>
-              <span class="receta-emoji" aria-hidden="true">{{ receta.emoji }}</span>
-              @if (receta.publicada) {
-                <span class="estado publicada">Publicada</span>
-              } @else {
-                <span class="estado borrador">Borrador</span>
-              }
-              <!-- Acciones en hover -->
-              <div class="receta-acciones-hover">
-                <button class="accion-btn" aria-label="Editar">
-                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <path d="M11 2L14 5 6 13H3v-3L11 2z" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </button>
-                <button class="accion-btn" aria-label="Ver">
-                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <circle cx="8" cy="8" r="2.5"/>
-                    <path d="M1.5 8C2.5 4.5 5 2.5 8 2.5S13.5 4.5 14.5 8C13.5 11.5 11 13.5 8 13.5S2.5 11.5 1.5 8z"/>
-                  </svg>
-                </button>
-              </div>
-            </div>
-            <div class="receta-cuerpo">
-              <h4>{{ receta.titulo }}</h4>
-              <div class="receta-meta">
-                <span>{{ receta.tipo }}</span>
-                <span class="punto">·</span>
-                <span>{{ receta.tiempo }}</span>
-                @if (receta.publicada && receta.likes > 0) {
-                  <span class="punto">·</span>
-                  <span class="receta-likes">❤ {{ receta.likes }}</span>
-                }
-              </div>
-            </div>
+    <!-- Tab: Logros -->
+    @if (tabActiva() === 'logros') {
+      <div class="tab-panel">
+        <div revela>
+          <h2>Logros obtenidos</h2>
+          <p class="panel-desc">
+            {{ misLogros().length }} logros desbloqueados.
+            Sigue cocinando para conseguir más.
+          </p>
+        </div>
+
+        @if (misLogros().length === 0) {
+          <div class="sin-resultados">
+            <p>Aún no tienes logros. Explora recetas para empezar.</p>
+            <a routerLink="/explorar" class="btn-primario btn-sm">Explorar</a>
           </div>
-        }
-      </div>
-    </div>
-  }
-
-  @if (tabActiva() === 'logros') {
-    <div class="tab-panel">
-      <div revela>
-        <h2>Logros obtenidos</h2>
-        <p class="panel-desc">{{ logros.filter(l => l.desbloqueado).length }} de {{ logros.length }} logros desbloqueados.</p>
-      </div>
-      <div class="logros-grid">
-        @for (logro of logros; track logro.nombre; let i = $index) {
-          <div class="logro-card" revela [retardo]="i * 80" [class.bloqueado]="!logro.desbloqueado" [style.--logro-color]="logro.color">
-            <div class="logro-icono" [style.background]="logro.color">
-              <span>{{ logro.icono }}</span>
-            </div>
-            <div class="logro-info">
-              <strong>{{ logro.nombre }}</strong>
-              <p>{{ logro.descripcion }}</p>
-              @if (logro.desbloqueado && logro.fecha) {
-                <span class="logro-fecha">Desbloqueado: {{ logro.fecha }}</span>
-              }
-              @if (!logro.desbloqueado && logro.progreso !== undefined) {
-                <div class="logro-progreso-wrapper">
-                  <div class="logro-barra">
-                    <div class="logro-barra-fill"
-                         [style.width]="porcentaje(logro.progreso!, logro.meta!) + '%'">
-                    </div>
-                  </div>
-                  <span class="logro-pct">{{ formatNum(logro.progreso!) }}/{{ formatNum(logro.meta!) }}</span>
+        } @else {
+          <div class="logros-grid">
+            @for (ul of misLogros(); track ul.id; let i = $index) {
+              <div class="logro-card" revela [retardo]="i * 80">
+                <div class="logro-icono" style="background: var(--primario)">
+                  <!-- Icono: si el backend devuelve un emoji en iconoUrl se muestra,
+                       si no, se usa un ícono por defecto -->
+                  <span>{{ ul.logro.iconoUrl ?? '🏆' }}</span>
                 </div>
-              }
-            </div>
-          </div>
-        }
-      </div>
-    </div>
-  }
-
-  @if (tabActiva() === 'favoritos') {
-    <div class="tab-panel">
-
-      <!-- Recetas favoritas (favorito_receta → receta) -->
-      <div class="panel-header" revela>
-        <h2>Recetas favoritas</h2>
-        <a routerLink="/explorar" class="btn-secundario btn-sm" style="text-decoration:none">Explorar más</a>
-      </div>
-      <div class="recetas-grid">
-        @for (receta of recetasFavoritas; track receta.titulo; let i = $index) {
-          <div class="receta-card" revela [retardo]="i * 60">
-            <div class="receta-imagen" [style.background]="receta.color">
-              <div class="receta-imagen-overlay"></div>
-              <span class="receta-emoji" aria-hidden="true">{{ receta.emoji }}</span>
-            </div>
-            <div class="receta-cuerpo">
-              <h4>{{ receta.titulo }}</h4>
-              <div class="receta-meta">
-                <span>{{ receta.tipo }}</span>
-                <span class="punto">·</span>
-                <span>{{ receta.tiempo }}</span>
-                <span class="punto">·</span>
-                <span>por {{ receta.autor }}</span>
+                <div class="logro-info">
+                  <strong>{{ ul.logro.nombre }}</strong>
+                  <p>{{ ul.logro.descripcion }}</p>
+                  <span class="logro-fecha">{{ formatearFecha(ul.fechaObtenido) }}</span>
+                </div>
               </div>
-            </div>
+            }
           </div>
         }
       </div>
+    }
 
-      <!-- Supermercados favoritos (favorito_supermercado → supermercado) -->
-      <div class="panel-header" revela style="margin-top: 3rem">
-        <h2>Supermercados favoritos</h2>
-        <a routerLink="/mapa" class="btn-secundario btn-sm" style="text-decoration:none">Ver mapa</a>
-      </div>
-      <div class="supermercados-favoritos">
-        @for (super of favoritosSupermercados; track super.nombre; let i = $index) {
-          <div class="supermercado-fav-card" revela [retardo]="i * 80">
-            <div class="super-fav-info">
-              <strong>{{ super.nombre }}</strong>
-              <p>{{ super.descripcion }}</p>
-              <span class="super-fav-dir">
-                <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" style="width:11px;height:11px;flex-shrink:0">
-                  <circle cx="7" cy="6" r="3"/><path d="M7 14c0 0-5-4-5-8a5 5 0 0 1 10 0c0 4-5 8-5 8z" stroke-linecap="round"/>
-                </svg>
-                {{ super.direccion }}
-              </span>
-            </div>
-            <div class="super-fav-meta">
-              <span class="super-valoracion">{{ super.valoracion }} ★</span>
-              <span class="super-horario">{{ super.horario }}</span>
-            </div>
+    <!-- Tab: Recompensas -->
+    @if (tabActiva() === 'recompensas') {
+      <div class="tab-panel">
+        <div revela>
+          <h2>Recompensas ganadas</h2>
+          <p class="panel-desc">
+            {{ misRecompensas().length }} recompensas en tu historial.
+          </p>
+        </div>
+
+        @if (misRecompensas().length === 0) {
+          <div class="sin-resultados">
+            <p>Aún no has ganado recompensas. Prueba la ruleta.</p>
+            <a routerLink="/rewards" class="btn-primario btn-sm">Ir a Rewards</a>
+          </div>
+        } @else {
+          <div class="logros-grid">
+            @for (ur of misRecompensas(); track ur.id; let i = $index) {
+              <div class="logro-card" revela [retardo]="i * 80">
+                <div class="logro-icono" style="background: var(--amarillo)">
+                  <span>🎁</span>
+                </div>
+                <div class="logro-info">
+                  <strong>{{ ur.recompensa.nombre }}</strong>
+                  <p>{{ ur.recompensa.descripcion }}</p>
+                  <span class="logro-fecha">{{ formatearFecha(ur.fechaObtenida) }}</span>
+                </div>
+              </div>
+            }
           </div>
         }
       </div>
+    }
 
-    </div>
-  }
+  </div>
 
-</div>
+}

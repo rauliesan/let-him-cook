@@ -27,5 +27,4 @@ public class UsuarioRequestDTO {
     private String password;
 
     private String fotoUrl;
-
 }

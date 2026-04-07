@@ -101,7 +101,7 @@ public class UsuarioService {
             throw new RecursoDuplicadoException("El nombre de usuario " + dto.getNombre() + " ya está en uso.");
         }
 
-        // 3. Mapear DTO a Entidad
+        // 2. Mapear DTO a Entidad
         Usuario usuario = usuarioMapper.toEntity(dto);
 
         // 4. Lógica de Seguridad y Gamificación

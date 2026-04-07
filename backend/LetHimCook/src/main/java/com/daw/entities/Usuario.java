@@ -17,6 +17,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
@@ -69,6 +70,11 @@ public class Usuario {
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private Rol rol = Rol.USER;
+
+	/* Modelo de IA preferido — opcional */
+	@ManyToOne(fetch = FetchType.LAZY, optional = true)
+	@JoinColumn(name = "ia_modelo_seleccionado_id", nullable = true)
+	private IaModelo iaModeloSeleccionado;
 
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "usuario")
 	private Set<Receta> recetas;

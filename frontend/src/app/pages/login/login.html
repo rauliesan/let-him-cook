@@ -20,7 +20,6 @@
         <p>La plataforma que convierte tus ingredientes disponibles en recetas deliciosas con un solo clic.</p>
       </div>
 
-      <!-- Tarjetas de ventajas que muestra el panel lateral -->
       <div class="lateral-ventajas">
         <div class="ventaja">
           <span class="ventaja-icono">
@@ -60,11 +59,11 @@
     </div>
   </div>
 
-  <!-- Mitad derecha con el formulario de login o registro -->
+  <!-- Mitad derecha con el formulario -->
   <div class="login-formulario">
     <div class="formulario-contenido">
 
-      <!-- Selector entre login y nuevo registro -->
+      <!-- Selector entre login y registro -->
       <div class="modo-tabs">
         <button [class.activo]="modoActivo() === 'login'" (click)="cambiarModo('login')">
           Iniciar sesión
@@ -74,6 +73,12 @@
         </button>
       </div>
 
+      <!-- Mensaje de error compartido por ambos formularios -->
+      @if (error()) {
+        <div class="form-error">{{ error() }}</div>
+      }
+
+      <!-- Formulario de login -->
       @if (modoActivo() === 'login') {
         <div class="form-bloque">
           <div class="form-cabecera">
@@ -81,19 +86,21 @@
             <p>Ingresa tus datos para continuar cocinando.</p>
           </div>
 
-          <form class="form">
+          <form class="form" (ngSubmit)="submitLogin()">
             <div class="campo">
               <label>Email</label>
-              <input type="email" placeholder="tu&#64;email.com" />
+              <input type="email" placeholder="tu&#64;email.com" [(ngModel)]="loginEmail" name="loginEmail" />
             </div>
             <div class="campo">
               <label>
                 Contraseña
                 <a href="#" class="olvidada">¿La olvidaste?</a>
               </label>
-              <input type="password" placeholder="••••••••" />
+              <input type="password" placeholder="••••••••" [(ngModel)]="loginPassword" name="loginPassword" />
             </div>
-            <button type="submit" class="btn-primario btn-full">Iniciar sesión</button>
+            <button type="submit" class="btn-primario btn-full" [disabled]="cargando()">
+              {{ cargando() ? 'Entrando...' : 'Iniciar sesión' }}
+            </button>
           </form>
 
           <div class="separador-o">
@@ -119,6 +126,7 @@
         </div>
       }
 
+      <!-- Formulario de registro -->
       @if (modoActivo() === 'registro') {
         <div class="form-bloque">
           <div class="form-cabecera">
@@ -126,30 +134,26 @@
             <p>Crea tu cuenta gratuita en menos de un minuto.</p>
           </div>
 
-          <form class="form">
-            <div class="form-fila">
-              <div class="campo">
-                <label>Nombre</label>
-                <input type="text" placeholder="Tu nombre" />
-              </div>
-              <div class="campo">
-                <label>Apellido</label>
-                <input type="text" placeholder="Tu apellido" />
-              </div>
+          <form class="form" (ngSubmit)="submitRegistro()">
+            <div class="campo">
+              <label>Nombre</label>
+              <input type="text" placeholder="Tu nombre" [(ngModel)]="regNombre" name="regNombre" />
             </div>
             <div class="campo">
               <label>Email</label>
-              <input type="email" placeholder="tu&#64;email.com" />
+              <input type="email" placeholder="tu&#64;email.com" [(ngModel)]="regEmail" name="regEmail" />
             </div>
             <div class="campo">
               <label>Contraseña</label>
-              <input type="password" placeholder="Mínimo 8 caracteres" />
+              <input type="password" placeholder="Mínimo 8 caracteres" [(ngModel)]="regPassword" name="regPassword" />
             </div>
             <div class="campo-check">
-              <input type="checkbox" id="terminos" />
+              <input type="checkbox" id="terminos" [(ngModel)]="regTerminos" name="regTerminos" />
               <label for="terminos">Acepto los términos de servicio y la política de privacidad.</label>
             </div>
-            <button type="submit" class="btn-primario btn-full">Crear cuenta gratuita</button>
+            <button type="submit" class="btn-primario btn-full" [disabled]="cargando()">
+              {{ cargando() ? 'Creando cuenta...' : 'Crear cuenta gratuita' }}
+            </button>
           </form>
 
           <p class="form-pie">

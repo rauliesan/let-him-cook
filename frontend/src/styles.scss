@@ -190,3 +190,29 @@ img {
   border-radius: var(--radio-full);
   margin: 16px 0;
 }
+
+/* ==========================================
+   Efectos de like — creados dinámicamente
+   con createElement, necesitan scope global
+   ========================================== */
+
+/* Corazón flotante que sube y se desvanece al dar like */
+.like-fx-heart {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.88rem;
+  color: #C13E28;
+  pointer-events: none;
+  animation: likeHeartFly 0.72s ease forwards;
+  z-index: 100;
+  user-select: none;
+  line-height: 1;
+}
+
+@keyframes likeHeartFly {
+  0%   { opacity: 1;   transform: translateX(-50%) translateY(0)     scale(0.5); }
+  35%  { opacity: 1;   transform: translateX(-50%) translateY(-16px)  scale(1.3); }
+  100% { opacity: 0;   transform: translateX(-50%) translateY(-38px)  scale(0.7); }
+}

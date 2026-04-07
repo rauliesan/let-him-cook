@@ -16,7 +16,7 @@ import com.daw.repositories.TipoComidaRepository;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Servicio para la gestión de Tipos de Comida.
+ * Servicio para la gestión de tipos de comida.
  *
  * @author IES Almudeyne - Raúl Liébana Sánchez
  */
@@ -28,10 +28,12 @@ public class TipoComidaService {
     private final TipoComidaRepository tipoComidaRepository;
     private final TipoComidaMapper tipoComidaMapper;
 
+    @Transactional(readOnly = true)
     public List<TipoComidaResponseDTO> listarTodos() {
         return tipoComidaMapper.toListDTO(tipoComidaRepository.findAll());
     }
 
+    @Transactional(readOnly = true)
     public TipoComidaResponseDTO buscarPorId(UUID id) {
         TipoComida tipoComida = tipoComidaRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Tipo de Comida no encontrado con ID: " + id));
@@ -40,8 +42,7 @@ public class TipoComidaService {
 
     public TipoComidaResponseDTO crear(TipoComidaRequestDTO dto) {
         TipoComida tipoComida = tipoComidaMapper.toEntity(dto);
-        tipoComida = tipoComidaRepository.save(tipoComida);
-        return tipoComidaMapper.toResponseDTO(tipoComida);
+        return tipoComidaMapper.toResponseDTO(tipoComidaRepository.save(tipoComida));
     }
 
     public TipoComidaResponseDTO actualizar(UUID id, TipoComidaRequestDTO dto) {
@@ -52,8 +53,7 @@ public class TipoComidaService {
         tipoComida.setDescripcion(dto.getDescripcion());
         tipoComida.setIconoUrl(dto.getIconoUrl());
 
-        tipoComida = tipoComidaRepository.save(tipoComida);
-        return tipoComidaMapper.toResponseDTO(tipoComida);
+        return tipoComidaMapper.toResponseDTO(tipoComidaRepository.save(tipoComida));
     }
 
     public void eliminar(UUID id) {

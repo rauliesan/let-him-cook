@@ -3,13 +3,13 @@ package com.daw.controllers;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +29,11 @@ import lombok.RequiredArgsConstructor;
 /**
  * Controlador para la gestión de recetas favoritas.
  *
+ * GET    /favoritos-recetas                  → admin, lista todos
+ * GET    /favoritos-recetas/mis-favoritos    → favoritos del usuario autenticado (paginado)
+ * POST   /favoritos-recetas                  → agrega una receta a favoritos
+ * DELETE /favoritos-recetas/{recetaId}       → elimina una receta de favoritos (por recetaId)
+ *
  * @author IES Almudeyne - Raúl Liébana Sánchez
  */
 @RestController
@@ -45,20 +50,22 @@ public class FavoritoRecetaController {
     }
 
     /**
-     * Obtiene el listado de recetas favoritas del usuario autenticado de forma
-     * paginada.
-     *
-     * @param userDetails detalles del usuario del token
-     * @param pageable    opciones de paginación
-     * @return 200 OK con los favoritos
+     * Devuelve las recetas favoritas paginadas del usuario autenticado.
      */
     @GetMapping("/mis-favoritos")
     public ResponseEntity<Page<FavoritoRecetaResponseDTO>> buscarMisFavoritos(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PageableDefault(size = 10) Pageable pageable) {
-
         UUID usuarioId = userDetails.getUsuario().getId();
         return ResponseEntity.ok().body(favoritoRecetaService.buscarMisFavoritos(usuarioId, pageable));
+    }
+
+    /** Devuelve la lista sin paginar de favoritos del usuario autenticado. */
+    @GetMapping("/mis-favoritos/todos")
+    public ResponseEntity<List<FavoritoRecetaResponseDTO>> getMisFavoritos(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        UUID usuarioId = userDetails.getUsuario().getId();
+        return ResponseEntity.ok(favoritoRecetaService.listarMisFavoritos(usuarioId));
     }
 
     @GetMapping("/{id}")
@@ -66,21 +73,22 @@ public class FavoritoRecetaController {
         return ResponseEntity.ok().body(favoritoRecetaService.buscarPorId(id));
     }
 
+    /** Agrega una receta a favoritos. */
     @PostMapping
     public ResponseEntity<FavoritoRecetaResponseDTO> crear(
             @Valid @RequestBody FavoritoRecetaRequestDTO dto,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-
         UUID usuarioId = userDetails.getUsuario().getId();
-        FavoritoRecetaResponseDTO response = favoritoRecetaService.crear(dto, usuarioId);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(favoritoRecetaService.agregar(dto, usuarioId));
     }
 
-    @PreAuthorize("hasRole('ADMIN') or @favoritoRecetaRepository.existsByIdAndUsuarioId(#id, authentication.principal.usuario.id)")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable UUID id) {
-        favoritoRecetaService.eliminar(id);
+    /** Elimina una receta de favoritos por recetaId (toggle desde el frontend). */
+    @DeleteMapping("/{recetaId}")
+    public ResponseEntity<Void> eliminar(
+            @PathVariable UUID recetaId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        UUID usuarioId = userDetails.getUsuario().getId();
+        favoritoRecetaService.eliminar(recetaId, usuarioId);
         return ResponseEntity.noContent().build();
     }
 }

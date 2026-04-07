@@ -7,4 +7,9 @@ import java.util.UUID;
 
 @Repository
 public interface TipoComidaRepository extends JpaRepository<TipoComida, UUID> {
+
+    boolean existsByNombre(String nombre);
+
+    java.util.Optional<TipoComida> findByNombre(String nombre);
+
 }

@@ -4,7 +4,7 @@
 
   <div class="contenedor nav-inner">
 
-    <!-- Logotipo y nombre de la app -->
+    <!-- Logotipo -->
     <a routerLink="/" class="logo">
       <span class="logo-icono">
         <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
@@ -17,52 +17,89 @@
       <span class="logo-texto">LetHimCook</span>
     </a>
 
-    <!-- Navegación principal para escritorio -->
+    <!-- Navegación principal -->
     <nav class="nav-links" [class.abierto]="menuAbierto()">
-      <!-- En movil: cabecera del menu con mini perfil -->
+
+      <!-- Cabecera del menú móvil: muestra nombre si está autenticado -->
       <div class="menu-movil-header">
-        <div class="menu-movil-avatar">MG</div>
+        <div class="menu-movil-avatar">
+          {{ auth.sesion()?.nombre?.charAt(0)?.toUpperCase() ?? '?' }}
+        </div>
         <div class="menu-movil-info">
-          <span class="menu-movil-nombre">María García</span>
-          <span class="menu-movil-nivel">Nivel 12 · Chef Expert</span>
+          @if (auth.estaAutenticado()) {
+            <span class="menu-movil-nombre">{{ auth.sesion()?.nombre }}</span>
+            <span class="menu-movil-nivel">{{ auth.sesion()?.email }}</span>
+          } @else {
+            <span class="menu-movil-nombre">Invitado</span>
+            <span class="menu-movil-nivel">Sin sesión</span>
+          }
         </div>
       </div>
 
+      <!-- Inicio: siempre visible -->
       <a routerLink="/" routerLinkActive="activo" [routerLinkActiveOptions]="{exact:true}" (click)="cerrarMenu()">
         <svg class="nav-icono" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 10L10 3l7 7M5 8.5V16a1 1 0 001 1h3v-4h2v4h3a1 1 0 001-1V8.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Inicio
       </a>
+
+      <!-- Explorar: visible siempre -->
       <a routerLink="/explorar" routerLinkActive="activo" (click)="cerrarMenu()">
         <svg class="nav-icono" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="9" r="5.5"/><path d="M13 13l4 4" stroke-linecap="round"/></svg>
         Explorar
       </a>
-      <a routerLink="/mapa" routerLinkActive="activo" (click)="cerrarMenu()">
-        <svg class="nav-icono" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2C6.7 2 4 4.7 4 8c0 4.5 6 10 6 10s6-5.5 6-10c0-3.3-2.7-6-6-6z" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="8" r="2"/></svg>
-        Mapa
+
+      <!-- Foro: visible siempre -->
+      <a routerLink="/foro" routerLinkActive="activo" (click)="cerrarMenu()">
+        <svg class="nav-icono" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5h14a1 1 0 011 1v7a1 1 0 01-1 1H9l-4 3V13H3a1 1 0 01-1-1V6a1 1 0 011-1z" stroke-linejoin="round"/></svg>
+        Foro
       </a>
-      <a routerLink="/rewards" routerLinkActive="activo" (click)="cerrarMenu()">
-        <svg class="nav-icono" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2l2.5 5 5.5.8-4 3.9.9 5.3L10 14.5 5.1 17l.9-5.3-4-3.9 5.5-.8z" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Rewards
-      </a>
-      <a routerLink="/perfil" routerLinkActive="activo" (click)="cerrarMenu()">
+
+      <!-- Mapa y Rewards: solo si está autenticado -->
+      @if (auth.estaAutenticado()) {
+        <a routerLink="/mapa" routerLinkActive="activo" (click)="cerrarMenu()">
+          <svg class="nav-icono" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2C6.7 2 4 4.7 4 8c0 4.5 6 10 6 10s6-5.5 6-10c0-3.3-2.7-6-6-6z" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="8" r="2"/></svg>
+          Mapa
+        </a>
+        <a routerLink="/rewards" routerLinkActive="activo" (click)="cerrarMenu()">
+          <svg class="nav-icono" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2l2.5 5 5.5.8-4 3.9.9 5.3L10 14.5 5.1 17l.9-5.3-4-3.9 5.5-.8z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Rewards
+        </a>
+      }
+
+      <!-- Mi Perfil: va a /perfil si autenticado, a /login si no -->
+      <a [routerLink]="auth.estaAutenticado() ? '/perfil' : '/login'"
+         routerLinkActive="activo"
+         (click)="cerrarMenu()">
         <svg class="nav-icono" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="7" r="3.5"/><path d="M3.5 17.5c0-3.5 3-5.5 6.5-5.5s6.5 2 6.5 5.5" stroke-linecap="round"/></svg>
         Mi Perfil
       </a>
+
+      <!-- Contacto: siempre visible -->
       <a routerLink="/contacto" routerLinkActive="activo" (click)="cerrarMenu()">
         <svg class="nav-icono" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5h14a1 1 0 011 1v8a1 1 0 01-1 1H3a1 1 0 01-1-1V6a1 1 0 011-1z"/><path d="M2 5l8 6 8-6" stroke-linecap="round"/></svg>
         Contacto
       </a>
 
-      <!-- En movil: botones de accion al final del menu -->
+      <!-- Botones de acción móvil -->
       <div class="menu-movil-acciones">
-        <a routerLink="/login" class="btn-primario" (click)="cerrarMenu()">Entrar</a>
+        @if (auth.estaAutenticado()) {
+          <button class="btn-primario" (click)="salir()">Cerrar sesión</button>
+        } @else {
+          <a routerLink="/login" class="btn-primario" (click)="cerrarMenu()">Entrar</a>
+        }
       </div>
     </nav>
 
-    <!-- Acciones del lado derecho -->
+    <!-- Acciones del lado derecho (escritorio) -->
     <div class="nav-acciones">
-      <a routerLink="/login" class="btn-secundario btn-sm">Entrar</a>
-      <a routerLink="/login" class="btn-primario btn-sm">Únete</a>
+      @if (auth.estaAutenticado()) {
+        <!-- Nombre del usuario + botón de salir -->
+        <span class="nav-usuario-nombre">{{ auth.sesion()?.nombre }}</span>
+        <button class="btn-secundario btn-sm" (click)="salir()">Salir</button>
+      } @else {
+        <a routerLink="/login" class="btn-secundario btn-sm">Entrar</a>
+        <a routerLink="/login" class="btn-primario btn-sm">Únete</a>
+      }
     </div>
 
     <!-- Botón hamburguesa para móvil -->
@@ -75,7 +112,7 @@
   </div>
 </header>
 
-<!-- Backdrop oscuro para el menu movil -->
+<!-- Backdrop oscuro para el menú móvil -->
 @if (menuAbierto()) {
   <div class="menu-backdrop" (click)="cerrarMenu()"></div>
 }

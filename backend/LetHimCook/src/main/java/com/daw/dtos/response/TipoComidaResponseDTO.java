@@ -19,5 +19,7 @@ public class TipoComidaResponseDTO {
     private String descripcion;
     
     private String iconoUrl;
-    
+
+    private String colorHex;
+
 }
