@@ -79,13 +79,6 @@ public class Usuario {
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "usuario")
 	private Set<Receta> recetas;
 
-	/**
-	 * Preferencias de tipos de comida del usuario.
-	 */
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "usuario_preferencia", joinColumns = @JoinColumn(name = "usuario_id"), inverseJoinColumns = @JoinColumn(name = "tipo_comida_id"))
-	private Set<TipoComida> preferencias;
-
 	@ManyToMany
 	@JoinTable(name = "usuario_amigo", joinColumns = @JoinColumn(name = "usuario_id"), inverseJoinColumns = @JoinColumn(name = "amigo_id"))
 	private Set<Usuario> amigos;
