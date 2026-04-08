@@ -1,12 +1,15 @@
 package com.daw.mappers;
 
-import com.daw.dtos.request.FavoritoRecetaRequestDTO;
-import com.daw.dtos.response.FavoritoRecetaResponseDTO;
-import com.daw.entities.FavoritoReceta;
+import java.util.List;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
-import java.util.List;
+import org.springframework.data.domain.Page;
+
+import com.daw.dtos.request.FavoritoRecetaRequestDTO;
+import com.daw.dtos.response.FavoritoRecetaResponseDTO;
+import com.daw.entities.FavoritoReceta;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface FavoritoRecetaMapper {
@@ -22,4 +25,8 @@ public interface FavoritoRecetaMapper {
     FavoritoRecetaResponseDTO toResponseDTO(FavoritoReceta entity);
 
     List<FavoritoRecetaResponseDTO> toListDTO(List<FavoritoReceta> list);
+    
+    default Page<FavoritoRecetaResponseDTO> toPageDTO(Page<FavoritoReceta> page) {
+        return page.map(this::toResponseDTO);
+    }
 }
