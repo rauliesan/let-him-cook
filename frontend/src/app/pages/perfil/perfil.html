@@ -106,16 +106,68 @@
           </div>
         </div>
 
-        <!-- Modelo IA configurado -->
+        <!-- Configuración IA -->
         <div class="resumen-card resumen-ia">
           <div class="resumen-card-titulo">
             <span class="resumen-icono">🤖</span>
             Asistente IA
+            @if (!editandoIa()) {
+              <button class="ia-edit-btn" (click)="abrirEditarIa()">
+                {{ usuario()?.iaCustomConfigured ? '✏️ Editar' : '+ Configurar' }}
+              </button>
+            }
           </div>
-          <div class="ia-modelo-nombre">
-            {{ usuario()?.iaModeloSeleccionadoNombre ?? 'Sin modelo asignado' }}
-          </div>
-          <span class="ia-prefs-label">Modelo de generación de recetas</span>
+
+          @if (!editandoIa()) {
+            <!-- Estado actual -->
+            @if (usuario()?.iaCustomConfigured) {
+              <div class="ia-status-badge ia-custom">🔑 IA personalizada</div>
+              <div class="ia-detail">{{ usuario()?.iaCustomModelo || 'Modelo personalizado' }}</div>
+              @if (usuario()?.iaCustomEndpoint) {
+                <div class="ia-detail ia-sm">{{ usuario()?.iaCustomEndpoint }}</div>
+              }
+              <button class="ia-reset-btn" (click)="eliminarIaConfig()">
+                Usar DeepSeek predeterminado
+              </button>
+            } @else if (usuario()?.iaModeloSeleccionadoNombre) {
+              <div class="ia-status-badge">🤖 {{ usuario()?.iaModeloSeleccionadoNombre }}</div>
+              <div class="ia-detail ia-sm">Modelo del perfil</div>
+            } @else {
+              <div class="ia-status-badge ia-default">⚡ DeepSeek (predeterminado)</div>
+              <div class="ia-detail ia-sm">IA de la aplicación — configura la tuya propia</div>
+            }
+          } @else {
+            <!-- Formulario de edición -->
+            @if (errorIa()) {
+              <div class="ia-error">{{ errorIa() }}</div>
+            }
+            <div class="ia-presets">
+              <span>Preset:</span>
+              <button (click)="setPreset('deepseek')">DeepSeek</button>
+              <button (click)="setPreset('openai')">OpenAI</button>
+              <button (click)="setPreset('ollama')">Ollama local</button>
+            </div>
+            <div class="ia-f-group">
+              <label>API Key <span class="ia-req">*</span></label>
+              <input type="password" [(ngModel)]="iaApiKeyInput" placeholder="sk-..." class="ia-input" />
+            </div>
+            <div class="ia-f-group">
+              <label>Endpoint <span class="ia-opt">(opcional)</span></label>
+              <input type="text" [(ngModel)]="iaEndpointInput"
+                     placeholder="https://api.deepseek.com/v1/chat/completions" class="ia-input" />
+            </div>
+            <div class="ia-f-group">
+              <label>Modelo <span class="ia-opt">(opcional)</span></label>
+              <input type="text" [(ngModel)]="iaModeloInput" placeholder="deepseek-chat" class="ia-input" />
+            </div>
+            <div class="ia-form-actions">
+              <button class="ia-save" (click)="guardarIaConfig()"
+                      [disabled]="guardandoIa() || !iaApiKeyInput.trim()">
+                {{ guardandoIa() ? 'Guardando...' : 'Guardar' }}
+              </button>
+              <button class="ia-cancel" (click)="editandoIa.set(false)">Cancelar</button>
+            </div>
+          }
         </div>
 
         <!-- Enlace a rewards con total de recompensas -->

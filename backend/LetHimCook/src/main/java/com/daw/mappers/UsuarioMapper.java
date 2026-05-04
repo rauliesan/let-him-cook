@@ -15,6 +15,11 @@ public interface UsuarioMapper {
     @Mapping(target = "passwordHash", ignore = true)
     Usuario toEntity(UsuarioRequestDTO dto);
 
+    @Mapping(target = "iaModeloSeleccionadoId", source = "iaModeloSeleccionado.id")
+    @Mapping(target = "iaModeloSeleccionadoNombre", source = "iaModeloSeleccionado.nombreModelo")
+    @Mapping(target = "iaCustomConfigured", expression = "java(entity.getIaCustomApiKey() != null && !entity.getIaCustomApiKey().isBlank())")
+    @Mapping(target = "iaCustomEndpoint", source = "iaCustomEndpoint")
+    @Mapping(target = "iaCustomModelo", source = "iaCustomModelo")
     UsuarioResponseDTO toResponseDTO(Usuario entity);
 
     List<UsuarioResponseDTO> toListDTO(List<Usuario> list);

@@ -1,0 +1,302 @@
+<div class="cocinar-page">
+
+  <!-- ── Hero ── -->
+  <section class="cocinar-hero">
+    <div class="hero-orbs">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+    </div>
+    <div class="contenedor hero-inner">
+      <div class="hero-badge">✨ Inteligencia Artificial</div>
+      <h1 class="hero-titulo">Cocina con <span class="hero-accent">IA</span></h1>
+      <p class="hero-sub">Dinos qué tienes en la nevera y crearemos recetas únicas para ti</p>
+
+      @if (st.paso() !== 'exito') {
+        <div class="steps-row">
+          <div class="step" [class.active]="st.pasoNum() >= 1" [class.done]="st.pasoNum() > 1">
+            <div class="step-dot">
+              @if (st.pasoNum() > 1) { ✓ } @else { 1 }
+            </div>
+            <span>Ingredientes</span>
+          </div>
+          <div class="step-line" [class.lit]="st.pasoNum() > 1"></div>
+          <div class="step" [class.active]="st.pasoNum() >= 2" [class.done]="st.pasoNum() > 2">
+            <div class="step-dot">
+              @if (st.pasoNum() > 2) { ✓ } @else { 2 }
+            </div>
+            <span>Sugerencias</span>
+          </div>
+          <div class="step-line" [class.lit]="st.pasoNum() > 2"></div>
+          <div class="step" [class.active]="st.pasoNum() >= 3" [class.done]="st.pasoNum() > 3">
+            <div class="step-dot">
+              @if (st.pasoNum() > 3) { ✓ } @else { 3 }
+            </div>
+            <span>Editar</span>
+          </div>
+          <div class="step-line" [class.lit]="st.pasoNum() > 3"></div>
+          <div class="step" [class.active]="st.pasoNum() >= 4">
+            <div class="step-dot">4</div>
+            <span>¡Listo!</span>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <div class="contenedor page-body">
+
+    <!-- ══════════════════════════════════════════
+         PASO 1 — Ingredientes
+    ══════════════════════════════════════════ -->
+    @if (st.paso() === 'ingredientes') {
+      <div class="wizard-card slide-up">
+        <div class="wc-head">
+          <div class="wc-icon-box">🥕</div>
+          <div>
+            <h2>¿Qué tienes en la nevera?</h2>
+            <p>Añade ingredientes y la IA diseñará 3 recetas para ti</p>
+          </div>
+        </div>
+
+        <!-- Input de ingredientes -->
+        <div class="ing-row">
+          <input
+            type="text"
+            class="f-input"
+            placeholder="pollo, tomate, arroz..."
+            [(ngModel)]="st.ingredienteInput"
+            (keydown)="onIngredienteKeydown($event)"
+          />
+          <button class="btn-add" (click)="agregarIngrediente()" [disabled]="!st.ingredienteInput.trim()">
+            + Añadir
+          </button>
+        </div>
+
+        <!-- Chips -->
+        @if (st.ingredientes().length > 0) {
+          <div class="chips">
+            @for (ing of st.ingredientes(); track ing; let i = $index) {
+              <span class="chip">
+                {{ ing }}
+                <button class="chip-x" (click)="quitarIngrediente(i)">×</button>
+              </span>
+            }
+          </div>
+        }
+
+        <!-- Preferencias -->
+        <div class="f-group mt16">
+          <label class="f-label">Preferencias <span class="lbl-opt">(opcional)</span></label>
+          <textarea
+            class="f-input"
+            placeholder="sin gluten, vegetariano, cocina italiana, 20 minutos..."
+            [(ngModel)]="st.preferencias"
+            rows="2"
+          ></textarea>
+        </div>
+
+        <!-- Enlace al perfil para configurar IA -->
+        <a routerLink="/perfil" class="ia-hint-link">
+          ⚙️ ¿Quieres usar tu propia IA? Configúrala en tu perfil →
+        </a>
+
+        @if (st.errorIA()) {
+          <div class="alert-err">⚠️ {{ st.errorIA() }}</div>
+        }
+
+        <button
+          class="btn-cta"
+          (click)="generarRecetas()"
+          [disabled]="st.ingredientes().length === 0 || st.cargandoIA()"
+        >
+          @if (st.cargandoIA()) {
+            <span class="cta-spin"></span> Generando tus recetas...
+          } @else {
+            <span>✨</span> Generar recetas con IA
+          }
+        </button>
+
+        @if (st.ingredientes().length === 0) {
+          <p class="hint">Añade al menos un ingrediente para continuar</p>
+        }
+      </div>
+    }
+
+    <!-- ══════════════════════════════════════════
+         PASO 2 — Sugerencias
+    ══════════════════════════════════════════ -->
+    @if (st.paso() === 'sugerencias') {
+      <div class="slide-up">
+        <div class="sec-nav">
+          <button class="btn-back" (click)="volver()">← Cambiar ingredientes</button>
+          <div>
+            <h2>Elige tu receta</h2>
+            <p>La IA ha creado 3 recetas con tus ingredientes</p>
+          </div>
+        </div>
+
+        <div class="cards-grid">
+          @for (s of st.sugerencias(); track s.nombre; let i = $index) {
+            <div class="recipe-card" (click)="seleccionarSugerencia(s)">
+              <div class="rc-top" [style.background]="s.categoriaColor || '#C13E28'">
+                <span class="rc-emoji">{{ s.categoriaEmoji || '🍽️' }}</span>
+                <div class="rc-top-info">
+                  <span class="rc-cat">{{ s.categoria }}</span>
+                  <span class="rc-num">#{{ i + 1 }}</span>
+                </div>
+              </div>
+              <div class="rc-body">
+                <h3>{{ s.nombre }}</h3>
+                <p class="rc-desc">{{ s.descripcion }}</p>
+                <div class="rc-pills">
+                  <span class="pill">⏱ {{ s.tiempoPreparacion }} min</span>
+                  <span class="pill"
+                    [class.pill-easy]="s.dificultad==='BAJA'"
+                    [class.pill-med]="s.dificultad==='MEDIA'"
+                    [class.pill-hard]="s.dificultad==='ALTA'">
+                    {{ s.dificultad === 'BAJA' ? '🟢 Fácil' : s.dificultad === 'ALTA' ? '🔴 Difícil' : '🟡 Media' }}
+                  </span>
+                  @if (s.calorias) { <span class="pill pill-cal">🔥 {{ s.calorias }} kcal</span> }
+                </div>
+                <button class="btn-elegir">Elegir esta receta →</button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- ══════════════════════════════════════════
+         PASO 3 — Editor
+    ══════════════════════════════════════════ -->
+    @if (st.paso() === 'editor') {
+      <div class="wizard-card slide-up">
+        <div class="editor-topbar">
+          <button class="btn-back" (click)="volver()">← Elegir otra</button>
+          <div class="cat-pill"
+               [style.background]="st.editorCategoriaColor + '20'"
+               [style.border-color]="st.editorCategoriaColor"
+               [style.color]="st.editorCategoriaColor">
+            {{ st.editorCategoriaEmoji }} {{ st.editorCategoriaNombre }}
+          </div>
+        </div>
+
+        <div class="wc-head">
+          <div class="wc-icon-box">✏️</div>
+          <div>
+            <h2>Revisa y personaliza</h2>
+            <p>Modifica cualquier campo antes de publicar</p>
+          </div>
+        </div>
+
+        <div class="editor-grid">
+          <div class="f-group col-full">
+            <label class="f-label">Nombre de la receta <span class="req">*</span></label>
+            <input type="text" class="f-input f-lg" [(ngModel)]="st.editorNombre" placeholder="Nombre..." />
+          </div>
+
+          <div class="f-group col-full">
+            <label class="f-label">Descripción</label>
+            <textarea class="f-input" [(ngModel)]="st.editorDescripcion" rows="2" placeholder="Descripción breve..."></textarea>
+          </div>
+
+          <div class="f-group col-full">
+            <label class="f-label">Instrucciones paso a paso</label>
+            <textarea class="f-input" [(ngModel)]="st.editorInstrucciones" rows="6" placeholder="Paso 1: ...&#10;Paso 2: ..."></textarea>
+          </div>
+
+          <div class="f-group col-full">
+            <label class="f-label">Ingredientes</label>
+            <textarea class="f-input" [(ngModel)]="st.editorIngredientes" rows="3" placeholder="pollo (200g), tomate (2 und)..."></textarea>
+          </div>
+
+          <div class="f-group">
+            <label class="f-label">⏱ Tiempo (min)</label>
+            <input type="number" class="f-input" [(ngModel)]="st.editorTiempoPreparacion" min="1" />
+          </div>
+
+          <div class="f-group">
+            <label class="f-label">Dificultad</label>
+            <select class="f-input" [(ngModel)]="st.editorDificultad">
+              <option value="BAJA">🟢 Fácil</option>
+              <option value="MEDIA">🟡 Media</option>
+              <option value="ALTA">🔴 Difícil</option>
+            </select>
+          </div>
+
+          <div class="f-group">
+            <label class="f-label">🔥 Calorías</label>
+            <input type="number" class="f-input" [(ngModel)]="st.editorCalorias" min="0" />
+          </div>
+
+          <div class="f-group">
+            <label class="f-label">⚠️ Alérgenos</label>
+            <input type="text" class="f-input" [(ngModel)]="st.editorAlergenos" placeholder="gluten, lactosa..." />
+          </div>
+
+          <div class="f-group col-full">
+            <div class="visibility-row" (click)="st.editorEsPublica = !st.editorEsPublica">
+              <div class="toggle" [class.on]="st.editorEsPublica"><div class="toggle-knob"></div></div>
+              <span>{{ st.editorEsPublica ? '🌍 Pública — visible para toda la comunidad' : '🔒 Privada — solo tú puedes verla' }}</span>
+            </div>
+          </div>
+        </div>
+
+        @if (st.errorPublicar()) {
+          <div class="alert-err">⚠️ {{ st.errorPublicar() }}</div>
+        }
+
+        <button
+          class="btn-cta btn-publish"
+          (click)="publicarReceta()"
+          [disabled]="!st.editorNombre.trim() || st.publicando()"
+        >
+          @if (st.publicando()) {
+            <span class="cta-spin"></span> Publicando...
+          } @else {
+            🚀 Publicar y ganar <strong>+50 puntos</strong>
+          }
+        </button>
+      </div>
+    }
+
+    <!-- ══════════════════════════════════════════
+         PASO 4 — Éxito
+    ══════════════════════════════════════════ -->
+    @if (st.paso() === 'exito' && st.resultado()) {
+      <div class="exito-wrap slide-up">
+        <div class="confetti-layer">
+          @for (n of confettiItems; track n) {
+            <div class="conf" [style]="'--i:' + n"></div>
+          }
+        </div>
+        <div class="exito-card">
+          <div class="exito-emoji">🎉</div>
+          <h2>¡Receta publicada!</h2>
+          <p>Tu receta ya está disponible para la comunidad</p>
+
+          <div class="pts-box">
+            <div class="pts-num">+{{ st.resultado()!.puntosGanados }}</div>
+            <div class="pts-label">puntos ganados</div>
+            <div class="pts-total">Total: <strong>{{ st.resultado()!.nuevosTotalPuntos }} pts</strong></div>
+          </div>
+
+          <div class="receta-preview">
+            <div class="rp-nombre">{{ st.resultado()!.receta.nombre }}</div>
+            @if (st.resultado()!.receta.tipoComidaNombre) {
+              <div class="rp-cat">{{ st.resultado()!.receta.tipoComidaNombre }}</div>
+            }
+          </div>
+
+          <div class="exito-actions">
+            <a routerLink="/explorar" class="btn-cta">Ver en Explorar</a>
+            <a routerLink="/perfil" class="btn-sec-action">Mi perfil</a>
+            <button class="btn-ghost" (click)="st.reiniciar()">Crear otra receta</button>
+          </div>
+        </div>
+      </div>
+    }
+
+  </div>
+</div>

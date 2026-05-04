@@ -521,42 +521,160 @@
   }
 }
 
-/* Modelo IA seleccionado (usuario.ia_modelo_seleccionado_id) */
+/* ── IA config card ── */
 .resumen-ia {
   display: flex;
   flex-direction: column;
+  gap: 0.6rem;
 }
 
-.ia-modelo-nombre {
-  font-size: 0.95rem;
-  font-weight: 800;
-  color: var(--negro);
-  margin-bottom: 10px;
-  letter-spacing: -0.01em;
-}
-
-.ia-prefs-lista {
+.resumen-card-titulo {
   display: flex;
-  gap: 5px;
+  align-items: center;
+  gap: 0.4rem;
   flex-wrap: wrap;
-  margin-bottom: 8px;
 }
 
-.ia-pref-chip {
-  font-size: 0.68rem;
+.ia-edit-btn {
+  margin-left: auto;
+  background: none;
+  border: 1px solid var(--borde, #e0dbd4);
+  border-radius: 6px;
+  padding: 0.18rem 0.6rem;
+  font-size: 0.72rem;
   font-weight: 600;
-  padding: 2px 8px;
-  border-radius: var(--radio-full);
-  background: rgba(193, 62, 40, 0.08);
-  color: var(--primario);
-  border: 1px solid rgba(193, 62, 40, 0.15);
+  color: var(--primario, #C13E28);
+  cursor: pointer;
+  transition: all 0.2s;
+  &:hover { background: rgba(193,62,40,.08); border-color: var(--primario, #C13E28); }
 }
 
-.ia-prefs-label {
-  font-size: 0.7rem;
-  color: var(--gris);
-  font-weight: 500;
-  margin-top: auto;
+.ia-status-badge {
+  display: inline-block;
+  padding: 0.28rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  background: rgba(193,62,40,.08);
+  color: var(--primario, #C13E28);
+  border: 1px solid rgba(193,62,40,.2);
+  width: fit-content;
+
+  &.ia-default { background: rgba(16,163,74,.07); color: #059669; border-color: rgba(16,163,74,.2); }
+  &.ia-custom  { background: rgba(37,99,235,.07);  color: #1d4ed8; border-color: rgba(37,99,235,.2); }
+}
+
+.ia-detail {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--negro, #1a1a1a);
+  &.ia-sm { font-size: 0.72rem; font-weight: 400; color: var(--gris, #777); word-break: break-all; }
+}
+
+.ia-reset-btn {
+  background: none;
+  border: none;
+  color: var(--gris, #777);
+  font-size: 0.72rem;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  transition: color 0.2s;
+  &:hover { color: var(--primario, #C13E28); }
+}
+
+/* IA edit form */
+.ia-error {
+  padding: 0.55rem 0.75rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  color: #991b1b;
+  font-size: 0.78rem;
+}
+
+.ia-presets {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  span { font-size: 0.72rem; color: var(--gris, #777); font-weight: 500; }
+  button {
+    background: rgba(193,62,40,.07);
+    border: 1px solid rgba(193,62,40,.2);
+    border-radius: 6px;
+    padding: 0.18rem 0.55rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--primario, #C13E28);
+    cursor: pointer;
+    transition: all 0.15s;
+    &:hover { background: rgba(193,62,40,.15); }
+  }
+}
+
+.ia-f-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--gris-oscuro, #555);
+  }
+}
+
+.ia-req { color: var(--primario, #C13E28); }
+.ia-opt { font-weight: 400; color: var(--gris, #aaa); }
+
+.ia-input {
+  width: 100%;
+  height: 36px;
+  padding: 0 0.7rem;
+  border: 1.5px solid var(--borde, #e0dbd4);
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-family: inherit;
+  color: var(--negro, #1a1a1a);
+  background: white;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+  &:focus { border-color: var(--primario, #C13E28); }
+  &::placeholder { color: #bbb; }
+}
+
+.ia-form-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.ia-save {
+  flex: 1;
+  height: 34px;
+  background: var(--primario, #C13E28);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  &:hover:not(:disabled) { background: #9E2F1D; }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+.ia-cancel {
+  height: 34px;
+  padding: 0 0.9rem;
+  background: none;
+  border: 1.5px solid var(--borde, #e0dbd4);
+  border-radius: 6px;
+  color: var(--gris, #777);
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  &:hover { border-color: #999; color: var(--negro, #1a1a1a); }
 }
 
 /* Monedas con enlace a Rewards */

@@ -185,4 +185,21 @@ export class Foro implements OnInit {
   esAutor(nombreUsuario: string): boolean {
     return this.auth.estaAutenticado() && nombreUsuario === this.miNombre;
   }
+
+  /* Paleta de colores para avatares — determinista según el nombre */
+  private readonly AVATAR_PALETTE = [
+    '#C13E28','#2563eb','#059669','#d97706',
+    '#7c3aed','#db2777','#0891b2','#65a30d',
+  ];
+
+  avatarColor(name: string): string {
+    if (!name) return this.AVATAR_PALETTE[0];
+    let h = 0;
+    for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h);
+    return this.AVATAR_PALETTE[Math.abs(h) % this.AVATAR_PALETTE.length];
+  }
+
+  /* Límites de caracteres */
+  readonly MAX_TITULO    = 120;
+  readonly MAX_CONTENIDO = 2000;
 }

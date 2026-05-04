@@ -51,7 +51,7 @@ export class RecetaService {
 
   /* Lista todas las recetas (sin paginación — endpoint público) */
   getTodas(): Observable<RecetaResponse[]> {
-    return this.http.get<RecetaResponse[]>(`${API}/recetas`);
+    return this.http.get<RecetaResponse[]>(`${API}/recetas/todas`);
   }
 
   /* Lista paginada de recetas */

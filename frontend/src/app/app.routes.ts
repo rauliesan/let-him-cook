@@ -27,5 +27,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/rewards/rewards').then(m => m.Rewards),
     canActivate: [authGuard],
   },
+  {
+    path: 'cocinar',
+    loadComponent: () => import('./pages/cocinar/cocinar').then(m => m.Cocinar),
+    canActivate: [authGuard],
+  },
   { path: '**', redirectTo: '' },
 ];

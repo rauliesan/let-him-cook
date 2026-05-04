@@ -12,4 +12,6 @@ public interface TipoComidaRepository extends JpaRepository<TipoComida, UUID> {
 
     java.util.Optional<TipoComida> findByNombre(String nombre);
 
+    java.util.Optional<TipoComida> findByNombreIgnoreCase(String nombre);
+
 }

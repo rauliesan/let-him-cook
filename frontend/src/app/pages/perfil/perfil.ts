@@ -1,5 +1,6 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Revela } from '../../shared/revela/revela';
 import { AuthService } from '../../services/auth.service';
@@ -9,7 +10,7 @@ import { RecompensaService, UsuarioRecompensaResponse } from '../../services/rec
 
 @Component({
   selector: 'app-perfil',
-  imports: [CommonModule, RouterLink, Revela],
+  imports: [CommonModule, FormsModule, RouterLink, Revela],
   templateUrl: './perfil.html',
   styleUrl: './perfil.scss',
 })
@@ -26,6 +27,14 @@ export class Perfil implements OnInit {
 
   /* Tab activa */
   tabActiva = signal('logros');
+
+  /* ── Configuración IA personalizada ── */
+  editandoIa    = signal(false);
+  iaApiKeyInput  = '';
+  iaEndpointInput = '';
+  iaModeloInput  = '';
+  guardandoIa   = signal(false);
+  errorIa       = signal<string | null>(null);
 
   constructor(
     public auth: AuthService,
@@ -95,6 +104,68 @@ export class Perfil implements OnInit {
     const puntosPorNivel = nivel * 100;
     return Math.min(100, Math.round(((puntos % puntosPorNivel) / puntosPorNivel) * 100));
   });
+
+  /* ── Métodos de configuración IA ── */
+  abrirEditarIa() {
+    this.iaApiKeyInput   = '';
+    this.iaEndpointInput = this.usuario()?.iaCustomEndpoint ?? '';
+    this.iaModeloInput   = this.usuario()?.iaCustomModelo  ?? '';
+    this.errorIa.set(null);
+    this.editandoIa.set(true);
+  }
+
+  setPreset(preset: 'deepseek' | 'openai' | 'ollama') {
+    if (preset === 'deepseek') {
+      this.iaEndpointInput = 'https://api.deepseek.com/v1/chat/completions';
+      this.iaModeloInput   = 'deepseek-chat';
+    } else if (preset === 'openai') {
+      this.iaEndpointInput = 'https://api.openai.com/v1/chat/completions';
+      this.iaModeloInput   = 'gpt-4o-mini';
+    } else {
+      this.iaEndpointInput = 'http://localhost:11434/v1/chat/completions';
+      this.iaModeloInput   = 'llama3.2';
+    }
+  }
+
+  guardarIaConfig() {
+    if (!this.iaApiKeyInput.trim()) return;
+    this.guardandoIa.set(true);
+    this.errorIa.set(null);
+
+    this.usuarioService.guardarIaConfig(
+      this.iaApiKeyInput.trim(),
+      this.iaEndpointInput.trim() || undefined,
+      this.iaModeloInput.trim()   || undefined,
+    ).subscribe({
+      next: u => {
+        this.usuario.update(curr => curr ? { ...curr,
+          iaCustomConfigured: u.iaCustomConfigured,
+          iaCustomEndpoint:   u.iaCustomEndpoint,
+          iaCustomModelo:     u.iaCustomModelo,
+        } : curr);
+        this.guardandoIa.set(false);
+        this.editandoIa.set(false);
+      },
+      error: err => {
+        this.guardandoIa.set(false);
+        this.errorIa.set(err.error?.mensaje ?? err.error?.message ?? 'Error al guardar la configuración.');
+      },
+    });
+  }
+
+  eliminarIaConfig() {
+    this.usuarioService.eliminarIaConfig().subscribe({
+      next: () => {
+        this.usuario.update(curr => curr ? { ...curr,
+          iaCustomConfigured: false,
+          iaCustomEndpoint:   null,
+          iaCustomModelo:     null,
+        } : curr);
+        this.editandoIa.set(false);
+      },
+      error: () => {},
+    });
+  }
 
   /* Formatea números grandes: 1500 → "1.5k" */
   formatNum(n: number): string {

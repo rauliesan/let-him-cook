@@ -76,6 +76,16 @@ public class Usuario {
 	@JoinColumn(name = "ia_modelo_seleccionado_id", nullable = true)
 	private IaModelo iaModeloSeleccionado;
 
+	/* Configuración IA personalizada del usuario (BYOAI desde perfil) */
+	@Column(name = "ia_custom_api_key", columnDefinition = "TEXT")
+	private String iaCustomApiKey;
+
+	@Column(name = "ia_custom_endpoint", columnDefinition = "TEXT")
+	private String iaCustomEndpoint;
+
+	@Column(name = "ia_custom_modelo")
+	private String iaCustomModelo;
+
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "usuario")
 	private Set<Receta> recetas;
 

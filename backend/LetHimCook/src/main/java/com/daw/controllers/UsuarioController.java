@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.daw.dtos.request.UsuarioIaConfigRequestDTO;
 import com.daw.dtos.request.UsuarioRequestDTO;
 import com.daw.dtos.response.UsuarioResponseDTO;
 import com.daw.security.CustomUserDetails;
@@ -121,5 +122,40 @@ public class UsuarioController {
     public ResponseEntity<Void> eliminar(@PathVariable UUID id) {
         usuarioService.eliminar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Actualiza el modelo de IA preferido del usuario autenticado.
+     * Pasa iaModeloId=null para desvincularlo.
+     */
+    @PutMapping("/me/ia-modelo")
+    public ResponseEntity<UsuarioResponseDTO> actualizarIaModelo(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam(required = false) UUID iaModeloId) {
+        return ResponseEntity.ok(usuarioService.actualizarIaModelo(userDetails.getUsuario().getId(), iaModeloId));
+    }
+
+    /**
+     * Guarda la configuración de IA personalizada (BYOAI) en el perfil del usuario.
+     * La API key nunca se devuelve en la respuesta.
+     */
+    @PutMapping("/me/ia-config")
+    public ResponseEntity<UsuarioResponseDTO> guardarIaConfig(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestBody UsuarioIaConfigRequestDTO dto) {
+        return ResponseEntity.ok(usuarioService.guardarIaConfig(
+                userDetails.getUsuario().getId(),
+                dto.getApiKey(),
+                dto.getEndpoint(),
+                dto.getModelo()));
+    }
+
+    /**
+     * Elimina la configuración de IA personalizada — vuelve a usar la IA por defecto.
+     */
+    @DeleteMapping("/me/ia-config")
+    public ResponseEntity<UsuarioResponseDTO> eliminarIaConfig(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(usuarioService.eliminarIaConfig(userDetails.getUsuario().getId()));
     }
 }

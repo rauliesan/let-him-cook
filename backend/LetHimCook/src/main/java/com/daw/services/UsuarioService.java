@@ -13,12 +13,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.daw.dtos.request.UsuarioRequestDTO;
 import com.daw.dtos.response.UsuarioResponseDTO;
+import com.daw.entities.IaModelo;
 import com.daw.entities.Rol;
 import com.daw.entities.Usuario;
 import com.daw.exceptions.OperacionInvalidaException;
 import com.daw.exceptions.RecursoDuplicadoException;
 import com.daw.exceptions.RecursoNoEncontradoException;
 import com.daw.mappers.UsuarioMapper;
+import com.daw.repositories.IaModeloRepository;
 import com.daw.repositories.UsuarioRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -34,6 +36,7 @@ import lombok.RequiredArgsConstructor;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final IaModeloRepository iaModeloRepository;
     private final UsuarioMapper usuarioMapper;
     private final PasswordEncoder passwordEncoder;
 
@@ -174,8 +177,46 @@ public class UsuarioService {
     }
 
     /**
+     * Guarda la configuración de IA personalizada (BYOAI) del usuario.
+     * La API key se almacena cifrada en la base de datos.
+     */
+    public UsuarioResponseDTO guardarIaConfig(UUID usuarioId, String apiKey, String endpoint, String modelo) {
+        Usuario usuario = buscarEntidadPorId(usuarioId);
+        usuario.setIaCustomApiKey(apiKey);
+        usuario.setIaCustomEndpoint((endpoint != null && !endpoint.isBlank()) ? endpoint : null);
+        usuario.setIaCustomModelo((modelo != null && !modelo.isBlank()) ? modelo : null);
+        return usuarioMapper.toResponseDTO(usuarioRepository.save(usuario));
+    }
+
+    /**
+     * Elimina la configuración de IA personalizada del usuario (vuelve al default).
+     */
+    public UsuarioResponseDTO eliminarIaConfig(UUID usuarioId) {
+        Usuario usuario = buscarEntidadPorId(usuarioId);
+        usuario.setIaCustomApiKey(null);
+        usuario.setIaCustomEndpoint(null);
+        usuario.setIaCustomModelo(null);
+        return usuarioMapper.toResponseDTO(usuarioRepository.save(usuario));
+    }
+
+    /**
+     * Actualiza el modelo de IA seleccionado por el usuario.
+     */
+    public UsuarioResponseDTO actualizarIaModelo(UUID usuarioId, UUID iaModeloId) {
+        Usuario usuario = buscarEntidadPorId(usuarioId);
+        if (iaModeloId != null) {
+            IaModelo modelo = iaModeloRepository.findById(iaModeloId)
+                    .orElseThrow(() -> new RecursoNoEncontradoException("Modelo de IA no encontrado con ID: " + iaModeloId));
+            usuario.setIaModeloSeleccionado(modelo);
+        } else {
+            usuario.setIaModeloSeleccionado(null);
+        }
+        return usuarioMapper.toResponseDTO(usuarioRepository.save(usuario));
+    }
+
+    /**
      * Busca la entidad completa por email.
-     * 
+     *
      * @param email correo electrónico del usuario
      * @return entidad Usuario
      * @throws RecursoNoEncontradoException si no existe un usuario con ese email

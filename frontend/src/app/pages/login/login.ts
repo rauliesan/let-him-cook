@@ -51,7 +51,7 @@ export class Login {
       error: (err) => {
         this.cargando.set(false);
         /* El backend devuelve 401 con un mensaje claro en el body */
-        const msg = err.error?.message || err.error?.error || 'Credenciales incorrectas.';
+        const msg = err.error?.mensaje || err.error?.message || 'Credenciales incorrectas.';
         this.error.set(msg);
       },
     });
@@ -77,7 +77,7 @@ export class Login {
       },
       error: (err) => {
         this.cargando.set(false);
-        const msg = err.error?.message || err.error?.error || 'Error al crear la cuenta.';
+        const msg = err.error?.mensaje || err.error?.message || 'Error al crear la cuenta.';
         this.error.set(msg);
       },
     });

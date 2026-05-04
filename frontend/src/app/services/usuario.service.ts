@@ -14,6 +14,12 @@ export interface UsuarioResponse {
   rol: 'ADMIN' | 'USER';
   iaModeloSeleccionadoId: string | null;
   iaModeloSeleccionadoNombre: string | null;
+  /** true si el usuario tiene su propia API key guardada */
+  iaCustomConfigured: boolean;
+  /** Endpoint de la IA personalizada (nunca se expone la key) */
+  iaCustomEndpoint: string | null;
+  /** Nombre del modelo de la IA personalizada */
+  iaCustomModelo: string | null;
 }
 
 const API = 'http://localhost:9999';
@@ -31,5 +37,19 @@ export class UsuarioService {
   /* Lista paginada para saber el total de usuarios registrados */
   contarUsuarios(): Observable<{ totalElements: number }> {
     return this.http.get<{ totalElements: number }>(`${API}/usuarios/busqueda?size=1`);
+  }
+
+  /** Guarda configuración de IA personalizada (BYOAI) en el perfil */
+  guardarIaConfig(apiKey: string, endpoint?: string, modelo?: string): Observable<UsuarioResponse> {
+    return this.http.put<UsuarioResponse>(`${API}/usuarios/me/ia-config`, {
+      apiKey,
+      endpoint: endpoint ?? null,
+      modelo: modelo ?? null,
+    });
+  }
+
+  /** Elimina la configuración personalizada — vuelve al DeepSeek de la app */
+  eliminarIaConfig(): Observable<UsuarioResponse> {
+    return this.http.delete<UsuarioResponse>(`${API}/usuarios/me/ia-config`);
   }
 }

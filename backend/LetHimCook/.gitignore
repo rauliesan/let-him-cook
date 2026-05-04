@@ -1,3 +1,6 @@
+# Secrets — NEVER commit
+src/main/resources/application-secret.properties
+
 # Maven compiled output
 target/
 *.class
