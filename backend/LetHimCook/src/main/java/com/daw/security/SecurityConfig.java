@@ -80,6 +80,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/tipos-comida", "/tipos-comida/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/posts", "/posts/**").permitAll()
 
+                        // Formulario de contacto — público
+                        .requestMatchers(HttpMethod.POST, "/contacto").permitAll()
+
                         // Rutas exclusivas de ADMIN
                         .requestMatchers("/admin/**").hasRole("ADMIN")
 
