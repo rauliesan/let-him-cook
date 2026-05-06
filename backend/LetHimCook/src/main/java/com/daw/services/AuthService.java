@@ -31,6 +31,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final UsuarioService usuarioService;
+    private final EmailService emailService;
     private final AuthMapper authMapper;
 
     /**
@@ -75,5 +76,44 @@ public class AuthService {
 
         // 4. Mapear respuesta
         return authMapper.toAuthResponse(usuario, token);
+    }
+
+    /**
+     * Paso 1: Genera un código de 6 dígitos y lo envía por email.
+     */
+    public void solicitarRecuperacion(String email) {
+        try {
+            Usuario usuario = usuarioService.buscarEntidadPorEmail(email);
+            // Generar código de 6 dígitos aleatorio
+            String codigo = String.format("%06d", new java.util.Random().nextInt(999999));
+            usuarioService.guardarCodigoRecuperacion(usuario, codigo);
+            emailService.enviarCodigoRecuperacion(email, codigo);
+        } catch (com.daw.exceptions.RecursoNoEncontradoException e) {
+            // Lanza excepción específica si el correo no está registrado (QoL pedido por el usuario)
+            throw new com.daw.exceptions.RecursoNoEncontradoException("El correo ingresado no está registrado en el sistema.");
+        }
+    }
+
+    /**
+     * Paso 2: Verifica que el código es correcto y no ha expirado.
+     */
+    public boolean verificarCodigo(String email, String codigo) {
+        try {
+            Usuario usuario = usuarioService.buscarEntidadPorEmail(email);
+            return usuarioService.esCodigoValido(usuario, codigo);
+        } catch (com.daw.exceptions.RecursoNoEncontradoException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Paso 3: Actualiza la contraseña si el código es válido.
+     */
+    public void resetearPassword(String email, String codigo, String nuevaPassword) {
+        Usuario usuario = usuarioService.buscarEntidadPorEmail(email);
+        if (!usuarioService.esCodigoValido(usuario, codigo)) {
+            throw new org.springframework.security.authentication.BadCredentialsException("Código inválido o expirado");
+        }
+        usuarioService.resetearPassword(usuario, nuevaPassword);
     }
 }

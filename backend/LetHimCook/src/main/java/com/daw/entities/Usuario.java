@@ -71,6 +71,13 @@ public class Usuario {
 	@Column(nullable = false)
 	private Rol rol = Rol.USER;
 
+	/* Campos para la recuperación de contraseña */
+	@Column(name = "codigo_recuperacion")
+	private String codigoRecuperacion;
+
+	@Column(name = "fecha_expiracion_codigo")
+	private ZonedDateTime fechaExpiracionCodigo;
+
 	/* Modelo de IA preferido — opcional */
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
 	@JoinColumn(name = "ia_modelo_seleccionado_id", nullable = true)

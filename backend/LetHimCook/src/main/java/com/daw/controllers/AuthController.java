@@ -52,4 +52,43 @@ public class AuthController {
     public ResponseEntity<AuthResponseDTO> login(@Valid @RequestBody LoginRequestDTO dto) {
         return ResponseEntity.ok().body(authService.login(dto));
     }
+
+    /**
+     * Paso 1: Solicita la recuperación de contraseña enviando un código por email.
+     */
+    @PostMapping("/recuperar-password")
+    public ResponseEntity<String> recuperarPassword(@Valid @RequestBody com.daw.dtos.request.RecuperarRequestDTO dto) {
+        try {
+            authService.solicitarRecuperacion(dto.getEmail());
+            return ResponseEntity.ok().body("{\"mensaje\": \"Se ha enviado un código de recuperación a tu email.\"}");
+        } catch (com.daw.exceptions.RecursoNoEncontradoException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"mensaje\": \"" + e.getMessage() + "\"}");
+        }
+    }
+
+    /**
+     * Paso 2: Verifica que el código es válido para ese email.
+     */
+    @PostMapping("/verificar-codigo")
+    public ResponseEntity<String> verificarCodigo(@Valid @RequestBody com.daw.dtos.request.VerificarCodigoRequestDTO dto) {
+        boolean valido = authService.verificarCodigo(dto.getEmail(), dto.getCodigo());
+        if (valido) {
+            return ResponseEntity.ok().body("{\"mensaje\": \"Código válido.\"}");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"mensaje\": \"Código inválido o expirado.\"}");
+        }
+    }
+
+    /**
+     * Paso 3: Resetea la contraseña usando el código verificado.
+     */
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@Valid @RequestBody com.daw.dtos.request.ResetPasswordRequestDTO dto) {
+        try {
+            authService.resetearPassword(dto.getEmail(), dto.getCodigo(), dto.getNuevaPassword());
+            return ResponseEntity.ok().body("{\"mensaje\": \"Contraseña actualizada correctamente.\"}");
+        } catch (org.springframework.security.authentication.BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"mensaje\": \"Código inválido o expirado.\"}");
+        }
+    }
 }

@@ -61,6 +61,21 @@ export class AuthService {
     this.router.navigate(['/login']);
   }
 
+  /* Recuperación de contraseña - Paso 1 */
+  solicitarRecuperacion(email: string): Observable<any> {
+    return this.http.post(`${API}/auth/recuperar-password`, { email });
+  }
+
+  /* Recuperación de contraseña - Paso 2 */
+  verificarCodigo(email: string, codigo: string): Observable<any> {
+    return this.http.post(`${API}/auth/verificar-codigo`, { email, codigo });
+  }
+
+  /* Recuperación de contraseña - Paso 3 */
+  resetPassword(email: string, codigo: string, nuevaPassword: string): Observable<any> {
+    return this.http.post(`${API}/auth/reset-password`, { email, codigo, nuevaPassword });
+  }
+
   /* Devuelve el token JWT o null */
   getToken(): string | null {
     return localStorage.getItem(CLAVE_TOKEN);

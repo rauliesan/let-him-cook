@@ -237,4 +237,37 @@ public class UsuarioService {
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado con ID: " + id));
     }
+
+    /**
+     * Guarda el código de recuperación para un usuario.
+     */
+    public void guardarCodigoRecuperacion(Usuario usuario, String codigo) {
+        usuario.setCodigoRecuperacion(codigo);
+        // El código expira en 15 minutos
+        usuario.setFechaExpiracionCodigo(ZonedDateTime.now(ZoneId.of("Europe/Madrid")).plusMinutes(15));
+        usuarioRepository.save(usuario);
+    }
+
+    /**
+     * Verifica si el código es válido para un usuario dado.
+     */
+    public boolean esCodigoValido(Usuario usuario, String codigo) {
+        if (usuario.getCodigoRecuperacion() == null || !usuario.getCodigoRecuperacion().equals(codigo)) {
+            return false;
+        }
+        if (usuario.getFechaExpiracionCodigo() == null || usuario.getFechaExpiracionCodigo().isBefore(ZonedDateTime.now(ZoneId.of("Europe/Madrid")))) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Actualiza la contraseña y limpia el código de recuperación.
+     */
+    public void resetearPassword(Usuario usuario, String nuevaPassword) {
+        usuario.setPasswordHash(passwordEncoder.encode(nuevaPassword));
+        usuario.setCodigoRecuperacion(null);
+        usuario.setFechaExpiracionCodigo(null);
+        usuarioRepository.save(usuario);
+    }
 }

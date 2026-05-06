@@ -89,7 +89,7 @@
         @if (auth.estaAutenticado()) {
           <button class="btn-primario" (click)="salir()">Cerrar sesión</button>
         } @else {
-          <a routerLink="/login" class="btn-primario" (click)="cerrarMenu()">Entrar</a>
+          <a routerLink="/login" [queryParams]="{ mode: 'login' }" class="btn-primario" (click)="cerrarMenu()">Entrar</a>
         }
       </div>
     </nav>
@@ -101,8 +101,8 @@
         <span class="nav-usuario-nombre">{{ auth.sesion()?.nombre }}</span>
         <button class="btn-secundario btn-sm" (click)="salir()">Salir</button>
       } @else {
-        <a routerLink="/login" class="btn-secundario btn-sm">Entrar</a>
-        <a routerLink="/login" class="btn-primario btn-sm">Únete</a>
+        <a routerLink="/login" [queryParams]="{ mode: 'login' }" class="btn-secundario btn-sm">Entrar</a>
+        <a routerLink="/login" [queryParams]="{ mode: 'registro' }" class="btn-primario btn-sm">Únete</a>
       }
     </div>
 
