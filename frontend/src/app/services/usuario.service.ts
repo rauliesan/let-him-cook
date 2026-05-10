@@ -22,7 +22,7 @@ export interface UsuarioResponse {
   iaCustomModelo: string | null;
 }
 
-const API = 'http://localhost:8080';
+const API = 'http://localhost:9999';
 
 @Injectable({ providedIn: 'root' })
 export class UsuarioService {
