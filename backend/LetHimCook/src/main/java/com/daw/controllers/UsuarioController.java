@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.daw.dtos.request.FotoUrlRequestDTO;
 import com.daw.dtos.request.UsuarioIaConfigRequestDTO;
 import com.daw.dtos.request.UsuarioRequestDTO;
 import com.daw.dtos.response.UsuarioResponseDTO;
@@ -157,5 +159,17 @@ public class UsuarioController {
     public ResponseEntity<UsuarioResponseDTO> eliminarIaConfig(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         return ResponseEntity.ok(usuarioService.eliminarIaConfig(userDetails.getUsuario().getId()));
+    }
+
+    /**
+     * Actualiza únicamente la foto de perfil del usuario autenticado.
+     * Acepta imagen en Base64 (data URI) o URL externa.
+     */
+    @PatchMapping("/me/foto")
+    public ResponseEntity<UsuarioResponseDTO> actualizarFoto(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestBody FotoUrlRequestDTO dto) {
+        return ResponseEntity.ok(
+                usuarioService.actualizarFoto(userDetails.getUsuario().getId(), dto.getFotoUrl()));
     }
 }

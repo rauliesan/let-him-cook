@@ -22,7 +22,7 @@ export interface UsuarioResponse {
   iaCustomModelo: string | null;
 }
 
-const API = 'http://localhost:9999';
+const API = 'http://localhost:8080';
 
 @Injectable({ providedIn: 'root' })
 export class UsuarioService {
@@ -51,5 +51,10 @@ export class UsuarioService {
   /** Elimina la configuración personalizada — vuelve al DeepSeek de la app */
   eliminarIaConfig(): Observable<UsuarioResponse> {
     return this.http.delete<UsuarioResponse>(`${API}/usuarios/me/ia-config`);
+  }
+
+  /** Actualiza únicamente la foto de perfil del usuario autenticado */
+  actualizarFoto(fotoUrl: string): Observable<UsuarioResponse> {
+    return this.http.patch<UsuarioResponse>(`${API}/usuarios/me/foto`, { fotoUrl });
   }
 }
