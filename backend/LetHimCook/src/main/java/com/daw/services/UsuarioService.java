@@ -200,6 +200,20 @@ public class UsuarioService {
     }
 
     /**
+     * Actualiza únicamente la foto de perfil del usuario autenticado.
+     * Acepta una imagen en Base64 (data URI) o una URL externa.
+     *
+     * @param usuarioId ID del usuario autenticado
+     * @param fotoUrl   imagen en Base64 o URL
+     * @return el usuario actualizado como DTO
+     */
+    public UsuarioResponseDTO actualizarFoto(UUID usuarioId, String fotoUrl) {
+        Usuario usuario = buscarEntidadPorId(usuarioId);
+        usuario.setFotoUrl(fotoUrl);
+        return usuarioMapper.toResponseDTO(usuarioRepository.save(usuario));
+    }
+
+    /**
      * Actualiza el modelo de IA seleccionado por el usuario.
      */
     public UsuarioResponseDTO actualizarIaModelo(UUID usuarioId, UUID iaModeloId) {

@@ -36,6 +36,10 @@ export class Perfil implements OnInit {
   guardandoIa   = signal(false);
   errorIa       = signal<string | null>(null);
 
+  /* ── Foto de perfil ── */
+  subiendoFoto  = signal(false);
+  errorFoto     = signal<string | null>(null);
+
   constructor(
     public auth: AuthService,
     private usuarioService: UsuarioService,
@@ -179,5 +183,75 @@ export class Perfil implements OnInit {
     return new Date(iso).toLocaleDateString('es-ES', {
       day: '2-digit', month: 'short', year: 'numeric',
     });
+  }
+
+  /* ── Foto de perfil ── */
+  /** Dispara el click sobre el input file oculto */
+  abrirSelectorFoto() {
+    const input = document.getElementById('foto-input') as HTMLInputElement;
+    if (input) input.click();
+  }
+
+  /** Lee el archivo seleccionado, lo convierte a Base64 y lo sube al backend */
+  onFotoSeleccionada(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length) return;
+
+    const archivo = input.files[0];
+
+    // Validar tipo y tamaño (máx 2 MB)
+    if (!archivo.type.startsWith('image/')) {
+      this.errorFoto.set('El archivo debe ser una imagen.');
+      return;
+    }
+    if (archivo.size > 2 * 1024 * 1024) {
+      this.errorFoto.set('La imagen no puede superar los 2 MB.');
+      return;
+    }
+
+    this.errorFoto.set(null);
+    this.subiendoFoto.set(true);
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = reader.result as string;
+      this.usuarioService.actualizarFoto(base64).subscribe({
+        next: (u) => {
+          this.usuario.update(curr => curr ? { ...curr, fotoUrl: u.fotoUrl } : curr);
+          this.subiendoFoto.set(false);
+          // Limpiar el input para permitir volver a seleccionar el mismo archivo
+          input.value = '';
+        },
+        error: () => {
+          this.errorFoto.set('No se pudo actualizar la foto. Inténtalo de nuevo.');
+          this.subiendoFoto.set(false);
+          input.value = '';
+        },
+      });
+    };
+    reader.readAsDataURL(archivo);
+  }
+
+  /* ── Compartir Perfil ── */
+  compartirPerfil() {
+    const titulo = 'Let Him Cook';
+    const texto = '¡Mira mi progreso en Let Him Cook!';
+    const url = window.location.origin;
+
+    if (navigator.share) {
+      navigator.share({
+        title: titulo,
+        text: texto,
+        url: url
+      }).catch(console.error);
+    } else {
+      // Fallback si Web Share API no está disponible
+      const contenidoCopiar = `${texto} ${url}`;
+      navigator.clipboard.writeText(contenidoCopiar).then(() => {
+        alert('Enlace copiado al portapapeles');
+      }).catch(() => {
+        alert('No se pudo copiar el enlace al portapapeles');
+      });
+    }
   }
 }

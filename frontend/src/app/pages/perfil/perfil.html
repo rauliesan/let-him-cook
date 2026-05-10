@@ -35,13 +35,34 @@
           <div class="avatar">{{ iniciales() }}</div>
         }
         <div class="nivel-badge">Nv.{{ usuario()?.nivel }}</div>
-        <button class="avatar-editar" aria-label="Cambiar foto de perfil">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-            <rect x="1.5" y="4.5" width="13" height="9" rx="2" stroke-linecap="round"/>
-            <path d="M5.5 4.5L6.5 2.5h3l1 2"/>
-            <circle cx="8" cy="9" r="2.5"/>
-          </svg>
+
+        <!-- Botón de editar foto -->
+        <button class="avatar-editar"
+                aria-label="Cambiar foto de perfil"
+                [disabled]="subiendoFoto()"
+                (click)="abrirSelectorFoto()">
+          @if (subiendoFoto()) {
+            <span class="foto-spinner"></span>
+          } @else {
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="1.5" y="4.5" width="13" height="9" rx="2" stroke-linecap="round"/>
+              <path d="M5.5 4.5L6.5 2.5h3l1 2"/>
+              <circle cx="8" cy="9" r="2.5"/>
+            </svg>
+          }
         </button>
+
+        <!-- Input file oculto -->
+        <input id="foto-input"
+               type="file"
+               accept="image/*"
+               style="display:none"
+               (change)="onFotoSeleccionada($event)" />
+
+        <!-- Error de foto -->
+        @if (errorFoto()) {
+          <div class="foto-error">{{ errorFoto() }}</div>
+        }
       </div>
 
       <div class="perfil-datos">
@@ -81,7 +102,7 @@
       </div>
 
       <div class="perfil-acciones">
-        <button class="btn-secundario">Compartir</button>
+        <button class="btn-secundario" (click)="compartirPerfil()">Compartir</button>
       </div>
     </div>
 
