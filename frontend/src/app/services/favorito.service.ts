@@ -14,7 +14,7 @@ const API = 'http://localhost:9999';
 @Injectable({ providedIn: 'root' })
 export class FavoritoService {
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   /* Lista los favoritos del usuario autenticado */
   getMisFavoritos(): Observable<FavoritoResponse[]> {

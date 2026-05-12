@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, signal, computed, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Revela } from '../../shared/revela/revela';
 import { CountUp } from '../../shared/countup/countup';
@@ -45,12 +45,31 @@ const COLOR_FALLBACK = '#B83520';
   templateUrl: './explorar.html',
   styleUrl: './explorar.scss',
 })
-export class Explorar implements OnInit {
+export class Explorar implements OnInit, OnDestroy {
 
   readonly grupos = GRUPOS;
 
+  /* Animación del buscador */
+  placeholderActual = signal('');
+  private frasesBuscador = [
+    'Buscar espaguetis a la carbonara...',
+    '¿Qué tal un risotto de setas?',
+    'Busca ingredientes como "aguacate"',
+    'Encuentra recetas de "Chef Ramsey"',
+    '¿Cocinamos algo con pollo?',
+    'Prueba con "Postres sin azúcar"',
+    'Recetas de menos de 30 minutos',
+    'Busca "Tacos al pastor"',
+    '¿Cómo se hace un Pad Thai?',
+    'Cenas saludables para hoy',
+  ];
+  private fraseIndex = 0;
+  private charIndex = 0;
+  private borrando = false;
+  private timeoutId: any;
+
   /* Datos de la API */
-  categorias   = signal<TipoComidaResponse[]>([]);
+  categorias = signal<TipoComidaResponse[]>([]);
   todasRecetas = signal<RecetaResponse[]>([]);
 
   private categoriasMapa = computed(() =>
@@ -58,16 +77,16 @@ export class Explorar implements OnInit {
   );
 
   /* IDs de recetas en favoritos */
-  favoritosIds  = signal<Set<string>>(new Set());
+  favoritosIds = signal<Set<string>>(new Set());
   likesAnimando = signal<Set<string>>(new Set());
 
   /* Estado de carga */
-  cargando   = signal(true);
+  cargando = signal(true);
   errorCarga = signal<string | null>(null);
 
   /* Filtros activos */
   /* Set de categorías activas — vacío significa "Todas" */
-  filtrosActivos   = signal<Set<string>>(new Set());
+  filtrosActivos = signal<Set<string>>(new Set());
   dificultadActiva = signal('Cualquiera');
 
   /**
@@ -81,13 +100,50 @@ export class Explorar implements OnInit {
 
   dificultades = ['Cualquiera', 'BAJA', 'MEDIA', 'ALTA'];
 
+  /* Búsqueda dinámica */
+  terminoBusqueda = signal('');
+  buscando        = signal(false);
+
   constructor(
     private recetaService: RecetaService,
     private favoritoService: FavoritoService,
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.cargarDatos();
+    this.animarPlaceholder();
+  }
+
+  ngOnDestroy() {
+    if (this.timeoutId) clearTimeout(this.timeoutId);
+  }
+
+  animarPlaceholder() {
+    const frase = this.frasesBuscador[this.fraseIndex];
+    const delaySiguienteFrase = 2500;
+    const delayBorrando = 40;
+    const delayEscribiendo = 80;
+
+    if (this.borrando) {
+      this.placeholderActual.set(frase.substring(0, this.charIndex--) + '|');
+      if (this.charIndex < 0) {
+        this.borrando = false;
+        this.fraseIndex = (this.fraseIndex + 1) % this.frasesBuscador.length;
+        this.timeoutId = setTimeout(() => this.animarPlaceholder(), 500);
+        return;
+      }
+    } else {
+      this.placeholderActual.set(frase.substring(0, this.charIndex++) + '|');
+      if (this.charIndex > frase.length) {
+        this.borrando = true;
+        this.placeholderActual.set(frase); // Quitar cursor al final
+        this.timeoutId = setTimeout(() => this.animarPlaceholder(), delaySiguienteFrase);
+        return;
+      }
+    }
+
+    const velocidad = this.borrando ? delayBorrando : delayEscribiendo;
+    this.timeoutId = setTimeout(() => this.animarPlaceholder(), velocidad);
   }
 
   cargarDatos() {
@@ -116,6 +172,34 @@ export class Explorar implements OnInit {
     });
   }
 
+  /* Ejecutar búsqueda en el servidor */
+  buscar(event?: Event) {
+    if (event) event.preventDefault();
+    const termino = this.terminoBusqueda().trim();
+    
+    if (!termino) {
+      this.cargarDatos(); // Si está vacío, resetear a todas
+      return;
+    }
+
+    this.buscando.set(true);
+    this.recetaService.buscarDinamico(termino, this.dificultadActiva()).subscribe({
+      next: (res) => {
+        this.todasRecetas.set(res.content);
+        this.buscando.set(false);
+      },
+      error: () => {
+        this.buscando.set(false);
+      }
+    });
+  }
+
+  onInputSearch(event: Event) {
+    const el = event.target as HTMLInputElement;
+    this.terminoBusqueda.set(el.value);
+    // Podríamos añadir debounce aquí, pero por ahora lo dejamos con el botón y Enter
+  }
+
   /* Recetas filtradas — una receta aparece si cualquiera de sus 3 categorías
      está en el set de filtros activos (OR entre categorías seleccionadas) */
   recetasFiltradas = computed(() => {
@@ -129,7 +213,7 @@ export class Explorar implements OnInit {
         });
       } else {
         lista = lista.filter(r =>
-          filtros.has(r.tipoComidaNombre  ?? '') ||
+          filtros.has(r.tipoComidaNombre ?? '') ||
           filtros.has(r.tipoComida2Nombre ?? '') ||
           filtros.has(r.tipoComida3Nombre ?? '')
         );
@@ -258,8 +342,8 @@ export class Explorar implements OnInit {
   private ajustarBrillo(hex: string, delta: number): string {
     const n = parseInt(hex.replace('#', ''), 16);
     const r = Math.max(0, Math.min(255, ((n >> 16) & 255) + delta));
-    const g = Math.max(0, Math.min(255, ((n >> 8)  & 255) + delta));
-    const b = Math.max(0, Math.min(255, ((n)       & 255) + delta));
+    const g = Math.max(0, Math.min(255, ((n >> 8) & 255) + delta));
+    const b = Math.max(0, Math.min(255, ((n) & 255) + delta));
     return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
   }
 

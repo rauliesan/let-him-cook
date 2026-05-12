@@ -55,6 +55,13 @@ public class RecetaService {
         return recetaMapper.toPageDTO(page);
     }
 
+    /** Búsqueda dinámica en múltiples campos. */
+    @Transactional(readOnly = true)
+    public Page<RecetaResponseDTO> buscarDinamico(String termino, Dificultad dificultad, Pageable pageable) {
+        Page<Receta> page = recetaRepository.buscarDinamico(termino, dificultad, pageable);
+        return recetaMapper.toPageDTO(page);
+    }
+
     /** Lista paginada simple sin filtros. */
     @Transactional(readOnly = true)
     public Page<RecetaResponseDTO> listarPaginado(Pageable pageable) {
