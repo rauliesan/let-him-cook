@@ -65,4 +65,16 @@ export class RecetaService {
   getCategorias(): Observable<TipoComidaResponse[]> {
     return this.http.get<TipoComidaResponse[]>(`${API}/tipos-comida`);
   }
+
+  /* Búsqueda dinámica en el servidor */
+  buscarDinamico(termino: string, dificultad?: string, categorias?: string[], pagina = 0, tam = 12): Observable<Pagina<RecetaResponse>> {
+    let url = `${API}/recetas/busqueda?termino=${termino}&page=${pagina}&size=${tam}`;
+    if (dificultad && dificultad !== 'Cualquiera') {
+      url += `&dificultad=${dificultad}`;
+    }
+    if (categorias && categorias.length > 0) {
+      url += `&categorias=${categorias.join(',')}`;
+    }
+    return this.http.get<Pagina<RecetaResponse>>(url);
+  }
 }
