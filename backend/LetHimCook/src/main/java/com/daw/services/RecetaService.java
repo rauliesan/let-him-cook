@@ -57,8 +57,8 @@ public class RecetaService {
 
     /** Búsqueda dinámica en múltiples campos. */
     @Transactional(readOnly = true)
-    public Page<RecetaResponseDTO> buscarDinamico(String termino, Dificultad dificultad, Pageable pageable) {
-        Page<Receta> page = recetaRepository.buscarDinamico(termino, dificultad, pageable);
+    public Page<RecetaResponseDTO> buscarDinamico(String termino, Dificultad dificultad, List<UUID> categorias, Pageable pageable) {
+        Page<Receta> page = recetaRepository.buscarDinamico(termino, dificultad, categorias, pageable);
         return recetaMapper.toPageDTO(page);
     }
 

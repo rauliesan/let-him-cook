@@ -177,13 +177,13 @@ export class Explorar implements OnInit, OnDestroy {
     if (event) event.preventDefault();
     const termino = this.terminoBusqueda().trim();
     
-    if (!termino) {
-      this.cargarDatos(); // Si está vacío, resetear a todas
-      return;
-    }
+    // Convertir nombres de categorías activas a sus IDs reales de la BD
+    const categoriasIds = [...this.filtrosActivos()]
+      .map(nombre => this.categoriasMapa().get(nombre)?.id)
+      .filter((id): id is string => !!id);
 
     this.buscando.set(true);
-    this.recetaService.buscarDinamico(termino, this.dificultadActiva()).subscribe({
+    this.recetaService.buscarDinamico(termino, this.dificultadActiva(), categoriasIds).subscribe({
       next: (res) => {
         this.todasRecetas.set(res.content);
         this.buscando.set(false);
@@ -200,35 +200,14 @@ export class Explorar implements OnInit, OnDestroy {
     // Podríamos añadir debounce aquí, pero por ahora lo dejamos con el botón y Enter
   }
 
-  /* Recetas filtradas — una receta aparece si cualquiera de sus 3 categorías
-     está en el set de filtros activos (OR entre categorías seleccionadas) */
-  recetasFiltradas = computed(() => {
-    let lista = this.todasRecetas();
-    const filtros = this.filtrosActivos();
-    if (filtros.size > 0) {
-      if (this.modoFiltro() === 'AND') {
-        lista = lista.filter(r => {
-          const cats = new Set([r.tipoComidaNombre, r.tipoComida2Nombre, r.tipoComida3Nombre].filter(Boolean) as string[]);
-          return [...filtros].every(f => cats.has(f));
-        });
-      } else {
-        lista = lista.filter(r =>
-          filtros.has(r.tipoComidaNombre ?? '') ||
-          filtros.has(r.tipoComida2Nombre ?? '') ||
-          filtros.has(r.tipoComida3Nombre ?? '')
-        );
-      }
-    }
-    if (this.dificultadActiva() !== 'Cualquiera') {
-      lista = lista.filter(r => r.dificultad === this.dificultadActiva());
-    }
-    return lista;
-  });
+  /* Las recetas se cargan directamente desde el servidor según los filtros aplicados en buscar() */
+  recetasFiltradas = computed(() => this.todasRecetas());
 
   /* Toggle de una categoría — si ya está activa la quita, si no la añade */
   seleccionarFiltro(nombre: string) {
     if (nombre === 'Todas') {
       this.filtrosActivos.set(new Set());
+      this.buscar(); // Ejecutar búsqueda inmediatamente al limpiar filtros
       return;
     }
     this.filtrosActivos.update(s => {
@@ -236,9 +215,13 @@ export class Explorar implements OnInit, OnDestroy {
       n.has(nombre) ? n.delete(nombre) : n.add(nombre);
       return n;
     });
+    this.buscar(); // Ejecutar búsqueda inmediatamente al cambiar categoría
   }
 
-  seleccionarDificultad(d: string) { this.dificultadActiva.set(d); }
+  seleccionarDificultad(d: string) { 
+    this.dificultadActiva.set(d); 
+    this.buscar(); // Ejecutar búsqueda inmediatamente al cambiar dificultad
+  }
 
   toggleGrupo(nombre: string) {
     this.gruposAbiertos.update(s => {

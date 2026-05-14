@@ -62,8 +62,9 @@ public class RecetaController {
     public ResponseEntity<Page<RecetaResponseDTO>> buscarDinamico(
             @RequestParam(defaultValue = "") String termino,
             @RequestParam(required = false) Dificultad dificultad,
+            @RequestParam(required = false) List<UUID> categorias,
             @PageableDefault(size = 12) Pageable pageable) {
-        return ResponseEntity.ok().body(recetaService.buscarDinamico(termino, dificultad, pageable));
+        return ResponseEntity.ok().body(recetaService.buscarDinamico(termino, dificultad, categorias, pageable));
     }
 
     /** Lista paginada simple (sin filtros). */

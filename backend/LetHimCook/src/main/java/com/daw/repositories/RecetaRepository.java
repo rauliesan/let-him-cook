@@ -22,9 +22,11 @@ public interface RecetaRepository extends JpaRepository<Receta, UUID> {
            "(LOWER(r.nombre) LIKE LOWER(CONCAT('%', :termino, '%')) OR " +
            "LOWER(r.descripcion) LIKE LOWER(CONCAT('%', :termino, '%')) OR " +
            "LOWER(r.ingredientes) LIKE LOWER(CONCAT('%', :termino, '%'))) AND " +
-           "(:dificultad IS NULL OR r.dificultad = :dificultad)")
+           "(:dificultad IS NULL OR r.dificultad = :dificultad) AND " +
+           "(:categorias IS NULL OR r.tipoComida.id IN :categorias OR r.tipoComida2.id IN :categorias OR r.tipoComida3.id IN :categorias)")
     Page<Receta> buscarDinamico(@Param("termino") String termino, 
                                @Param("dificultad") Dificultad dificultad, 
+                               @Param("categorias") java.util.List<java.util.UUID> categorias,
                                Pageable pageable);
 
     boolean existsByIdAndUsuarioId(UUID id, UUID usuarioId);
