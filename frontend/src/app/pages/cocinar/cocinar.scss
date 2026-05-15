@@ -83,56 +83,164 @@
   margin: 0 0 2.5rem;
 }
 
-/* ── Step tracker ── */
+/* ── Step tracker (Barra de progreso animada) ── */
 .steps-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
+  gap: 0;
+  padding: 1.5rem 0;
+  max-width: 650px;
+  margin: 0 auto;
 }
 
 .step {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: .45rem;
+  gap: .8rem;
+  width: 100px;
+  position: relative;
+  z-index: 2;
 
-  span { font-size: .7rem; font-weight: 500; color: rgba(255,255,255,.5); white-space: nowrap; }
-
-  &.active .step-dot {
-    background: var(--red);
-    border-color: var(--red);
-    color: white;
-    box-shadow: 0 0 18px rgba(193,62,40,.65);
+  span { 
+    font-size: .75rem; 
+    font-weight: 600; 
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: .08em;
   }
-  &.done .step-dot {
-    background: #16a34a;
-    border-color: #16a34a;
-    color: white;
-  }
-  &.active span, &.done span { color: rgba(255,255,255,.9); }
-}
 
-.step-dot {
-  width: 40px; height: 40px;
-  border-radius: 50%;
-  border: 2px solid rgba(255,255,255,.25);
-  background: rgba(255,255,255,.08);
-  color: rgba(255,255,255,.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: .88rem;
-  transition: all .3s;
+  .step-dot {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: .95rem;
+    position: relative;
+    backdrop-filter: blur(4px);
+    
+    /* Animación base de secuencia */
+    animation-duration: 8s;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    animation-iteration-count: infinite;
+  }
+
+  &:nth-child(1) .step-dot { animation-name: syncDot1; }
+  &:nth-child(3) .step-dot { animation-name: syncDot2; }
+  &:nth-child(5) .step-dot { animation-name: syncDot3; }
+  &:nth-child(7) .step-dot { animation-name: syncDot4; }
+
+  &:nth-child(1) span { animation: syncText1 8s infinite cubic-bezier(0.4, 0, 0.2, 1); }
+  &:nth-child(3) span { animation: syncText2 8s infinite cubic-bezier(0.4, 0, 0.2, 1); }
+  &:nth-child(5) span { animation: syncText3 8s infinite cubic-bezier(0.4, 0, 0.2, 1); }
+  &:nth-child(7) span { animation: syncText4 8s infinite cubic-bezier(0.4, 0, 0.2, 1); }
 }
 
 .step-line {
-  width: 56px; height: 2px;
-  background: rgba(255,255,255,.18);
-  margin-bottom: 24px;
-  flex-shrink: 0;
-  transition: background .3s;
-  &.lit { background: var(--red); box-shadow: 0 0 8px rgba(193,62,40,.5); }
+  flex: 1;
+  height: 4px;
+  background: rgba(255,255,255,.08);
+  margin-top: 20px;
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--pill);
+  z-index: 1;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, var(--red), #ff7a56, #ffca28, #ff7a56);
+    background-size: 200% 100%;
+    transform-origin: left;
+    border-radius: var(--pill);
+    
+    animation-duration: 8s;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    animation-iteration-count: infinite;
+  }
+
+  &:nth-child(2)::after { animation-name: syncLine1; }
+  &:nth-child(4)::after { animation-name: syncLine2; }
+  &:nth-child(6)::after { animation-name: syncLine3; }
+}
+
+/* ── Secuencia de Animación Sincronizada ── */
+
+@mixin dotOff {
+  background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.15); color: rgba(255,255,255,.4);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2); transform: scale(1);
+}
+@mixin dotOn {
+  background: var(--red); border-color: #ff7a56; color: white;
+  box-shadow: 0 0 25px rgba(193,62,40,.6), inset 0 0 10px rgba(255,255,255,.2); transform: scale(1.15);
+}
+
+@keyframes syncDot1 {
+  0%, 85% { @include dotOn; }
+  90%, 100% { @include dotOff; }
+}
+@keyframes syncDot2 {
+  0%, 15% { @include dotOff; }
+  20%, 85% { @include dotOn; }
+  90%, 100% { @include dotOff; }
+}
+@keyframes syncDot3 {
+  0%, 35% { @include dotOff; }
+  40%, 85% { @include dotOn; }
+  90%, 100% { @include dotOff; }
+}
+@keyframes syncDot4 {
+  0%, 55% { @include dotOff; }
+  60%, 85% { @include dotOn; }
+  90%, 100% { @include dotOff; }
+}
+
+@mixin textOff { color: rgba(255,255,255,.4); text-shadow: none; }
+@mixin textOn { color: white; text-shadow: 0 0 10px rgba(255,255,255,.4); }
+
+@keyframes syncText1 {
+  0%, 85% { @include textOn; }
+  90%, 100% { @include textOff; }
+}
+@keyframes syncText2 {
+  0%, 15% { @include textOff; }
+  20%, 85% { @include textOn; }
+  90%, 100% { @include textOff; }
+}
+@keyframes syncText3 {
+  0%, 35% { @include textOff; }
+  40%, 85% { @include textOn; }
+  90%, 100% { @include textOff; }
+}
+@keyframes syncText4 {
+  0%, 55% { @include textOff; }
+  60%, 85% { @include textOn; }
+  90%, 100% { @include textOff; }
+}
+
+@keyframes syncLine1 {
+  0%, 5% { transform: scaleX(0); opacity: 1; }
+  15%, 85% { transform: scaleX(1); opacity: 1; }
+  90% { transform: scaleX(1); opacity: 0; }
+  95%, 100% { transform: scaleX(0); opacity: 0; }
+}
+@keyframes syncLine2 {
+  0%, 25% { transform: scaleX(0); opacity: 1; }
+  35%, 85% { transform: scaleX(1); opacity: 1; }
+  90% { transform: scaleX(1); opacity: 0; }
+  95%, 100% { transform: scaleX(0); opacity: 0; }
+}
+@keyframes syncLine3 {
+  0%, 45% { transform: scaleX(0); opacity: 1; }
+  55%, 85% { transform: scaleX(1); opacity: 1; }
+  90% { transform: scaleX(1); opacity: 0; }
+  95%, 100% { transform: scaleX(0); opacity: 0; }
 }
 
 /* ================================================================
