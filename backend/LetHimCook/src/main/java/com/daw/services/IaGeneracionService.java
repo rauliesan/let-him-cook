@@ -94,14 +94,16 @@ public class IaGeneracionService {
             modelo   = usuario.getIaModeloSeleccionado().getNombreModelo();
 
         } else if (appDeepseekKey != null && !appDeepseekKey.isBlank()) {
-            // 3. Clave DeepSeek de la aplicación (predeterminado)
+            // 3. Clave DeepSeek de la aplicación (predeterminado si está en application.properties)
             apiKey   = appDeepseekKey;
             endpoint = DEEPSEEK_ENDPOINT;
             modelo   = DEEPSEEK_MODEL;
 
         } else {
-            throw new OperacionInvalidaException(
-                    "No hay ninguna IA configurada. Ve a tu perfil y añade tu propia clave de API.");
+            // 4. Fallback 100% gratuito (Pollinations.ai) - ¡Funciona sin API Key!
+            apiKey   = "free-key"; // Pollinations ignora este campo
+            endpoint = "https://text.pollinations.ai/openai";
+            modelo   = "openai";
         }
 
         String ingredientesList = String.join(", ", dto.getIngredientes());
