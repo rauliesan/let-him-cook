@@ -57,4 +57,9 @@ export class UsuarioService {
   actualizarFoto(fotoUrl: string): Observable<UsuarioResponse> {
     return this.http.patch<UsuarioResponse>(`${API}/usuarios/me/foto`, { fotoUrl });
   }
+
+  /** Deduce puntos por una tirada en la ruleta */
+  cobrarTirada(coste = 100): Observable<void> {
+    return this.http.post<void>(`${API}/usuarios/me/cobrar-tirada?coste=${coste}`, {});
+  }
 }

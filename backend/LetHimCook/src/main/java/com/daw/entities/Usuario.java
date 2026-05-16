@@ -115,6 +115,13 @@ public class Usuario {
 	@OneToMany(mappedBy = "usuario", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
 	private Set<UsuarioLogro> misLogros;
 
+	/* --- Gamificación: Recompensas por Cocinar --- */
+	@Column(name = "puntos_receta_hoy")
+	private Integer puntosRecetaHoy = 0;
+
+	@Column(name = "fecha_ultima_receta_recompensa")
+	private java.time.LocalDate fechaUltimaRecetaRecompensa;
+
 	@PrePersist
 	protected void onCreate() {
 		// Solo asigna la fecha automática si el campo está vacío (es null)

@@ -1,97 +1,102 @@
 @if (cargando()) {
   <div class="estado-carga">
     <div class="carga-spinner"></div>
-    <p>Cargando receta...</p>
+    <p>Preparando los fogones...</p>
   </div>
 }
 
 @if (!cargando() && error()) {
   <div class="estado-error contenedor">
-    <p>{{ error() }}</p>
-    <a [routerLink]="['/explorar']" class="btn-primario btn-sm">Volver a explorar</a>
+    <div class="error-card" revela>
+      <span class="error-emoji">👨‍🍳💨</span>
+      <p>{{ error() }}</p>
+      <a [routerLink]="['/explorar']" class="btn-primario btn-sm">Volver a explorar</a>
+    </div>
   </div>
 }
 
 @if (!cargando() && !error() && receta(); as r) {
   <div class="detalle-hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-pattern"></div>
+    
     <div class="contenedor detalle-hero-inner">
-      <a [routerLink]="['/explorar']" class="btn-volver">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-          <path d="M10 3L5 8l5 5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Volver
-      </a>
-      <h1>{{ r.nombre }}</h1>
-      <p class="detalle-autor">por {{ r.usuarioCreadorNombre }}</p>
-
-      <div class="detalle-badges">
-        @if (r.tipoComidaNombre) {
-          <span class="badge badge-cat">{{ r.tipoComidaNombre }}</span>
-        }
-        @if (r.tipoComida2Nombre) {
-          <span class="badge badge-cat">{{ r.tipoComida2Nombre }}</span>
-        }
-        @if (r.tipoComida3Nombre) {
-          <span class="badge badge-cat">{{ r.tipoComida3Nombre }}</span>
-        }
-        <span class="badge badge-dif">{{ etiquetaDificultad(r.dificultad) }}</span>
+      <div class="hero-top" revela>
+        <a [routerLink]="['/explorar']" class="btn-volver">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16">
+            <path d="M10 3L5 8l5 5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Explorar
+        </a>
       </div>
 
-      <div class="detalle-meta">
-        <div class="meta-item">
-          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18">
-            <circle cx="10" cy="10" r="8"/>
-            <path d="M10 6v4l2.5 2" stroke-linecap="round"/>
-          </svg>
-          <span>{{ formatearTiempo(r.tiempoPreparacion) }}</span>
-        </div>
-        @if (r.calorias) {
-          <div class="meta-item">
-            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18">
-              <path d="M10 2C6 2 3 6 3 10a7 7 0 0014 0c0-4-3-8-7-8z" stroke-linecap="round"/>
-            </svg>
-            <span>{{ r.calorias }} kcal</span>
+      <div class="hero-main">
+        <div class="hero-info" revela [retardo]="100">
+          <div class="cat-badges">
+            @if (r.tipoComidaNombre) { <span class="badge badge-premium">{{ r.tipoComidaNombre }}</span> }
+            @if (r.tipoComida2Nombre) { <span class="badge badge-premium">{{ r.tipoComida2Nombre }}</span> }
           </div>
-        }
-        <div class="meta-item">
-          <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
-            <path d="M10 17 L2 10 C2 7 4 5 6.5 5 C7.8 5 8.8 5.6 10 6.7 C11.2 5.6 12.2 5 13.5 5 C16 5 18 7 18 10 Z"/>
-          </svg>
-          <span>{{ r.totalLikes }}</span>
+          <h1>{{ r.nombre }}</h1>
+          <div class="autor-pill">
+            <span class="autor-prefijo">Receta de</span>
+            <span class="autor-nombre">{{ r.usuarioCreadorNombre }}</span>
+          </div>
+          
+          @if (r.descripcion) {
+            <p class="hero-descripcion" revela [retardo]="150">{{ r.descripcion }}</p>
+          }
+        </div>
+
+        <div class="hero-stats" revela [retardo]="200">
+          <div class="stat-card">
+            <span class="stat-icon">⏱️</span>
+            <span class="stat-val">{{ formatearTiempo(r.tiempoPreparacion) }}</span>
+            <span class="stat-label">Preparación</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon">📊</span>
+            <span class="stat-val">{{ etiquetaDificultad(r.dificultad) }}</span>
+            <span class="stat-label">Dificultad</span>
+          </div>
+          @if (r.calorias) {
+            <div class="stat-card">
+              <span class="stat-icon">🔥</span>
+              <span class="stat-val">{{ r.calorias }}</span>
+              <span class="stat-label">kcal</span>
+            </div>
+          }
+          <div class="stat-card likes">
+            <span class="stat-icon">❤️</span>
+            <span class="stat-val">{{ r.totalLikes }}</span>
+            <span class="stat-label">Likes</span>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
   <div class="contenedor detalle-body">
-    @if (r.descripcion) {
-      <section class="detalle-seccion">
-        <p class="detalle-descripcion">{{ r.descripcion }}</p>
-      </section>
-    }
+    
 
-    <div class="detalle-cols">
-      <section class="detalle-seccion detalle-ingredientes">
-        <h2>Ingredientes</h2>
-        <ul class="lista-ingredientes">
-          @for (ing of ingredientesList(); track $index) {
-            <li>{{ ing }}</li>
-          }
-        </ul>
-      </section>
-
-      @if (r.alergenos) {
-        <section class="detalle-seccion detalle-alergenos">
-          <h2>Alérgenos</h2>
-          <div class="alergenos-tags">
-            @for (a of r.alergenos.split(','); track $index) {
-              <span class="alergen-tag">{{ a.trim() }}</span>
+    <div class="detalle-grid">
+      <!-- Columna Izquierda: Ingredientes y Alérgenos -->
+      <div class="col-side">
+        <section class="detalle-seccion" revela [retardo]="400">
+          <div class="seccion-tab">
+            <span class="tab-icon">🛒</span>
+            <span class="tab-texto">Ingredientes</span>
+          </div>
+          <div class="ingredientes-grid">
+            @for (ing of ingredientesList(); track $index) {
+              <div class="ingrediente-chip">
+                <span class="ing-dot"></span>
+                <span class="ing-nombre">{{ ing }}</span>
+              </div>
             }
           </div>
         </section>
-      }
-    </div>
 
+<<<<<<< HEAD
     <!-- Instrucciones paso a paso con IA -->
     <section class="detalle-seccion detalle-instrucciones">
       <div class="instrucciones-header">
@@ -134,5 +139,91 @@
         <p class="instrucciones-placeholder">Pulsa el botón para que la IA genere los pasos de preparación.</p>
       }
     </section>
+=======
+        @if (alergenosList().length > 0) {
+          <section class="detalle-seccion" revela [retardo]="500">
+            <div class="seccion-tab">
+              <span class="tab-icon">⚠️</span>
+              <span class="tab-texto">Alérgenos</span>
+            </div>
+            <div class="alergenos-seccion">
+              <div class="alergenos-flex">
+                @for (a of alergenosList(); track $index) {
+                  <div class="alergen-pill">
+                    <span class="alergen-icon">{{ a.icono }}</span>
+                    <span class="alergen-nombre">{{ a.nombre }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+          </section>
+        }
+      </div>
+
+      <!-- Columna Derecha: Instrucciones (Modo Cocina) -->
+      <div class="col-main">
+        <section class="detalle-seccion hoja-cocina" revela [retardo]="450">
+          <div class="seccion-tab">
+            <span class="tab-icon">👨‍🍳</span>
+            <span class="tab-texto">Modo Cocina</span>
+            
+            <div class="progreso-wrapper" *ngIf="instruccionesList().length > 0">
+              <div class="progreso-container">
+                <div class="progreso-barra" [style.width.%]="porcentajeProgreso()"></div>
+              </div>
+              <span class="progreso-texto">{{ porcentajeProgreso() }}%</span>
+            </div>
+          </div>
+
+          <div class="timeline-cocina">
+            @for (paso of instruccionesList(); track $index; let i = $index) {
+              <button class="paso-card" 
+                   [class.completado]="isPasoCompletado(i)"
+                   (click)="togglePaso(i)"
+                   type="button">
+                <div class="paso-numero">
+                  <span class="num">{{ i + 1 }}</span>
+                  <span class="check">✓</span>
+                </div>
+                <div class="paso-content">
+                  <p>{{ paso }}</p>
+                </div>
+              </button>
+            }
+          </div>
+
+          <!-- Mensaje de éxito al completar -->
+          <div class="exito-cocina" *ngIf="todoCompletado()" revela>
+            <div class="exito-inner">
+              <span class="exito-emoji">🎉</span>
+              <h3>¡Buen provecho!</h3>
+              <p>Has completado todos los pasos de la receta.</p>
+
+              <div class="reward-pill" *ngIf="recompensaReclamada()">
+                @if (monedasGanadas()! > 0) {
+                  <div class="reward-content">
+                    <span class="reward-amount">+{{ monedasGanadas() }} 🪙</span>
+                    <p class="reward-text">Monedas añadidas a tu perfil</p>
+                  </div>
+                } @else {
+                  <p class="reward-limit">Límite diario de cocina alcanzado (150 🪙)</p>
+                }
+              </div>
+
+              <button (click)="reiniciarPasos()" class="btn-secundario btn-sm">Reiniciar pasos</button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notificación de Monedas (Toast) -->
+  <div class="toast-notificacion" [class.show]="mostrarNotificacion()">
+    <div class="toast-content">
+      <span class="toast-icon">💰</span>
+      <span class="toast-text">{{ mensajeNotificacion() }}</span>
+    </div>
+>>>>>>> feature-recetas-info
   </div>
 }

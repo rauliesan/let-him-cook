@@ -145,4 +145,32 @@ public class RecetaService {
         }
         recetaRepository.deleteById(id);
     }
+
+    /**
+     * Registra que se ha completado una receta y otorga monedas al usuario.
+     * Recompensa: 50 monedas. Máximo diario: 150 monedas.
+     */
+    public int completarReceta(UUID usuarioId, UUID recetaId) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado"));
+
+        java.time.LocalDate hoy = java.time.LocalDate.now(java.time.ZoneId.of("Europe/Madrid"));
+
+        // Resetear contador diario si es un nuevo día
+        if (usuario.getFechaUltimaRecetaRecompensa() == null || !usuario.getFechaUltimaRecetaRecompensa().equals(hoy)) {
+            usuario.setPuntosRecetaHoy(0);
+            usuario.setFechaUltimaRecetaRecompensa(hoy);
+        }
+
+        // Comprobar límite diario (150 monedas = 3 recetas)
+        int ganancia = 0;
+        if (usuario.getPuntosRecetaHoy() < 150) {
+            ganancia = 50;
+            usuario.setPuntos(usuario.getPuntos() + ganancia);
+            usuario.setPuntosRecetaHoy(usuario.getPuntosRecetaHoy() + ganancia);
+            usuarioRepository.save(usuario);
+        }
+
+        return ganancia;
+    }
 }
