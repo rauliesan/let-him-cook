@@ -18,16 +18,16 @@ export class FavoritoService {
 
   /* Lista los favoritos del usuario autenticado */
   getMisFavoritos(): Observable<FavoritoResponse[]> {
-    return this.http.get<FavoritoResponse[]>(`${API}/mis-favoritos`);
+    return this.http.get<FavoritoResponse[]>(`${API}/favoritos-recetas/mis-favoritos/todos`);
   }
 
   /* Agrega una receta a favoritos */
   agregar(recetaId: string): Observable<FavoritoResponse> {
-    return this.http.post<FavoritoResponse>(`${API}/mis-favoritos`, { recetaId });
+    return this.http.post<FavoritoResponse>(`${API}/favoritos-recetas`, { recetaId });
   }
 
   /* Elimina una receta de favoritos */
   eliminar(recetaId: string): Observable<void> {
-    return this.http.delete<void>(`${API}/mis-favoritos/${recetaId}`);
+    return this.http.delete<void>(`${API}/favoritos-recetas/${recetaId}`);
   }
 }

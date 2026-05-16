@@ -112,8 +112,8 @@ export class Perfil implements OnInit {
   /* ── Métodos de configuración IA ── */
   abrirEditarIa() {
     this.iaApiKeyInput   = '';
-    this.iaEndpointInput = this.usuario()?.iaCustomEndpoint ?? '';
-    this.iaModeloInput   = this.usuario()?.iaCustomModelo  ?? '';
+    this.iaEndpointInput = this.usuario()?.iaCustomEndpoint ?? 'https://api.deepseek.com/v1/chat/completions';
+    this.iaModeloInput   = this.usuario()?.iaCustomModelo  ?? 'deepseek-chat';
     this.errorIa.set(null);
     this.editandoIa.set(true);
   }

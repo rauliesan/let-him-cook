@@ -171,7 +171,7 @@
     } @else {
     <div class="recetas-grid">
       @for (receta of recetasFiltradas(); track receta.id; let i = $index) {
-      <article class="receta-card" revela [retardo]="i * 70">
+      <article class="receta-card" revela [retardo]="i * 70" [routerLink]="['/receta', receta.id]" style="cursor:pointer">
         <div class="receta-imagen" [style.background]="colorReceta(receta.tipoComidaNombre, i)">
           <div class="receta-overlay"></div>
           <!-- Emojis de hasta 3 categorías -->

@@ -1,0 +1,137 @@
+.estado-carga, .estado-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  min-height: 40vh;
+  text-align: center;
+}
+
+.detalle-hero {
+  background: var(--rojo, #b83520);
+  color: white;
+  padding: 2.5rem 0 2rem;
+}
+
+.detalle-hero-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.btn-volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: rgba(255,255,255,0.8);
+  text-decoration: none;
+  font-size: 0.9rem;
+  width: fit-content;
+
+  &:hover { color: white; }
+}
+
+.detalle-hero h1 {
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  font-weight: 700;
+  margin: 0;
+}
+
+.detalle-autor {
+  opacity: 0.8;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.detalle-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+
+  &.badge-cat { background: rgba(255,255,255,0.2); color: white; }
+  &.badge-dif { background: white; color: var(--rojo, #b83520); }
+}
+
+.detalle-meta {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+.detalle-body {
+  padding: 2rem 0 4rem;
+}
+
+.detalle-descripcion {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--texto-suave, #555);
+  margin-bottom: 2rem;
+}
+
+.detalle-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+
+  @media (max-width: 640px) { grid-template-columns: 1fr; }
+}
+
+.detalle-seccion {
+  h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--texto, #222);
+  }
+}
+
+.lista-ingredientes {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  li {
+    padding: 0.5rem 0.75rem;
+    background: var(--crema, #fdf6f0);
+    border-radius: 8px;
+    font-size: 0.95rem;
+
+    &::before { content: '• '; color: var(--rojo, #b83520); font-weight: bold; }
+  }
+}
+
+.alergenos-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.alergen-tag {
+  padding: 0.3rem 0.7rem;
+  background: #fff3cd;
+  color: #856404;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}

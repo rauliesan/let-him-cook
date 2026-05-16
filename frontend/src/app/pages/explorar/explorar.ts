@@ -1,5 +1,6 @@
 import { Component, OnInit, signal, computed, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { Revela } from '../../shared/revela/revela';
 import { CountUp } from '../../shared/countup/countup';
 import { RecetaService, RecetaResponse, TipoComidaResponse } from '../../services/receta.service';
@@ -41,7 +42,7 @@ const COLOR_FALLBACK = '#B83520';
 
 @Component({
   selector: 'app-explorar',
-  imports: [CommonModule, Revela, CountUp],
+  imports: [CommonModule, RouterLink, Revela, CountUp],
   templateUrl: './explorar.html',
   styleUrl: './explorar.scss',
 })

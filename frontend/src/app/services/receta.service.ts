@@ -66,6 +66,11 @@ export class RecetaService {
     return this.http.get<TipoComidaResponse[]>(`${API}/tipos-comida`);
   }
 
+  /* Obtiene una receta por su ID */
+  getPorId(id: string): Observable<RecetaResponse> {
+    return this.http.get<RecetaResponse>(`${API}/recetas/${id}`);
+  }
+
   /* Búsqueda dinámica en el servidor */
   buscarDinamico(termino: string, dificultad?: string, categorias?: string[], pagina = 0, tam = 12): Observable<Pagina<RecetaResponse>> {
     let url = `${API}/recetas/busqueda?termino=${termino}&page=${pagina}&size=${tam}`;

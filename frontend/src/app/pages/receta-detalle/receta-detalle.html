@@ -1,0 +1,95 @@
+@if (cargando()) {
+  <div class="estado-carga">
+    <div class="carga-spinner"></div>
+    <p>Cargando receta...</p>
+  </div>
+}
+
+@if (!cargando() && error()) {
+  <div class="estado-error contenedor">
+    <p>{{ error() }}</p>
+    <a [routerLink]="['/explorar']" class="btn-primario btn-sm">Volver a explorar</a>
+  </div>
+}
+
+@if (!cargando() && !error() && receta(); as r) {
+  <div class="detalle-hero">
+    <div class="contenedor detalle-hero-inner">
+      <a [routerLink]="['/explorar']" class="btn-volver">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+          <path d="M10 3L5 8l5 5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Volver
+      </a>
+      <h1>{{ r.nombre }}</h1>
+      <p class="detalle-autor">por {{ r.usuarioCreadorNombre }}</p>
+
+      <div class="detalle-badges">
+        @if (r.tipoComidaNombre) {
+          <span class="badge badge-cat">{{ r.tipoComidaNombre }}</span>
+        }
+        @if (r.tipoComida2Nombre) {
+          <span class="badge badge-cat">{{ r.tipoComida2Nombre }}</span>
+        }
+        @if (r.tipoComida3Nombre) {
+          <span class="badge badge-cat">{{ r.tipoComida3Nombre }}</span>
+        }
+        <span class="badge badge-dif">{{ etiquetaDificultad(r.dificultad) }}</span>
+      </div>
+
+      <div class="detalle-meta">
+        <div class="meta-item">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18">
+            <circle cx="10" cy="10" r="8"/>
+            <path d="M10 6v4l2.5 2" stroke-linecap="round"/>
+          </svg>
+          <span>{{ formatearTiempo(r.tiempoPreparacion) }}</span>
+        </div>
+        @if (r.calorias) {
+          <div class="meta-item">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18">
+              <path d="M10 2C6 2 3 6 3 10a7 7 0 0014 0c0-4-3-8-7-8z" stroke-linecap="round"/>
+            </svg>
+            <span>{{ r.calorias }} kcal</span>
+          </div>
+        }
+        <div class="meta-item">
+          <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
+            <path d="M10 17 L2 10 C2 7 4 5 6.5 5 C7.8 5 8.8 5.6 10 6.7 C11.2 5.6 12.2 5 13.5 5 C16 5 18 7 18 10 Z"/>
+          </svg>
+          <span>{{ r.totalLikes }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="contenedor detalle-body">
+    @if (r.descripcion) {
+      <section class="detalle-seccion">
+        <p class="detalle-descripcion">{{ r.descripcion }}</p>
+      </section>
+    }
+
+    <div class="detalle-cols">
+      <section class="detalle-seccion detalle-ingredientes">
+        <h2>Ingredientes</h2>
+        <ul class="lista-ingredientes">
+          @for (ing of ingredientesList(); track $index) {
+            <li>{{ ing }}</li>
+          }
+        </ul>
+      </section>
+
+      @if (r.alergenos) {
+        <section class="detalle-seccion detalle-alergenos">
+          <h2>Alérgenos</h2>
+          <div class="alergenos-tags">
+            @for (a of r.alergenos.split(','); track $index) {
+              <span class="alergen-tag">{{ a.trim() }}</span>
+            }
+          </div>
+        </section>
+      }
+    </div>
+  </div>
+}

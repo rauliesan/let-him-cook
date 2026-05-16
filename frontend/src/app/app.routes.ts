@@ -32,5 +32,9 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/cocinar/cocinar').then(m => m.Cocinar),
     canActivate: [authGuard],
   },
+  {
+    path: 'receta/:id',
+    loadComponent: () => import('./pages/receta-detalle/receta-detalle').then(m => m.RecetaDetalle),
+  },
   { path: '**', redirectTo: '' },
 ];
