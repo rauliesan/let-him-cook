@@ -20,6 +20,15 @@ export class RecetaDetalle implements OnInit {
     return ing.split(',').map(s => s.trim()).filter(Boolean);
   });
 
+  instruccionesList = computed(() => {
+    const raw = this.receta()?.instrucciones ?? '';
+    // Split by "Paso N:" pattern, or by newlines, whichever yields steps
+    const pasos = raw.split(/Paso\s*\d+\s*:\s*/i).map(s => s.trim()).filter(Boolean);
+    if (pasos.length > 1) return pasos;
+    // Fallback: split by newlines
+    return raw.split('\n').map(s => s.trim()).filter(Boolean);
+  });
+
   constructor(
     private route: ActivatedRoute,
     private recetaService: RecetaService,

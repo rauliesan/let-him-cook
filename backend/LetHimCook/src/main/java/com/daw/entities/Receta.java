@@ -46,6 +46,9 @@ public class Receta {
 	@Column(columnDefinition = "TEXT", nullable = false)
 	private String ingredientes;
 	
+	@Column(columnDefinition = "TEXT")
+	private String instrucciones;
+	
 	/**
 	 * Tiempo de preparación en minutos.
 	 */

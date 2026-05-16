@@ -91,5 +91,18 @@
         </section>
       }
     </div>
+
+    @if (r.instrucciones) {
+      <section class="detalle-seccion detalle-instrucciones">
+        <h2>📝 Instrucciones</h2>
+        <ol class="lista-pasos">
+          @for (paso of instruccionesList(); track $index) {
+            <li class="paso-item">
+              <span class="paso-texto">{{ paso }}</span>
+            </li>
+          }
+        </ol>
+      </section>
+    }
   </div>
 }

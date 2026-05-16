@@ -138,6 +138,7 @@ public class IaGeneracionService {
         receta.setNombre(dto.getNombre());
         receta.setDescripcion(dto.getDescripcion());
         receta.setIngredientes(dto.getIngredientes());
+        receta.setInstrucciones(dto.getInstrucciones());
         receta.setTiempoPreparacion(dto.getTiempoPreparacion());
         receta.setDificultad(dto.getDificultad());
         receta.setCalorias(dto.getCalorias());
@@ -203,6 +204,7 @@ public class IaGeneracionService {
         requestBody.put("messages", List.of(Map.of("role", "user", "content", prompt)));
         requestBody.put("response_format", Map.of("type", "json_object"));
         requestBody.put("temperature", 0.8);
+        requestBody.put("max_tokens", 4096);
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 

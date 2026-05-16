@@ -89,13 +89,11 @@ export class Cocinar {
     this.st.publicando.set(true);
     this.st.errorPublicar.set(null);
 
-    const descFinal = this.st.editorDescripcion
-      + (this.st.editorInstrucciones ? '\n\n**Instrucciones:**\n' + this.st.editorInstrucciones : '');
-
     const req: PublicarRecetaIaRequest = {
       nombre: this.st.editorNombre,
-      descripcion: descFinal,
+      descripcion: this.st.editorDescripcion,
       ingredientes: this.st.editorIngredientes,
+      instrucciones: this.st.editorInstrucciones || undefined,
       tiempoPreparacion: this.st.editorTiempoPreparacion || undefined,
       dificultad: this.st.editorDificultad,
       calorias: this.st.editorCalorias || undefined,

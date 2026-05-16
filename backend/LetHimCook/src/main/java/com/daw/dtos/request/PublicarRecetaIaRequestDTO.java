@@ -22,6 +22,8 @@ public class PublicarRecetaIaRequestDTO {
     @NotBlank(message = "Los ingredientes son obligatorios")
     private String ingredientes;
 
+    private String instrucciones;
+
     private Integer tiempoPreparacion;
 
     private Dificultad dificultad;
