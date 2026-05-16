@@ -172,4 +172,15 @@ public class UsuarioController {
         return ResponseEntity.ok(
                 usuarioService.actualizarFoto(userDetails.getUsuario().getId(), dto.getFotoUrl()));
     }
+
+    /**
+     * Deduce puntos al usuario por una tirada en la ruleta/slots.
+     */
+    @PostMapping("/me/cobrar-tirada")
+    public ResponseEntity<Void> cobrarTirada(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam(defaultValue = "100") int coste) {
+        usuarioService.cobrarTirada(userDetails.getUsuario().getId(), coste);
+        return ResponseEntity.ok().build();
+    }
 }

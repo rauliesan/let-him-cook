@@ -99,4 +99,16 @@ public class RecetaController {
         recetaService.eliminar(id);
         return ResponseEntity.noContent().build();
     }
+
+    /**
+     * Marca una receta como completada (cocinada) por el usuario y devuelve las monedas ganadas.
+     */
+    @PostMapping("/{id}/completar")
+    public ResponseEntity<Integer> completarReceta(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        UUID usuarioId = userDetails.getUsuario().getId();
+        int monedas = recetaService.completarReceta(usuarioId, id);
+        return ResponseEntity.ok(monedas);
+    }
 }

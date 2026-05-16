@@ -83,4 +83,9 @@ export class RecetaService {
     }
     return this.http.get<Pagina<RecetaResponse>>(url);
   }
+
+  /* Registra que se ha completado la receta y devuelve las monedas ganadas */
+  completarReceta(id: string): Observable<number> {
+    return this.http.post<number>(`${API}/recetas/${id}/completar`, {});
+  }
 }

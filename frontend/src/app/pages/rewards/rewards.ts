@@ -90,7 +90,20 @@ export class Rewards implements OnInit {
       return;
     }
 
-    this.coins.update(c => c - this.COSTE_TIRADA);
+    // Deduzco puntos en el backend y luego inicio la animación
+    this.usuarioService.cobrarTirada(this.COSTE_TIRADA).subscribe({
+      next: () => {
+        this.coins.update(c => c - this.COSTE_TIRADA);
+        this.iniciarGiro(catalogo);
+      },
+      error: (err) => {
+        alert(err.error?.mensaje || 'No tienes suficientes monedas');
+        this.girando.set(false);
+      }
+    });
+  }
+
+  private iniciarGiro(catalogo: RecompensaResponse[]): void {
     this.girando.set(true);
     this.premioGanado.set(null);
     this.mostrarPremio.set(false);

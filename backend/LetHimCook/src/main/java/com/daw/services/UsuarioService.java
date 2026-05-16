@@ -284,4 +284,16 @@ public class UsuarioService {
         usuario.setFechaExpiracionCodigo(null);
         usuarioRepository.save(usuario);
     }
+
+    /**
+     * Deduce puntos al usuario por realizar una tirada en la ruleta/slots.
+     */
+    public void cobrarTirada(UUID usuarioId, int coste) {
+        Usuario usuario = buscarEntidadPorId(usuarioId);
+        if (usuario.getPuntos() < coste) {
+            throw new com.daw.exceptions.OperacionInvalidaException("No tienes suficientes monedas para jugar.");
+        }
+        usuario.setPuntos(usuario.getPuntos() - coste);
+        usuarioRepository.save(usuario);
+    }
 }

@@ -29,11 +29,10 @@ public class RecompensaSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        // Restaurar monedas a prueba1 para tests
         usuarioRepository.findByNombre("prueba1").ifPresent(u -> {
-            u.setPuntos(5000);
+            u.setPuntos(0);
             usuarioRepository.save(u);
-            log.info("Monedas restauradas para el usuario prueba1 (5000 coins)");
+            log.info("DEBUG: Monedas de prueba1 reseteadas a 0 en el Seeder");
         });
 
         if (recompensaRepository.existsByNombre("Dios Pastafarista")) {
