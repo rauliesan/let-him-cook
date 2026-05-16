@@ -47,7 +47,7 @@
         <!-- Emojis de cada segmento posicionados con rotacion -->
         @for (premio of premios; track premio.nombre; let i = $index) {
           <div class="ruleta-item"
-               [style.--seg-angulo]="(i * 45 + 22.5) + 'deg'">
+               [style.--seg-angulo]="(i * (360 / premios.length) + (360 / premios.length / 2)) + 'deg'">
             <span class="ruleta-item-emoji">{{ premio.emoji }}</span>
             <span class="ruleta-item-nombre">{{ premio.nombre }}</span>
           </div>
