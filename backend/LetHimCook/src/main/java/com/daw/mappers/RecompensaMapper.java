@@ -24,6 +24,8 @@ public interface RecompensaMapper {
     @Mapping(target = "id", source = "recompensa.id")
     @Mapping(target = "nombre", source = "recompensa.nombre")
     @Mapping(target = "descripcion", source = "recompensa.descripcion")
+    @Mapping(target = "emoji", source = "recompensa.emoji")
+    @Mapping(target = "rareza", source = "recompensa.rareza")
     @Mapping(target = "probabilidad", source = "recompensa.probabilidad")
     @Mapping(target = "fechaObtenida", source = "fechaObtenida")
     RecompensaResponseDTO toResponseDTO(UsuarioRecompensa entity);

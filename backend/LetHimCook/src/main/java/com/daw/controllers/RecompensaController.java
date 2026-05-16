@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
  * @author IES Almudeyne - Raúl Liébana Sánchez
  */
 @RestController
-@RequestMapping("/admin/recompensas")
+@RequestMapping("/recompensas")
 @RequiredArgsConstructor
 public class RecompensaController {
 

@@ -1,9 +1,9 @@
-<!-- Hero compacto con titulo y balance de coins -->
+<!-- Hero con balance de coins -->
 <section class="rewards-hero">
   <div class="contenedor rewards-hero-inner">
     <div revela>
-      <h1>Ruleta de <span class="acento">Premios</span></h1>
-      <p class="rewards-subtitulo">Gira la ruleta y gana badges, recetas y monedas</p>
+      <h1>Let Him <span class="acento">Cook</span> Slots</h1>
+      <p class="rewards-subtitulo">Consigue las 50 insignias de comida. ¿Serás capaz de hallar al Dios Pastafarista?</p>
     </div>
     <div class="coins-display" revela [retardo]="100">
       <span class="coins-icono">🪙</span>
@@ -13,70 +13,61 @@
   </div>
 </section>
 
-<!-- Zona principal de la ruleta -->
-<section class="ruleta-seccion">
-  <div class="contenedor ruleta-layout">
+<!-- Zona de la Máquina Tragaperras -->
+<section class="slot-machine-seccion">
+  <div class="contenedor">
+    
+    <div class="slot-machine-container" [class.is-spinning]="girando()" revela [retardo]="150">
+      <div class="slot-machine-frame">
+        <div class="slot-machine-header">
+          <div class="light"></div>
+          <div class="light"></div>
+          <div class="light"></div>
+          <span class="logo">LHC SLOTS</span>
+          <div class="light"></div>
+          <div class="light"></div>
+          <div class="light"></div>
+        </div>
 
-    <!-- Ruleta con flecha indicadora -->
-    <div class="ruleta-zona" revela [retardo]="150">
-
-      <!-- Flecha fija que apunta al segmento ganador -->
-      <div class="ruleta-flecha" aria-hidden="true">
-        <svg viewBox="0 0 36 30" fill="none">
-          <defs>
-            <linearGradient id="flechaGrad" x1="18" y1="0" x2="18" y2="30" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#E8B84B"/>
-              <stop offset="100%" stop-color="#C13E28"/>
-            </linearGradient>
-            <filter id="flechaSombra">
-              <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.4"/>
-            </filter>
-          </defs>
-          <path d="M18 30L2 4a2 2 0 0 1 1.7-3h28.6a2 2 0 0 1 1.7 3L18 30z" fill="url(#flechaGrad)" filter="url(#flechaSombra)"/>
-          <path d="M18 26L5 5h26L18 26z" fill="var(--primario)" opacity="0.8"/>
-        </svg>
-      </div>
-
-      <!-- Disco giratorio -->
-      <div class="ruleta-disco"
-           [class.girando]="girando()"
-           [class.reseteando]="!girando() && !mostrarPremio() && anguloActual() === 0"
-           [style.transform]="'rotate(' + anguloActual() + 'deg)'">
-
-        <!-- Segmentos con conic-gradient (dibujados via CSS) -->
-        <!-- Emojis de cada segmento posicionados con rotacion -->
-        @for (premio of premios; track premio.nombre; let i = $index) {
-          <div class="ruleta-item"
-               [style.--seg-angulo]="(i * 45 + 22.5) + 'deg'">
-            <span class="ruleta-item-emoji">{{ premio.emoji }}</span>
-            <span class="ruleta-item-nombre">{{ premio.nombre }}</span>
+        <div class="reels-container">
+          <div class="reel" *ngFor="let reel of reels; let i = index">
+            <div class="reel-window">
+              <div class="reel-strip" [class.spinning]="girando()">
+                <!-- Mostramos varios iconos para el efecto de giro, el real es el primero -->
+                <span class="icon">{{ reel() }}</span>
+                <span class="icon">🍔</span>
+                <span class="icon">🍕</span>
+                <span class="icon">🥗</span>
+                <span class="icon">🍣</span>
+                <span class="icon">🍜</span>
+                <span class="icon">{{ reel() }}</span>
+              </div>
+            </div>
+            <div class="reel-shading"></div>
           </div>
-        }
+        </div>
 
-        <!-- Centro -->
-        <div class="ruleta-centro">
-          <span>🎰</span>
+        <div class="slot-machine-footer">
+          <div class="win-line"></div>
         </div>
       </div>
 
-      <!-- Borde exterior -->
-      <div class="ruleta-borde" aria-hidden="true"></div>
+      <div class="slot-machine-handle" (click)="girar()" [class.pulled]="girando()">
+        <div class="handle-rod"></div>
+        <div class="handle-knob"></div>
+      </div>
     </div>
 
-    <!-- Boton de girar + info -->
-    <div class="ruleta-acciones" revela [retardo]="250">
-      <button class="btn-girar"
-              [disabled]="!puedeGirar()"
-              (click)="girar()">
+    <div class="slot-acciones" revela [retardo]="250">
+      <button class="btn-spin" [disabled]="!puedeGirar()" (click)="girar()">
         @if (girando()) {
-          <span class="spinner-girar"></span> Girando...
+          <span class="spinner-dot"></span> Girando...
         } @else {
-          Girar
-          <span class="btn-girar-coste">🪙 {{ COSTE_TIRADA }}</span>
+          TIRAR <span class="btn-coste">🪙 {{ COSTE_TIRADA }}</span>
         }
       </button>
       @if (coins() < COSTE_TIRADA && !girando()) {
-        <p class="sin-coins">No tienes suficientes coins para girar</p>
+        <p class="sin-coins">Necesitas más monedas para jugar</p>
       }
     </div>
   </div>
@@ -85,61 +76,77 @@
 <!-- Overlay de premio ganado -->
 @if (mostrarPremio() && premioGanado(); as premio) {
   <div class="premio-overlay" (click)="recogerPremio()">
-    <!-- Confetti particulas -->
-    <div class="confetti-container" aria-hidden="true">
-      @for (i of [1,2,3,4,5,6,7,8,9,10,11,12]; track i) {
-        <div class="confetti" [style.--i]="i"></div>
-      }
+    <div class="confetti-container">
+      <div class="confetti" *ngFor="let i of [1,2,3,4,5,6,7,8,9,10,11,12]" [style.--i]="i"></div>
     </div>
 
     <div class="premio-card" (click)="$event.stopPropagation()">
-      <div class="premio-brillo" aria-hidden="true"></div>
+      <div class="premio-brillo"></div>
       <span class="premio-emoji">{{ premio.emoji }}</span>
       <span class="premio-rareza rareza-{{ premio.rareza }}">{{ etiquetaRareza(premio.rareza) }}</span>
       <h2 class="premio-nombre">{{ premio.nombre }}</h2>
       <p class="premio-desc">{{ premio.descripcion }}</p>
-      <button class="btn-recoger" (click)="recogerPremio()">Recoger</button>
+      <button class="btn-recoger" (click)="recogerPremio()">Añadir a mi colección</button>
     </div>
   </div>
 }
 
-<!-- Historial de premios obtenidos -->
+<!-- Inventario de Premios Conseguidos -->
 <section class="historial-seccion">
   <div class="contenedor">
-    <h2 class="seccion-titulo" revela>Tus premios</h2>
+    <h2 class="seccion-titulo" revela>Mi Colección</h2>
 
-    @if (historial().length === 0) {
-      <p class="historial-vacio" revela [retardo]="80">Aun no has ganado ningun premio. Gira la ruleta!</p>
+    @if (misPremios().length === 0 && !cargandoMisPremios()) {
+      <div class="coleccion-vacia" revela>
+        <span class="emoji-vacio">🍽️</span>
+        <p>Tu vitrina está vacía. ¡Prueba suerte en la máquina!</p>
+      </div>
     } @else {
-      <div class="historial-grid">
-        @for (entry of historial(); track $index; let i = $index) {
-          <div class="historial-card" revela [retardo]="i * 70">
-            <div class="historial-icono">
-              <span>{{ entry.emoji }}</span>
+      <div class="coleccion-grid">
+        @for (premio of misPremios(); track premio.id; let i = $index) {
+          <div class="badge-card" revela [retardo]="(i % 5) * 50" [class.new]="i >= misPremios().length - 5">
+            <div class="badge-icon">
+              <span>{{ premio.emoji }}</span>
             </div>
-            <div class="historial-info">
-              <span class="historial-nombre">{{ entry.nombre }}</span>
+            <div class="badge-info">
+              <span class="badge-nombre">{{ premio.nombre }}</span>
+              <span class="badge-rareza rareza-{{ premio.rareza }}">{{ etiquetaRareza(premio.rareza) }}</span>
             </div>
-            <span class="historial-fecha">{{ entry.fecha }}</span>
           </div>
         }
       </div>
+
+      @if (hayMasPremios()) {
+        <div class="ver-mas-container" revela>
+          <button class="btn-ver-mas" (click)="cargarMisPremios(false)" [disabled]="cargandoMisPremios()">
+            @if (cargandoMisPremios()) {
+              Cargando...
+            } @else {
+              Mostrar más
+            }
+          </button>
+        </div>
+      }
     }
   </div>
 </section>
 
-<!-- Catalogo de todos los premios posibles -->
+<!-- Catálogo de Probabilidades -->
 <section class="catalogo-seccion">
   <div class="contenedor">
-    <h2 class="seccion-titulo" revela>Premios disponibles</h2>
+    <header class="catalogo-header" revela>
+      <h2 class="seccion-titulo">Probabilidades</h2>
+      <p>Consigue los 3 símbolos iguales para ganar el premio.</p>
+    </header>
+
     <div class="catalogo-grid">
-      @for (premio of premios; track premio.nombre; let i = $index) {
-        <div class="catalogo-card" revela [retardo]="i * 60" [style.--premio-color]="premio.color">
-          <span class="catalogo-emoji">{{ premio.emoji }}</span>
-          <span class="catalogo-nombre">{{ premio.nombre }}</span>
-          <span class="catalogo-rareza rareza-{{ premio.rareza }}">{{ etiquetaRareza(premio.rareza) }}</span>
-          <span class="catalogo-prob">{{ (premio.probabilidad * 100) | number:'1.0-1' }}%</span>
-          <p class="catalogo-desc">{{ premio.descripcion }}</p>
+      @for (p of catalogoPremios(); track p.id; let i = $index) {
+        <div class="catalogo-item rareza-{{ p.rareza }}" revela [retardo]="(i % 10) * 30">
+          <span class="item-emoji">{{ p.emoji }}</span>
+          <div class="item-info">
+            <span class="item-nombre">{{ p.nombre }}</span>
+            <span class="item-prob">{{ (p.probabilidad * 100) | number:'1.0-3' }}%</span>
+          </div>
         </div>
       }
     </div>

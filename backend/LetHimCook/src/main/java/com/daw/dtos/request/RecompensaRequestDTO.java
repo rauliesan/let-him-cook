@@ -18,6 +18,10 @@ public class RecompensaRequestDTO {
     
     private String descripcion;
     
+    private String emoji;
+
+    private String rareza;
+
     @Min(value = 0) @Max(value = 1)
     private Double probabilidad;
 }
