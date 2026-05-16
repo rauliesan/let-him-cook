@@ -7,6 +7,8 @@ export interface RecompensaResponse {
   id: string;
   nombre: string;
   descripcion: string;
+  emoji: string;
+  rareza: string;
   probabilidad: number;
   fechaObtenida: string | null;
 }
@@ -46,5 +48,10 @@ export class RecompensaService {
     return this.http.post<UsuarioRecompensaResponse>(`${API}/mis-recompensas`, {
       recompensaId,
     });
+  }
+
+  /* Listado de todas las recompensas base */
+  getTodas(): Observable<RecompensaResponse[]> {
+    return this.http.get<RecompensaResponse[]>(`${API}/recompensas`);
   }
 }

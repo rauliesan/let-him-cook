@@ -79,6 +79,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/recetas", "/recetas/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/tipos-comida", "/tipos-comida/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/posts", "/posts/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/recompensas", "/recompensas/**").permitAll()
 
                         // Formulario de contacto — público
                         .requestMatchers(HttpMethod.POST, "/contacto").permitAll()

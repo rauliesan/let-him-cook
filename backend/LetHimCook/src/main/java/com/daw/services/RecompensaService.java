@@ -50,6 +50,8 @@ public class RecompensaService {
 
         recompensa.setNombre(dto.getNombre());
         recompensa.setDescripcion(dto.getDescripcion());
+        recompensa.setEmoji(dto.getEmoji());
+        recompensa.setRareza(dto.getRareza());
         recompensa.setProbabilidad(dto.getProbabilidad());
 
         recompensa = recompensaRepository.save(recompensa);

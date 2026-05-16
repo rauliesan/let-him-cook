@@ -15,6 +15,7 @@ import com.daw.entities.Usuario;
 public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
 
     Optional<Usuario> findByEmail(String email);
+    Optional<Usuario> findByNombre(String nombre);
 
     boolean existsByEmail(String email);
 
