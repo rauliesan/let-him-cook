@@ -48,6 +48,12 @@ public class RecetaService {
         return recetaMapper.toListDTO(recetaRepository.findAll());
     }
 
+    /** Recetas creadas por un usuario concreto, ordenadas por fecha descendente. */
+    @Transactional(readOnly = true)
+    public List<RecetaResponseDTO> listarPorUsuario(UUID usuarioId) {
+        return recetaMapper.toListDTO(recetaRepository.findByUsuario_IdOrderByFechaCreacionDesc(usuarioId));
+    }
+
     /** Lista paginada con filtros opcionales. */
     @Transactional(readOnly = true)
     public Page<RecetaResponseDTO> buscarPaginado(String nombre, Dificultad dificultad, Pageable pageable) {

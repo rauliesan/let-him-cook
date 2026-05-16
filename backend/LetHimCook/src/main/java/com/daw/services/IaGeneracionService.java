@@ -166,29 +166,89 @@ public class IaGeneracionService {
         return response;
     }
 
+    @Transactional(readOnly = true)
+    public Map<String, String> generarInstrucciones(String recetaNombre, String ingredientes, UUID usuarioId) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado"));
+
+        String apiKey, endpoint, modelo;
+        if (usuario.getIaCustomApiKey() != null && !usuario.getIaCustomApiKey().isBlank()) {
+            apiKey   = usuario.getIaCustomApiKey();
+            endpoint = (usuario.getIaCustomEndpoint() != null && !usuario.getIaCustomEndpoint().isBlank())
+                    ? usuario.getIaCustomEndpoint() : DEEPSEEK_ENDPOINT;
+            modelo   = (usuario.getIaCustomModelo() != null && !usuario.getIaCustomModelo().isBlank())
+                    ? usuario.getIaCustomModelo() : DEEPSEEK_MODEL;
+        } else if (usuario.getIaModeloSeleccionado() != null
+                && usuario.getIaModeloSeleccionado().getApi() != null
+                && usuario.getIaModeloSeleccionado().getApi().getApiKey() != null) {
+            Api api  = usuario.getIaModeloSeleccionado().getApi();
+            apiKey   = api.getApiKey();
+            endpoint = (api.getEndpointUrl() != null && !api.getEndpointUrl().isBlank())
+                    ? api.getEndpointUrl() : DEEPSEEK_ENDPOINT;
+            modelo   = usuario.getIaModeloSeleccionado().getNombreModelo();
+        } else if (appDeepseekKey != null && !appDeepseekKey.isBlank()) {
+            apiKey   = appDeepseekKey;
+            endpoint = DEEPSEEK_ENDPOINT;
+            modelo   = DEEPSEEK_MODEL;
+        } else {
+            apiKey   = "free-key";
+            endpoint = "https://text.pollinations.ai/openai";
+            modelo   = "openai";
+        }
+
+        String prompt = "Receta: \"" + recetaNombre + "\". Ingredientes: " + ingredientes +
+                ". Escribe los pasos de preparacion numerados. Solo JSON: {\"instrucciones\":\"1. Paso...\\n2. Paso...\"}";
+
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.setBearerAuth(apiKey);
+
+            Map<String, Object> requestBody = new LinkedHashMap<>();
+            requestBody.put("model", modelo);
+            requestBody.put("messages", List.of(Map.of("role", "user", "content", prompt)));
+            requestBody.put("response_format", Map.of("type", "json_object"));
+            requestBody.put("temperature", 0.7);
+            requestBody.put("max_tokens", 512);
+
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+            ResponseEntity<String> rawResponse = restTemplate.postForEntity(endpoint, entity, String.class);
+            String rawBody = rawResponse.getBody();
+            if (rawBody == null || rawBody.isBlank()) {
+                throw new OperacionInvalidaException("La IA no devolvio respuesta.");
+            }
+
+            JsonNode apiResponse = objectMapper.readTree(rawBody);
+            String content = apiResponse.path("choices").get(0).path("message").path("content").asText("");
+            content = content.trim();
+            if (content.startsWith("```")) {
+                content = content.replaceFirst("```(?:json)?\\s*", "").replaceAll("\\s*```\\s*$", "").trim();
+            }
+
+            JsonNode root = objectMapper.readTree(content);
+            String instrucciones = root.path("instrucciones").asText("");
+            return Map.of("instrucciones", instrucciones);
+
+        } catch (OperacionInvalidaException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new OperacionInvalidaException("Error al generar instrucciones: " + e.getMessage());
+        }
+    }
+
     private String buildPrompt(String ingredientes, String preferencias) {
         StringBuilder sb = new StringBuilder();
-        sb.append("Eres un chef experto y creativo. El usuario tiene estos ingredientes: ")
-          .append(ingredientes).append(".\n");
+        sb.append("Eres un chef. Ingredientes disponibles: ").append(ingredientes).append(".");
         if (!preferencias.isBlank()) {
-            sb.append("Preferencias adicionales: ").append(preferencias).append(".\n");
+            sb.append(" Preferencias: ").append(preferencias).append(".");
         }
-        sb.append("Genera exactamente 3 recetas diferentes y creativas usando principalmente esos ingredientes.\n");
-        sb.append("Responde ÚNICAMENTE con un objeto JSON válido con esta estructura (sin texto adicional fuera del JSON):\n");
-        sb.append("{\"recetas\":[{")
-          .append("\"nombre\":\"Nombre de la receta\",")
-          .append("\"descripcion\":\"Descripción apetitosa de 2-3 frases\",")
-          .append("\"ingredientes\":\"ingrediente1 (cantidad), ingrediente2 (cantidad), ...\",")
-          .append("\"instrucciones\":\"Paso 1: ... Paso 2: ... Paso 3: ...\",")
-          .append("\"tiempoPreparacion\":30,")
-          .append("\"dificultad\":\"BAJA\",")
-          .append("\"calorias\":400,")
-          .append("\"alergenos\":\"gluten, lactosa\",")
-          .append("\"categoria\":\"Ensaladas\",")
-          .append("\"categoriaEmoji\":\"🥗\",")
-          .append("\"categoriaColor\":\"#5D9B5D\"")
-          .append("}]}\n");
-        sb.append("Reglas: dificultad debe ser BAJA, MEDIA o ALTA. Tiempo en minutos. Color en formato hex (#RRGGBB).");
+        sb.append(" Genera 3 recetas en JSON con esta estructura exacta, sin texto fuera del JSON:\n");
+        sb.append("{\"recetas\":[");
+        sb.append("{\"nombre\":\"string\",\"descripcion\":\"string breve\",\"ingredientes\":\"string\",");
+        sb.append("\"tiempoPreparacion\":30,\"dificultad\":\"BAJA\",\"calorias\":400,");
+        sb.append("\"alergenos\":\"string\",\"categoria\":\"string\",\"categoriaEmoji\":\"string\",\"categoriaColor\":\"#RRGGBB\"}");
+        sb.append("]}\n");
+        sb.append("Reglas: dificultad=BAJA|MEDIA|ALTA, tiempo en minutos, color hex. Descripcion maxima 1 frase corta.");
         return sb.toString();
     }
 
@@ -203,20 +263,28 @@ public class IaGeneracionService {
         requestBody.put("messages", List.of(Map.of("role", "user", "content", prompt)));
         requestBody.put("response_format", Map.of("type", "json_object"));
         requestBody.put("temperature", 0.8);
+        requestBody.put("max_tokens", 2048);
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
         try {
-            ResponseEntity<Map> response = restTemplate.postForEntity(endpoint, entity, Map.class);
-            Map<String, Object> body = response.getBody();
-            if (body == null) {
+            ResponseEntity<String> rawResponse = restTemplate.postForEntity(endpoint, entity, String.class);
+            String rawBody = rawResponse.getBody();
+            if (rawBody == null || rawBody.isBlank()) {
                 throw new OperacionInvalidaException("La IA no devolvió respuesta.");
             }
 
-            List<?> choices = (List<?>) body.get("choices");
-            Map<?, ?> firstChoice = (Map<?, ?>) choices.get(0);
-            Map<?, ?> message = (Map<?, ?>) firstChoice.get("message");
-            String content = (String) message.get("content");
+            JsonNode apiResponse = objectMapper.readTree(rawBody);
+            String content = apiResponse
+                    .path("choices").get(0)
+                    .path("message")
+                    .path("content").asText("");
+
+            // Quitar posibles code fences que algunos modelos añaden (```json ... ```)
+            content = content.trim();
+            if (content.startsWith("```")) {
+                content = content.replaceFirst("```(?:json)?\\s*", "").replaceAll("\\s*```\\s*$", "").trim();
+            }
 
             JsonNode root = objectMapper.readTree(content);
             JsonNode recetasNode = root.get("recetas");
