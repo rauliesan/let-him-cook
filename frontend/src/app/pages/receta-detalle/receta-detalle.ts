@@ -31,6 +31,13 @@ export class RecetaDetalle implements OnInit {
     return text.split(/\n+/).map(s => s.trim().replace(/^\d+[.)]\s*/, '')).filter(Boolean);
   });
 
+  instruccionesList = computed(() => {
+    const raw = this.receta()?.instrucciones ?? '';
+    const pasos = raw.split(/Paso\s*\d+\s*:\s*/i).map(s => s.trim()).filter(Boolean);
+    if (pasos.length > 1) return pasos;
+    return raw.split('\n').map(s => s.trim()).filter(Boolean);
+  });
+
   constructor(
     private route: ActivatedRoute,
     private recetaService: RecetaService,

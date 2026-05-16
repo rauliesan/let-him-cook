@@ -8,6 +8,7 @@ export interface RecetaResponse {
   nombre: string;
   descripcion: string | null;
   ingredientes: string;
+  instrucciones: string | null;
   tiempoPreparacion: number | null;
   dificultad: 'BAJA' | 'MEDIA' | 'ALTA' | null;
   calorias: number | null;

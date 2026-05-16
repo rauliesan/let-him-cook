@@ -92,7 +92,7 @@
           </div>
           <div class="stat-item">
             <strong>{{ misRecompensas().length }}</strong>
-            <span>Recompensas</span>
+            <span>Premios</span>
           </div>
           <div class="stat-item">
             <strong>Nv.{{ usuario()?.nivel }}</strong>
@@ -191,14 +191,14 @@
           }
         </div>
 
-        <!-- Enlace a rewards con total de recompensas -->
+        <!-- Enlace a rewards con total de premios -->
         <a routerLink="/rewards" class="resumen-card resumen-coins">
           <div class="resumen-card-titulo">
             <span class="resumen-icono">🎁</span>
-            Recompensas
+            Premios
           </div>
           <div class="coins-grande">{{ misRecompensas().length }}</div>
-          <span class="coins-cta">Ir a Rewards →</span>
+          <span class="coins-cta">Ir a la Ruleta →</span>
         </a>
       </div>
     </div>
@@ -309,9 +309,9 @@
     @if (tabActiva() === 'recompensas') {
       <div class="tab-panel">
         <div revela>
-          <h2>Recompensas ganadas</h2>
+          <h2>Premios ganados</h2>
           <p class="panel-desc">
-            {{ misRecompensas().length }} recompensas en tu historial.
+            {{ misRecompensas().length }} premios en tu colección.
           </p>
         </div>
 

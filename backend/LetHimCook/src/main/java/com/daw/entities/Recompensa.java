@@ -33,6 +33,12 @@ public class Recompensa {
 	@Column(columnDefinition = "TEXT")
 	private String descripcion;
 
+	@Column(nullable = true)
+	private String emoji;
+
+	@Column(nullable = true)
+	private String rareza;
+
 	/**
      * Probabilidad de que este premio salga en la ruleta (0.0 a 1.0)
      */

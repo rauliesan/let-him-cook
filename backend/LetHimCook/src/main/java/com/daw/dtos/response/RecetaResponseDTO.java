@@ -23,6 +23,8 @@ public class RecetaResponseDTO {
 
     private String ingredientes;
 
+    private String instrucciones;
+
     private Integer tiempoPreparacion;
 
     private Dificultad dificultad;

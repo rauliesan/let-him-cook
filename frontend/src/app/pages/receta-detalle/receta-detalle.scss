@@ -136,6 +136,7 @@
   font-weight: 500;
 }
 
+/* ── Instrucciones ── */
 .detalle-instrucciones {
   margin-top: 2rem;
 }
@@ -190,8 +191,15 @@
     padding: 0.6rem 0.85rem;
     background: var(--crema, #fdf6f0);
     border-radius: 8px;
+    border-left: 3px solid var(--primario, #C13E28);
     font-size: 0.95rem;
     line-height: 1.5;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+    &:hover {
+      transform: translateX(4px);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
 
     &::before {
       content: counter(pasos);

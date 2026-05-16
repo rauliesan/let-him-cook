@@ -1,0 +1,564 @@
+<section class="admin-page">
+  <div class="contenedor">
+
+    <!-- Cabecera -->
+    <header class="admin-header">
+      <div class="admin-header-info">
+        <h1>
+          <svg class="admin-icono-titulo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Panel de Administración
+        </h1>
+        <p class="admin-subtitulo">Gestiona todos los recursos de LetHimCook</p>
+      </div>
+    </header>
+
+    <!-- Toast de éxito -->
+    @if (exito()) {
+      <div class="toast-exito">
+        <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+        {{ exito() }}
+      </div>
+    }
+
+    <!-- Error global -->
+    @if (error()) {
+      <div class="toast-error">
+        <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+        {{ error() }}
+        <button class="toast-cerrar" (click)="error.set(null)">✕</button>
+      </div>
+    }
+
+    <div class="admin-layout">
+
+      <!-- Sidebar de tabs -->
+      <aside class="admin-sidebar">
+        @for (tab of tabs; track tab.id) {
+          <button
+            class="tab-btn"
+            [class.activa]="tabActiva() === tab.id"
+            (click)="cambiarTab(tab.id)">
+            <span class="tab-icono">{{ tab.icono }}</span>
+            <span class="tab-label">{{ tab.label }}</span>
+            <span class="tab-badge">{{ contadores()[tab.id] }}</span>
+          </button>
+        }
+      </aside>
+
+      <!-- Contenido principal -->
+      <main class="admin-contenido">
+
+        <!-- Barra de acciones -->
+        <div class="admin-acciones">
+          <div class="admin-busqueda-wrap">
+            <svg class="admin-busqueda-icono" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="9" r="5.5"/><path d="M13 13l4 4" stroke-linecap="round"/></svg>
+            <input
+              type="text"
+              class="admin-busqueda"
+              placeholder="Buscar..."
+              [ngModel]="busqueda()"
+              (ngModelChange)="busqueda.set($event)" />
+          </div>
+          @if (tabActiva() !== 'recetas') {
+            <button class="btn-primario btn-admin-crear" (click)="abrirCrear(tabActiva())">
+              <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"/></svg>
+              Crear
+            </button>
+          }
+        </div>
+
+        <!-- Spinner de carga -->
+        @if (cargando()) {
+          <div class="admin-cargando">
+            <div class="spinner"></div>
+            <span>Cargando...</span>
+          </div>
+        }
+
+        <!-- ═══ TABLA USUARIOS ═══ -->
+        @if (tabActiva() === 'usuarios' && !cargando()) {
+          <div class="admin-tabla-wrap">
+            <table class="admin-tabla">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Email</th>
+                  <th>Rol</th>
+                  <th>Nivel</th>
+                  <th>Puntos</th>
+                  <th>Fecha</th>
+                  <th class="th-acciones">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (u of usuariosFiltrados(); track u.id) {
+                  <tr>
+                    <td>
+                      <div class="celda-nombre">
+                        <div class="mini-avatar">{{ u.nombre.charAt(0).toUpperCase() }}</div>
+                        {{ u.nombre }}
+                      </div>
+                    </td>
+                    <td class="celda-gris">{{ u.email }}</td>
+                    <td><span class="etiqueta" [class.etiqueta-admin]="u.rol === 'ADMIN'" [class.etiqueta-user]="u.rol === 'USER'">{{ u.rol }}</span></td>
+                    <td class="celda-center">{{ u.nivel }}</td>
+                    <td class="celda-center">{{ u.puntos }}</td>
+                    <td class="celda-gris">{{ formatFecha(u.fechaInscripcion) }}</td>
+                    <td class="celda-acciones">
+                      <button class="btn-icono btn-editar" title="Editar" (click)="abrirEditar('usuarios', u)">✏️</button>
+                      <button class="btn-icono btn-eliminar" title="Eliminar" (click)="eliminar('usuarios', u.id, u.nombre)">🗑️</button>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr><td colspan="7" class="celda-vacia">No hay usuarios</td></tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+
+        <!-- ═══ TABLA RECETAS ═══ -->
+        @if (tabActiva() === 'recetas' && !cargando()) {
+          <div class="admin-tabla-wrap">
+            <table class="admin-tabla">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Autor</th>
+                  <th>Categoría</th>
+                  <th>Dificultad</th>
+                  <th>Likes</th>
+                  <th>Fecha</th>
+                  <th class="th-acciones">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (r of recetasFiltradas(); track r.id) {
+                  <tr>
+                    <td><strong>{{ truncar(r.nombre, 30) }}</strong></td>
+                    <td class="celda-gris">{{ r.usuarioCreadorNombre }}</td>
+                    <td>
+                      @if (r.tipoComidaNombre) {
+                        <span class="etiqueta etiqueta-cat">{{ r.tipoComidaNombre }}</span>
+                      } @else {
+                        <span class="celda-gris">—</span>
+                      }
+                    </td>
+                    <td>
+                      @if (r.dificultad) {
+                        <span class="etiqueta"
+                          [class.etiqueta-baja]="r.dificultad === 'BAJA'"
+                          [class.etiqueta-media]="r.dificultad === 'MEDIA'"
+                          [class.etiqueta-alta]="r.dificultad === 'ALTA'">
+                          {{ r.dificultad }}
+                        </span>
+                      } @else { — }
+                    </td>
+                    <td class="celda-center">❤️ {{ r.totalLikes }}</td>
+                    <td class="celda-gris">{{ formatFecha(r.fechaCreacion) }}</td>
+                    <td class="celda-acciones">
+                      <button class="btn-icono btn-editar" title="Editar" (click)="abrirEditar('recetas', r)">✏️</button>
+                      <button class="btn-icono btn-eliminar" title="Eliminar" (click)="eliminar('recetas', r.id, r.nombre)">🗑️</button>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr><td colspan="7" class="celda-vacia">No hay recetas</td></tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+
+        <!-- ═══ TABLA CATEGORÍAS ═══ -->
+        @if (tabActiva() === 'categorias' && !cargando()) {
+          <div class="admin-tabla-wrap">
+            <table class="admin-tabla">
+              <thead>
+                <tr>
+                  <th>Icono</th>
+                  <th>Nombre</th>
+                  <th>Descripción</th>
+                  <th class="th-acciones">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (c of categorias(); track c.id) {
+                  <tr>
+                    <td class="celda-center">{{ c.iconoUrl || '🍽️' }}</td>
+                    <td><strong>{{ c.nombre }}</strong></td>
+                    <td class="celda-gris">{{ truncar(c.descripcion) }}</td>
+                    <td class="celda-acciones">
+                      <button class="btn-icono btn-editar" (click)="abrirEditar('categorias', c)">✏️</button>
+                      <button class="btn-icono btn-eliminar" (click)="eliminar('categorias', c.id, c.nombre)">🗑️</button>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr><td colspan="4" class="celda-vacia">No hay categorías</td></tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+
+        <!-- ═══ TABLA SUPERMERCADOS ═══ -->
+        @if (tabActiva() === 'supermercados' && !cargando()) {
+          <div class="admin-tabla-wrap">
+            <table class="admin-tabla">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Dirección</th>
+                  <th>Horario</th>
+                  <th>Valoración</th>
+                  <th class="th-acciones">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (s of supermercados(); track s.id) {
+                  <tr>
+                    <td><strong>{{ s.nombre }}</strong></td>
+                    <td class="celda-gris">{{ truncar(s.direccion) }}</td>
+                    <td class="celda-gris">{{ s.horario || '—' }}</td>
+                    <td class="celda-center">⭐ {{ s.valoracion !== null && s.valoracion !== undefined ? s.valoracion : '—' }}</td>
+                    <td class="celda-acciones">
+                      <button class="btn-icono btn-editar" (click)="abrirEditar('supermercados', s)">✏️</button>
+                      <button class="btn-icono btn-eliminar" (click)="eliminar('supermercados', s.id, s.nombre)">🗑️</button>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr><td colspan="5" class="celda-vacia">No hay supermercados</td></tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+
+        <!-- ═══ TABLA LOGROS ═══ -->
+        @if (tabActiva() === 'logros' && !cargando()) {
+          <div class="admin-tabla-wrap">
+            <table class="admin-tabla">
+              <thead>
+                <tr>
+                  <th>Icono</th>
+                  <th>Nombre</th>
+                  <th>Descripción</th>
+                  <th class="th-acciones">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (l of logros(); track l.id) {
+                  <tr>
+                    <td class="celda-center">{{ l.iconoUrl || '🏆' }}</td>
+                    <td><strong>{{ l.nombre }}</strong></td>
+                    <td class="celda-gris">{{ truncar(l.descripcion) }}</td>
+                    <td class="celda-acciones">
+                      <button class="btn-icono btn-editar" (click)="abrirEditar('logros', l)">✏️</button>
+                      <button class="btn-icono btn-eliminar" (click)="eliminar('logros', l.id, l.nombre)">🗑️</button>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr><td colspan="4" class="celda-vacia">No hay logros</td></tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+
+        <!-- ═══ TABLA RECOMPENSAS ═══ -->
+        @if (tabActiva() === 'recompensas' && !cargando()) {
+          <div class="admin-tabla-wrap">
+            <table class="admin-tabla">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Descripción</th>
+                  <th>Probabilidad</th>
+                  <th class="th-acciones">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (r of recompensas(); track r.id) {
+                  <tr>
+                    <td><strong>{{ r.nombre }}</strong></td>
+                    <td class="celda-gris">{{ truncar(r.descripcion) }}</td>
+                    <td class="celda-center">{{ (r.probabilidad * 100).toFixed(0) }}%</td>
+                    <td class="celda-acciones">
+                      <button class="btn-icono btn-editar" (click)="abrirEditar('recompensas', r)">✏️</button>
+                      <button class="btn-icono btn-eliminar" (click)="eliminar('recompensas', r.id, r.nombre)">🗑️</button>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr><td colspan="4" class="celda-vacia">No hay recompensas</td></tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+
+        <!-- ═══ TABLA APIs ═══ -->
+        @if (tabActiva() === 'apis' && !cargando()) {
+          <div class="admin-tabla-wrap">
+            <table class="admin-tabla">
+              <thead>
+                <tr>
+                  <th>Servicio</th>
+                  <th>Endpoint</th>
+                  <th>API Key</th>
+                  <th class="th-acciones">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (a of apis(); track a.id) {
+                  <tr>
+                    <td><strong>{{ a.nombreServicio }}</strong></td>
+                    <td class="celda-gris celda-mono">{{ truncar(a.endpointUrl, 50) }}</td>
+                    <td class="celda-gris celda-mono">{{ a.apiKey.substring(0, 8) }}•••</td>
+                    <td class="celda-acciones">
+                      <button class="btn-icono btn-editar" (click)="abrirEditar('apis', a)">✏️</button>
+                      <button class="btn-icono btn-eliminar" (click)="eliminar('apis', a.id, a.nombreServicio)">🗑️</button>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr><td colspan="4" class="celda-vacia">No hay APIs</td></tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+
+        <!-- ═══ TABLA MODELOS IA ═══ -->
+        @if (tabActiva() === 'modelos-ia' && !cargando()) {
+          <div class="admin-tabla-wrap">
+            <table class="admin-tabla">
+              <thead>
+                <tr>
+                  <th>Modelo</th>
+                  <th>API Padre</th>
+                  <th>Endpoint</th>
+                  <th class="th-acciones">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (m of modelosIa(); track m.id) {
+                  <tr>
+                    <td><strong>{{ m.nombreModelo }}</strong></td>
+                    <td>{{ m.apiNombreServicio }}</td>
+                    <td class="celda-gris celda-mono">{{ truncar(m.apiEndpointUrl, 50) }}</td>
+                    <td class="celda-acciones">
+                      <button class="btn-icono btn-editar" (click)="abrirEditar('modelos-ia', m)">✏️</button>
+                      <button class="btn-icono btn-eliminar" (click)="eliminar('modelos-ia', m.id, m.nombreModelo)">🗑️</button>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr><td colspan="4" class="celda-vacia">No hay modelos de IA</td></tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+
+      </main>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     MODAL DE FORMULARIO
+     ═══════════════════════════════════════════ -->
+@if (modalAbierto()) {
+  <div class="modal-backdrop" (click)="cerrarModal()"></div>
+  <div class="modal">
+    <div class="modal-header">
+      <h2>{{ modalTitulo() }}</h2>
+      <button class="modal-cerrar" (click)="cerrarModal()">✕</button>
+    </div>
+
+    <div class="modal-body">
+
+      <!-- ── Form: Usuarios ── -->
+      @if (modalEntidad() === 'usuarios') {
+        <label class="campo">
+          <span>Nombre *</span>
+          <input type="text" [(ngModel)]="form['nombre']" placeholder="Nombre del usuario" />
+        </label>
+        <label class="campo">
+          <span>Email *</span>
+          <input type="email" [(ngModel)]="form['email']" placeholder="email@ejemplo.com" />
+        </label>
+        <label class="campo">
+          <span>Contraseña *</span>
+          <input type="password" [(ngModel)]="form['password']" placeholder="Mínimo 8 caracteres" />
+        </label>
+      }
+
+      <!-- ── Form: Recetas (solo editar) ── -->
+      @if (modalEntidad() === 'recetas') {
+        <label class="campo">
+          <span>Nombre *</span>
+          <input type="text" [(ngModel)]="form['nombre']" />
+        </label>
+        <label class="campo">
+          <span>Descripción</span>
+          <textarea [(ngModel)]="form['descripcion']" rows="2"></textarea>
+        </label>
+        <label class="campo">
+          <span>Ingredientes *</span>
+          <textarea [(ngModel)]="form['ingredientes']" rows="3"></textarea>
+        </label>
+        <label class="campo">
+          <span>Instrucciones</span>
+          <textarea [(ngModel)]="form['instrucciones']" rows="3"></textarea>
+        </label>
+        <div class="campo-fila">
+          <label class="campo">
+            <span>Tiempo (min)</span>
+            <input type="number" [(ngModel)]="form['tiempoPreparacion']" />
+          </label>
+          <label class="campo">
+            <span>Calorías</span>
+            <input type="number" [(ngModel)]="form['calorias']" />
+          </label>
+          <label class="campo">
+            <span>Dificultad</span>
+            <select [(ngModel)]="form['dificultad']">
+              <option value="BAJA">Baja</option>
+              <option value="MEDIA">Media</option>
+              <option value="ALTA">Alta</option>
+            </select>
+          </label>
+        </div>
+        <label class="campo">
+          <span>Alérgenos</span>
+          <input type="text" [(ngModel)]="form['alergenos']" />
+        </label>
+        <label class="campo campo-check">
+          <input type="checkbox" [(ngModel)]="form['esPublica']" />
+          <span>Receta pública</span>
+        </label>
+      }
+
+      <!-- ── Form: Categorías ── -->
+      @if (modalEntidad() === 'categorias') {
+        <label class="campo">
+          <span>Nombre *</span>
+          <input type="text" [(ngModel)]="form['nombre']" placeholder="Ej: Postres" />
+        </label>
+        <label class="campo">
+          <span>Descripción</span>
+          <textarea [(ngModel)]="form['descripcion']" rows="2"></textarea>
+        </label>
+        <label class="campo">
+          <span>Icono (emoji)</span>
+          <input type="text" [(ngModel)]="form['iconoUrl']" placeholder="🍰" />
+        </label>
+      }
+
+      <!-- ── Form: Supermercados ── -->
+      @if (modalEntidad() === 'supermercados') {
+        <label class="campo">
+          <span>Nombre *</span>
+          <input type="text" [(ngModel)]="form['nombre']" placeholder="Ej: Mercadona" />
+        </label>
+        <label class="campo">
+          <span>Descripción</span>
+          <textarea [(ngModel)]="form['descripcion']" rows="2"></textarea>
+        </label>
+        <label class="campo">
+          <span>Dirección</span>
+          <input type="text" [(ngModel)]="form['direccion']" />
+        </label>
+        <label class="campo">
+          <span>Horario</span>
+          <input type="text" [(ngModel)]="form['horario']" placeholder="09:00 - 21:00" />
+        </label>
+        <div class="campo-fila">
+          <label class="campo">
+            <span>Valoración (0-5)</span>
+            <input type="number" [(ngModel)]="form['valoracion']" min="0" max="5" step="0.1" />
+          </label>
+          <label class="campo">
+            <span>Foto URL</span>
+            <input type="text" [(ngModel)]="form['fotoUrl']" />
+          </label>
+        </div>
+      }
+
+      <!-- ── Form: Logros ── -->
+      @if (modalEntidad() === 'logros') {
+        <label class="campo">
+          <span>Nombre *</span>
+          <input type="text" [(ngModel)]="form['nombre']" placeholder="Ej: Primer receta" />
+        </label>
+        <label class="campo">
+          <span>Descripción</span>
+          <textarea [(ngModel)]="form['descripcion']" rows="2"></textarea>
+        </label>
+        <label class="campo">
+          <span>Icono (emoji)</span>
+          <input type="text" [(ngModel)]="form['iconoUrl']" placeholder="🏆" />
+        </label>
+      }
+
+      <!-- ── Form: Recompensas ── -->
+      @if (modalEntidad() === 'recompensas') {
+        <label class="campo">
+          <span>Nombre *</span>
+          <input type="text" [(ngModel)]="form['nombre']" placeholder="Ej: Sartén Dorada" />
+        </label>
+        <label class="campo">
+          <span>Descripción</span>
+          <textarea [(ngModel)]="form['descripcion']" rows="2"></textarea>
+        </label>
+        <label class="campo">
+          <span>Probabilidad (0 a 1)</span>
+          <input type="number" [(ngModel)]="form['probabilidad']" min="0" max="1" step="0.01" />
+        </label>
+      }
+
+      <!-- ── Form: APIs ── -->
+      @if (modalEntidad() === 'apis') {
+        <label class="campo">
+          <span>Nombre del servicio *</span>
+          <input type="text" [(ngModel)]="form['nombreServicio']" placeholder="Ej: DeepSeek" />
+        </label>
+        <label class="campo">
+          <span>Endpoint URL</span>
+          <input type="text" [(ngModel)]="form['endpointUrl']" placeholder="https://api.deepseek.com/v1/chat/completions" />
+        </label>
+        <label class="campo">
+          <span>API Key *</span>
+          <input type="text" [(ngModel)]="form['apiKey']" placeholder="sk-..." />
+        </label>
+      }
+
+      <!-- ── Form: Modelos IA ── -->
+      @if (modalEntidad() === 'modelos-ia') {
+        <label class="campo">
+          <span>Nombre del modelo *</span>
+          <input type="text" [(ngModel)]="form['nombreModelo']" placeholder="Ej: deepseek-chat" />
+        </label>
+        <label class="campo">
+          <span>API padre *</span>
+          <select [(ngModel)]="form['apiId']">
+            <option value="" disabled>Selecciona una API</option>
+            @for (a of apis(); track a.id) {
+              <option [value]="a.id">{{ a.nombreServicio }}</option>
+            }
+          </select>
+        </label>
+      }
+
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-secundario btn-sm" (click)="cerrarModal()">Cancelar</button>
+      <button class="btn-primario btn-sm" (click)="guardar()" [disabled]="cargando()">
+        @if (cargando()) {
+          Guardando...
+        } @else {
+          {{ modalModo() === 'crear' ? 'Crear' : 'Guardar cambios' }}
+        }
+      </button>
+    </div>
+  </div>
+}

@@ -124,7 +124,13 @@
             <li>{{ paso }}</li>
           }
         </ol>
-      } @else if (!generandoInstrucciones() && !instrucciones()) {
+      } @else if (!generandoInstrucciones() && !instrucciones() && r.instrucciones && instruccionesList().length > 0) {
+        <ol class="lista-pasos">
+          @for (paso of instruccionesList(); track $index) {
+            <li>{{ paso }}</li>
+          }
+        </ol>
+      } @else if (!generandoInstrucciones() && !instrucciones() && !r.instrucciones) {
         <p class="instrucciones-placeholder">Pulsa el botón para que la IA genere los pasos de preparación.</p>
       }
     </section>

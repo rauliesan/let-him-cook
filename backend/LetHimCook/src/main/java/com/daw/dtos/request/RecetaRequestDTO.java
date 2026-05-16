@@ -24,6 +24,8 @@ public class RecetaRequestDTO {
     @NotBlank(message = "Los ingredientes son obligatorios")
     private String ingredientes;
 
+    private String instrucciones;
+
     @Min(value = 1, message = "El tiempo de preparación debe ser mayor a 0")
     private Integer tiempoPreparacion;
 

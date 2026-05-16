@@ -25,6 +25,7 @@ export interface PublicarRecetaIaRequest {
   nombre: string;
   descripcion: string;
   ingredientes: string;
+  instrucciones?: string;
   tiempoPreparacion?: number;
   dificultad?: 'BAJA' | 'MEDIA' | 'ALTA';
   calorias?: number;

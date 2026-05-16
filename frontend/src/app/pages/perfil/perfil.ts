@@ -100,8 +100,8 @@ export class Perfil implements OnInit {
   /* Tabs con cantidades reales */
   tabs = computed(() => [
     { id: 'logros',      label: 'Logros',      cantidad: this.misLogros().length,      icono: '🏆' },
-    { id: 'recompensas', label: 'Recompensas',  cantidad: this.misRecompensas().length, icono: '🎁' },
-    { id: 'recetas',     label: 'Mis recetas',  cantidad: this.misRecetas().length,     icono: '🍳' },
+    { id: 'recompensas', label: 'Recompensas', cantidad: this.misRecompensas().length, icono: '🎁' },
+    { id: 'recetas',     label: 'Mis recetas', cantidad: this.misRecetas().length,     icono: '🍳' },
   ]);
 
   /* Iniciales para el avatar */

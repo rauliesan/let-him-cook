@@ -19,6 +19,10 @@ public class RecompensaResponseDTO {
     
     private String descripcion;
     
+    private String emoji;
+
+    private String rareza;
+
     private Double probabilidad;
     
     private ZonedDateTime fechaObtenida;
