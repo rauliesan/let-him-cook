@@ -56,6 +56,10 @@ export class IaService {
     return this.http.post<PublicarRecetaResponse>(`${API}/ia/publicar`, req);
   }
 
+  generarInstrucciones(recetaNombre: string, ingredientes: string): Observable<{ instrucciones: string }> {
+    return this.http.post<{ instrucciones: string }>(`${API}/ia/instrucciones`, { recetaNombre, ingredientes });
+  }
+
   actualizarIaModelo(iaModeloId: string | null): Observable<any> {
     const params = iaModeloId ? `?iaModeloId=${iaModeloId}` : '';
     return this.http.put(`${API}/usuarios/me/ia-modelo${params}`, {});

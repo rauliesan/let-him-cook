@@ -1215,3 +1215,194 @@
   color: var(--gris);
   line-height: 1.6;
 }
+
+/* ── Mis recetas ── */
+.mis-recetas-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.mis-receta-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: white;
+  border: 1px solid rgba(0,0,0,0.07);
+  border-radius: 12px;
+  transition: box-shadow 0.2s;
+
+  &:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.07); }
+
+  @media (max-width: 500px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.mis-receta-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+
+  h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--texto, #222);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &:hover { color: var(--primario, #C13E28); }
+  }
+}
+
+.mis-receta-cat {
+  font-size: 0.75rem;
+  color: var(--primario, #C13E28);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.mis-receta-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.8rem;
+  color: var(--texto-suave, #666);
+}
+
+.badge-dif-sm {
+  padding: 0.15rem 0.5rem;
+  background: var(--crema, #fdf6f0);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--texto, #333);
+}
+
+.btn-compartir-foro {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.9rem;
+  border: 1.5px solid var(--primario, #C13E28);
+  background: transparent;
+  color: var(--primario, #C13E28);
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s, color 0.2s;
+  flex-shrink: 0;
+
+  &:hover {
+    background: var(--primario, #C13E28);
+    color: white;
+  }
+}
+
+/* ── Modal compartir foro ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal-foro {
+  background: white;
+  border-radius: 16px;
+  padding: 1.75rem;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+
+  h3 {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+}
+
+.modal-receta-nombre {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--primario, #C13E28);
+  font-weight: 600;
+}
+
+.modal-error {
+  padding: 0.5rem 0.75rem;
+  background: #fff0ee;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: var(--primario, #C13E28);
+}
+
+.modal-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+
+  label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--texto, #333);
+
+    .opt { font-weight: 400; color: #999; }
+  }
+}
+
+.modal-input {
+  padding: 0.55rem 0.8rem;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  resize: vertical;
+  transition: border-color 0.2s;
+
+  &:focus {
+    outline: none;
+    border-color: var(--primario, #C13E28);
+  }
+}
+
+.modal-acciones {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: flex-end;
+  margin-top: 0.25rem;
+}
+
+.modal-exito {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.5rem 0;
+  text-align: center;
+
+  .exito-icono { font-size: 2.5rem; }
+
+  p {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #2e7d32;
+  }
+}

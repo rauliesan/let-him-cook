@@ -48,6 +48,14 @@ public class RecetaController {
         return ResponseEntity.ok(recetaService.listarTodas());
     }
 
+    /** Recetas creadas por el usuario autenticado. */
+    @GetMapping("/mis-recetas")
+    public ResponseEntity<List<RecetaResponseDTO>> listarMisRecetas(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        UUID usuarioId = userDetails.getUsuario().getId();
+        return ResponseEntity.ok(recetaService.listarPorUsuario(usuarioId));
+    }
+
     /** Lista paginada con filtros opcionales por nombre y dificultad. */
     @GetMapping
     public ResponseEntity<Page<RecetaResponseDTO>> buscarPaginado(

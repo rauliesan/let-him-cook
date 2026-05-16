@@ -71,6 +71,11 @@ export class RecetaService {
     return this.http.get<RecetaResponse>(`${API}/recetas/${id}`);
   }
 
+  /* Recetas creadas por el usuario autenticado */
+  getMisRecetas(): Observable<RecetaResponse[]> {
+    return this.http.get<RecetaResponse[]>(`${API}/recetas/mis-recetas`);
+  }
+
   /* Búsqueda dinámica en el servidor */
   buscarDinamico(termino: string, dificultad?: string, categorias?: string[], pagina = 0, tam = 12): Observable<Pagina<RecetaResponse>> {
     let url = `${API}/recetas/busqueda?termino=${termino}&page=${pagina}&size=${tam}`;
