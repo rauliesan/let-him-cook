@@ -1,6 +1,7 @@
 package com.daw.controllers;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -41,6 +42,19 @@ public class IaGeneracionController {
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         UUID usuarioId = userDetails.getUsuario().getId();
         return ResponseEntity.ok(iaGeneracionService.generarSugerencias(dto, usuarioId));
+    }
+
+    /**
+     * Genera instrucciones paso a paso para una receta usando la IA configurada.
+     */
+    @PostMapping("/instrucciones")
+    public ResponseEntity<Map<String, String>> instrucciones(
+            @RequestBody Map<String, String> dto,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        UUID usuarioId = userDetails.getUsuario().getId();
+        String nombre = dto.getOrDefault("recetaNombre", "");
+        String ingredientes = dto.getOrDefault("ingredientes", "");
+        return ResponseEntity.ok(iaGeneracionService.generarInstrucciones(nombre, ingredientes, usuarioId));
     }
 
     /**

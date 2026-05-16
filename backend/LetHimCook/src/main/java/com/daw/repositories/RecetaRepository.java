@@ -33,4 +33,6 @@ public interface RecetaRepository extends JpaRepository<Receta, UUID> {
                                Pageable pageable);
 
     boolean existsByIdAndUsuarioId(UUID id, UUID usuarioId);
+
+    java.util.List<Receta> findByUsuario_IdOrderByFechaCreacionDesc(UUID usuarioId);
 }

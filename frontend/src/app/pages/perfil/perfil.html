@@ -261,6 +261,50 @@
       </div>
     }
 
+    <!-- Tab: Mis recetas -->
+    @if (tabActiva() === 'recetas') {
+      <div class="tab-panel">
+        <div revela>
+          <h2>Mis recetas</h2>
+          <p class="panel-desc">{{ misRecetas().length }} recetas publicadas.</p>
+        </div>
+
+        @if (misRecetas().length === 0) {
+          <div class="sin-resultados">
+            <p>Aún no has publicado ninguna receta. Prueba el asistente de cocina.</p>
+            <a routerLink="/cocinar" class="btn-primario btn-sm">Cocinar</a>
+          </div>
+        } @else {
+          <div class="mis-recetas-grid">
+            @for (r of misRecetas(); track r.id; let i = $index) {
+              <div class="mis-receta-card" revela [retardo]="i * 60">
+                <div class="mis-receta-info">
+                  <span class="mis-receta-cat">{{ r.tipoComidaNombre ?? 'Sin categoría' }}</span>
+                  <h3 [routerLink]="['/receta', r.id]" style="cursor:pointer">{{ r.nombre }}</h3>
+                  <div class="mis-receta-meta">
+                    <span class="badge-dif-sm">{{ etiquetaDificultad(r.dificultad) }}</span>
+                    @if (r.tiempoPreparacion) {
+                      <span>{{ r.tiempoPreparacion }} min</span>
+                    }
+                    <span>{{ r.totalLikes }} ❤️</span>
+                  </div>
+                </div>
+                <button class="btn-compartir-foro" (click)="abrirCompartirForo(r)">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14">
+                    <circle cx="13" cy="3" r="2"/>
+                    <circle cx="3" cy="8" r="2"/>
+                    <circle cx="13" cy="13" r="2"/>
+                    <path d="M5 7l6-3M5 9l6 3" stroke-linecap="round"/>
+                  </svg>
+                  Subir al foro
+                </button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+
     <!-- Tab: Recompensas -->
     @if (tabActiva() === 'recompensas') {
       <div class="tab-panel">
@@ -297,4 +341,42 @@
 
   </div>
 
+}
+
+<!-- Modal: compartir receta en el foro -->
+@if (recetaACompartir()) {
+  <div class="modal-overlay" (click)="cerrarModalForo()">
+    <div class="modal-foro" (click)="$event.stopPropagation()">
+      @if (foroExito()) {
+        <div class="modal-exito">
+          <span class="exito-icono">✅</span>
+          <p>¡Publicado en el foro!</p>
+        </div>
+      } @else {
+        <h3>Subir al foro</h3>
+        <p class="modal-receta-nombre">{{ recetaACompartir()?.nombre }}</p>
+
+        @if (errorForo()) {
+          <div class="modal-error">{{ errorForo() }}</div>
+        }
+
+        <div class="modal-campo">
+          <label>Título del post</label>
+          <input type="text" [(ngModel)]="foroTitulo" maxlength="120" class="modal-input" />
+        </div>
+        <div class="modal-campo">
+          <label>Descripción <span class="opt">(opcional)</span></label>
+          <textarea [(ngModel)]="foroContenido" maxlength="2000" rows="3" class="modal-input"></textarea>
+        </div>
+
+        <div class="modal-acciones">
+          <button class="btn-primario btn-sm" (click)="compartirEnForo()"
+                  [disabled]="publicandoEnForo() || !foroTitulo.trim()">
+            {{ publicandoEnForo() ? 'Publicando...' : 'Publicar' }}
+          </button>
+          <button class="btn-secundario btn-sm" (click)="cerrarModalForo()">Cancelar</button>
+        </div>
+      }
+    </div>
+  </div>
 }
