@@ -91,6 +91,138 @@
   text-transform: uppercase;
   letter-spacing: 1px;
   margin-bottom: 2rem;
+<<<<<<< HEAD
+}
+
+.detalle-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+
+  @media (max-width: 640px) { grid-template-columns: 1fr; }
+}
+
+.detalle-seccion {
+  h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--texto, #222);
+  }
+}
+
+.lista-ingredientes {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  li {
+    padding: 0.5rem 0.75rem;
+    background: var(--crema, #fdf6f0);
+    border-radius: 8px;
+    font-size: 0.95rem;
+
+    &::before { content: '• '; color: var(--rojo, #b83520); font-weight: bold; }
+  }
+}
+
+.alergenos-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.alergen-tag {
+  padding: 0.3rem 0.7rem;
+  background: #fff3cd;
+  color: #856404;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* ── Instrucciones ── */
+.detalle-instrucciones {
+  margin-top: 2rem;
+}
+
+.instrucciones-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--texto, #222);
+    margin: 0;
+  }
+}
+
+.btn-wand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.9rem;
+  background: var(--primario, #C13E28);
+  color: white;
+  border: none;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+  white-space: nowrap;
+
+  &:hover:not(:disabled) { opacity: 0.88; transform: scale(1.03); }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+.lista-pasos {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  counter-reset: pasos;
+
+  li {
+    counter-increment: pasos;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.6rem 0.85rem;
+    background: var(--crema, #fdf6f0);
+    border-radius: 8px;
+    border-left: 3px solid var(--primario, #C13E28);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+    &:hover {
+      transform: translateX(4px);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    &::before {
+      content: counter(pasos);
+      flex-shrink: 0;
+      width: 1.5rem;
+      height: 1.5rem;
+      background: var(--primario, #C13E28);
+      color: white;
+      border-radius: 50%;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+=======
   transition: all 0.3s;
 
   &:hover {
@@ -566,10 +698,37 @@
     .paso-content p {
       opacity: 0.5;
       text-decoration: line-through;
+>>>>>>> feature-recetas-info
     }
   }
 }
 
+<<<<<<< HEAD
+.instrucciones-placeholder {
+  color: var(--texto-suave, #888);
+  font-size: 0.9rem;
+  font-style: italic;
+  margin: 0;
+}
+
+.instrucciones-error {
+  color: var(--primario, #C13E28);
+  font-size: 0.9rem;
+  margin: 0 0 0.5rem;
+}
+
+.spinner-mini {
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+=======
 /* --- Estilos de Éxito y Recompensas --- */
 .exito-cocina {
   margin-top: 2rem;
@@ -691,3 +850,4 @@
   from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
 }
+>>>>>>> feature-recetas-info

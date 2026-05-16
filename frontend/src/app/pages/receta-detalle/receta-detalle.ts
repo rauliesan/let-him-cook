@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { Revela } from '../../shared/revela/revela';
 import { RecetaService, RecetaResponse } from '../../services/receta.service';
+import { IaService } from '../../services/ia.service';
 
 @Component({
   selector: 'app-receta-detalle',
@@ -13,10 +14,15 @@ import { RecetaService, RecetaResponse } from '../../services/receta.service';
 })
 export class RecetaDetalle implements OnInit {
 
-  receta  = signal<RecetaResponse | null>(null);
+  receta   = signal<RecetaResponse | null>(null);
   cargando = signal(true);
   error    = signal<string | null>(null);
 
+<<<<<<< HEAD
+  instrucciones          = signal<string | null>(null);
+  generandoInstrucciones = signal(false);
+  errorInstrucciones     = signal<string | null>(null);
+=======
   // Estado del modo cocina: Índices de pasos completados
   pasosCompletados = signal<number[]>([]);
 
@@ -38,10 +44,17 @@ export class RecetaDetalle implements OnInit {
   // Notificación flotante
   mostrarNotificacion = signal(false);
   mensajeNotificacion = signal('');
+>>>>>>> feature-recetas-info
 
   ingredientesList = computed(() => {
     const ing = this.receta()?.ingredientes ?? '';
     return ing.split(',').map(s => s.trim()).filter(Boolean);
+  });
+
+  instruccionesPasos = computed(() => {
+    const text = this.instrucciones();
+    if (!text) return [];
+    return text.split(/\n+/).map(s => s.trim().replace(/^\d+[.)]\s*/, '')).filter(Boolean);
   });
 
   instruccionesList = computed(() => {
@@ -62,6 +75,7 @@ export class RecetaDetalle implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private recetaService: RecetaService,
+    private iaService: IaService,
   ) {}
 
   ngOnInit() {
@@ -92,6 +106,25 @@ export class RecetaDetalle implements OnInit {
     });
   }
 
+<<<<<<< HEAD
+  generarInstruccionesIA() {
+    const r = this.receta();
+    if (!r || this.generandoInstrucciones()) return;
+    this.generandoInstrucciones.set(true);
+    this.errorInstrucciones.set(null);
+    this.iaService.generarInstrucciones(r.nombre, r.ingredientes).subscribe({
+      next: (res) => {
+        this.instrucciones.set(res.instrucciones);
+        this.generandoInstrucciones.set(false);
+      },
+      error: (err) => {
+        this.errorInstrucciones.set(err.error?.mensaje ?? 'No se pudieron generar las instrucciones.');
+        this.generandoInstrucciones.set(false);
+      },
+    });
+  }
+
+=======
   private cargarProgresoLocal(recetaId: string): void {
     const guardado = localStorage.getItem(`progreso_receta_${recetaId}`);
     if (guardado) {
@@ -174,6 +207,7 @@ export class RecetaDetalle implements OnInit {
     return '⚠️';
   }
 
+>>>>>>> feature-recetas-info
   formatearTiempo(minutos: number | null): string {
     if (!minutos) return '—';
     if (minutos < 60) return `${minutos} min`;

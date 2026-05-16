@@ -7,6 +7,8 @@ import { AuthService } from '../../services/auth.service';
 import { UsuarioService, UsuarioResponse } from '../../services/usuario.service';
 import { LogroService, UsuarioLogroResponse } from '../../services/logro.service';
 import { RecompensaService, UsuarioRecompensaResponse } from '../../services/recompensa.service';
+import { RecetaService, RecetaResponse } from '../../services/receta.service';
+import { ForoService } from '../../services/foro.service';
 
 @Component({
   selector: 'app-perfil',
@@ -20,6 +22,15 @@ export class Perfil implements OnInit {
   usuario        = signal<UsuarioResponse | null>(null);
   misLogros      = signal<UsuarioLogroResponse[]>([]);
   misRecompensas = signal<UsuarioRecompensaResponse[]>([]);
+  misRecetas     = signal<RecetaResponse[]>([]);
+
+  /* Modal compartir en foro */
+  recetaACompartir  = signal<RecetaResponse | null>(null);
+  foroTitulo        = '';
+  foroContenido     = '';
+  publicandoEnForo  = signal(false);
+  errorForo         = signal<string | null>(null);
+  foroExito         = signal(false);
 
   /* Estado de carga */
   cargando   = signal(true);
@@ -45,6 +56,8 @@ export class Perfil implements OnInit {
     private usuarioService: UsuarioService,
     private logroService: LogroService,
     private recompensaService: RecompensaService,
+    private recetaService: RecetaService,
+    private foroService: ForoService,
   ) {}
 
   ngOnInit() {
@@ -70,6 +83,11 @@ export class Perfil implements OnInit {
           error: () => this.misRecompensas.set([]),
         });
 
+        this.recetaService.getMisRecetas().subscribe({
+          next: (r) => this.misRecetas.set(r),
+          error: () => this.misRecetas.set([]),
+        });
+
         this.cargando.set(false);
       },
       error: () => {
@@ -81,8 +99,9 @@ export class Perfil implements OnInit {
 
   /* Tabs con cantidades reales */
   tabs = computed(() => [
-    { id: 'logros',      label: 'Logros',     cantidad: this.misLogros().length,      icono: '🏆' },
-    { id: 'recompensas', label: 'Premios',    cantidad: this.misRecompensas().length, icono: '🎁' },
+    { id: 'logros',      label: 'Logros',      cantidad: this.misLogros().length,      icono: '🏆' },
+    { id: 'recompensas', label: 'Recompensas', cantidad: this.misRecompensas().length, icono: '🎁' },
+    { id: 'recetas',     label: 'Mis recetas', cantidad: this.misRecetas().length,     icono: '🍳' },
   ]);
 
   /* Iniciales para el avatar */
@@ -230,6 +249,43 @@ export class Perfil implements OnInit {
       });
     };
     reader.readAsDataURL(archivo);
+  }
+
+  /* ── Compartir receta en el foro ── */
+  abrirCompartirForo(receta: RecetaResponse) {
+    this.recetaACompartir.set(receta);
+    this.foroTitulo    = `Receta: ${receta.nombre}`;
+    this.foroContenido = '';
+    this.errorForo.set(null);
+    this.foroExito.set(false);
+  }
+
+  cerrarModalForo() {
+    this.recetaACompartir.set(null);
+    this.foroExito.set(false);
+  }
+
+  compartirEnForo() {
+    const receta = this.recetaACompartir();
+    if (!receta || !this.foroTitulo.trim()) return;
+    this.publicandoEnForo.set(true);
+    this.errorForo.set(null);
+    this.foroService.crearPost(this.foroTitulo.trim(), this.foroContenido.trim(), undefined, receta.id).subscribe({
+      next: () => {
+        this.publicandoEnForo.set(false);
+        this.foroExito.set(true);
+        setTimeout(() => this.cerrarModalForo(), 1800);
+      },
+      error: (err) => {
+        this.publicandoEnForo.set(false);
+        this.errorForo.set(err.error?.mensaje ?? err.error?.message ?? 'Error al publicar en el foro.');
+      },
+    });
+  }
+
+  etiquetaDificultad(d: string | null): string {
+    const mapa: Record<string, string> = { BAJA: 'Fácil', MEDIA: 'Media', ALTA: 'Difícil' };
+    return d ? (mapa[d] ?? d) : '—';
   }
 
   /* ── Compartir Perfil ── */
