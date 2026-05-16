@@ -134,6 +134,14 @@
       }
     }
   }
+
+  /* Link de admin con acento visual */
+  .nav-admin {
+    color: var(--primario);
+    font-weight: 600;
+
+    .nav-icono { opacity: 0.8; }
+  }
 }
 
 /* Elementos del menú móvil, ocultos en desktop */

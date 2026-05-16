@@ -5,6 +5,7 @@ import { Perfil } from './pages/perfil/perfil';
 import { Contacto } from './pages/contacto/contacto';
 import { Login } from './pages/login/login';
 import { authGuard } from './guards/auth.guard';
+import { adminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
   { path: '', component: Landing },
@@ -35,6 +36,12 @@ export const routes: Routes = [
   {
     path: 'receta/:id',
     loadComponent: () => import('./pages/receta-detalle/receta-detalle').then(m => m.RecetaDetalle),
+  },
+  /* Panel de administración — solo ADMIN */
+  {
+    path: 'admin',
+    loadComponent: () => import('./pages/admin/admin').then(m => m.Admin),
+    canActivate: [adminGuard],
   },
   { path: '**', redirectTo: '' },
 ];
