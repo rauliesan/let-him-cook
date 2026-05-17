@@ -287,7 +287,6 @@ public class IaGeneracionService {
         return sb.toString();
     }
 
-    @SuppressWarnings("unchecked")
     private List<RecetaSugerenciaDTO> callAiApi(String endpoint, String apiKey, String modelo, String prompt) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -296,9 +295,14 @@ public class IaGeneracionService {
         Map<String, Object> requestBody = new LinkedHashMap<>();
         requestBody.put("model", modelo);
         requestBody.put("messages", List.of(Map.of("role", "user", "content", prompt)));
-        requestBody.put("response_format", Map.of("type", "json_object"));
         requestBody.put("temperature", 0.8);
         requestBody.put("max_tokens", 4096);
+
+        // response_format solo para proveedores que lo soportan (OpenAI, DeepSeek, OpenRouter)
+        boolean soportaJsonMode = !endpoint.contains("pollinations");
+        if (soportaJsonMode) {
+            requestBody.put("response_format", Map.of("type", "json_object"));
+        }
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
@@ -315,32 +319,53 @@ public class IaGeneracionService {
                     .path("message")
                     .path("content").asText("");
 
-            // Quitar posibles code fences que algunos modelos añaden (```json ... ```)
+            // Limpiar code fences: ```json ... ``` o ``` ... ```
             content = content.trim();
             if (content.startsWith("```")) {
                 content = content.replaceFirst("```(?:json)?\\s*", "").replaceAll("\\s*```\\s*$", "").trim();
             }
 
+            // Extraer el primer bloque JSON válido si hay texto antes/después
+            int jsonStart = content.indexOf('{');
+            int jsonEnd   = content.lastIndexOf('}');
+            if (jsonStart >= 0 && jsonEnd > jsonStart) {
+                content = content.substring(jsonStart, jsonEnd + 1);
+            }
+
             JsonNode root = objectMapper.readTree(content);
-            JsonNode recetasNode = root.get("recetas");
+
+            // Soportar tanto {"recetas":[...]} como {"suggestions":[...]} o array directo [...]
+            JsonNode recetasNode = null;
+            if (root.isArray()) {
+                recetasNode = root;
+            } else {
+                for (String key : new String[]{"recetas", "recipes", "suggestions", "items"}) {
+                    if (root.has(key) && root.get(key).isArray()) {
+                        recetasNode = root.get(key);
+                        break;
+                    }
+                }
+            }
+
+            if (recetasNode == null || !recetasNode.isArray() || recetasNode.isEmpty()) {
+                throw new OperacionInvalidaException("La IA no devolvió recetas en el formato esperado. Inténtalo de nuevo.");
+            }
 
             List<RecetaSugerenciaDTO> result = new ArrayList<>();
-            if (recetasNode != null && recetasNode.isArray()) {
-                for (JsonNode r : recetasNode) {
-                    RecetaSugerenciaDTO s = new RecetaSugerenciaDTO();
-                    s.setNombre(r.path("nombre").asText("Receta sin nombre"));
-                    s.setDescripcion(r.path("descripcion").asText(""));
-                    s.setIngredientes(r.path("ingredientes").asText(""));
-                    s.setInstrucciones(r.path("instrucciones").asText(""));
-                    s.setTiempoPreparacion(r.path("tiempoPreparacion").asInt(30));
-                    s.setDificultad(r.path("dificultad").asText("MEDIA"));
-                    s.setCalorias(r.path("calorias").asInt(0));
-                    s.setAlergenos(r.path("alergenos").asText(""));
-                    s.setCategoria(r.path("categoria").asText("General"));
-                    s.setCategoriaEmoji(r.path("categoriaEmoji").asText("🍽️"));
-                    s.setCategoriaColor(r.path("categoriaColor").asText("#C13E28"));
-                    result.add(s);
-                }
+            for (JsonNode r : recetasNode) {
+                RecetaSugerenciaDTO s = new RecetaSugerenciaDTO();
+                s.setNombre(r.path("nombre").asText("Receta sin nombre"));
+                s.setDescripcion(r.path("descripcion").asText(""));
+                s.setIngredientes(r.path("ingredientes").asText(""));
+                s.setInstrucciones(r.path("instrucciones").asText(""));
+                s.setTiempoPreparacion(r.path("tiempoPreparacion").asInt(30));
+                s.setDificultad(r.path("dificultad").asText("MEDIA"));
+                s.setCalorias(r.path("calorias").asInt(0));
+                s.setAlergenos(r.path("alergenos").asText(""));
+                s.setCategoria(r.path("categoria").asText("General"));
+                s.setCategoriaEmoji(r.path("categoriaEmoji").asText("🍽️"));
+                s.setCategoriaColor(r.path("categoriaColor").asText("#C13E28"));
+                result.add(s);
             }
             return result;
 
@@ -348,15 +373,15 @@ public class IaGeneracionService {
             throw e;
         } catch (org.springframework.web.client.RestClientResponseException e) {
             if (e.getStatusCode().value() == 429) {
-                throw new OperacionInvalidaException("El modelo seleccionado está temporalmente saturado (Error 429). Por favor, intenta de nuevo en unos segundos o ve a tu perfil y selecciona otro modelo.");
+                throw new OperacionInvalidaException("El modelo está saturado (429). Espera unos segundos e inténtalo de nuevo.");
             } else if (e.getStatusCode().value() == 404) {
-                throw new OperacionInvalidaException("El modelo seleccionado no está disponible (Error 404). Por favor, ve a tu perfil y selecciona un modelo diferente.");
+                throw new OperacionInvalidaException("El modelo no está disponible (404). Ve a tu perfil y selecciona otro modelo.");
             } else if (e.getStatusCode().value() == 402) {
-                throw new OperacionInvalidaException("El proveedor de IA requiere pago o se ha quedado sin saldo (Error 402). Por favor, usa un modelo gratuito (como el Auto-router de OpenRouter) en tu perfil.");
+                throw new OperacionInvalidaException("El proveedor requiere pago o se ha quedado sin saldo (402). Usa un modelo gratuito en tu perfil.");
             } else if (e.getStatusCode().value() == 502 || e.getStatusCode().value() == 503 || e.getStatusCode().value() == 504) {
-                throw new OperacionInvalidaException("El proveedor de IA está inactivo (" + e.getStatusCode().value() + "). Por favor, selecciona otro modelo.");
+                throw new OperacionInvalidaException("El proveedor de IA está caído (" + e.getStatusCode().value() + "). Selecciona otro modelo.");
             } else {
-                throw new OperacionInvalidaException("El proveedor de IA devolvió un error (" + e.getStatusCode().value() + "). Intenta con otro modelo.");
+                throw new OperacionInvalidaException("Error del proveedor de IA (" + e.getStatusCode().value() + "). Intenta con otro modelo.");
             }
         } catch (Exception e) {
             throw new OperacionInvalidaException("Error al comunicarse con la IA: " + e.getMessage());
