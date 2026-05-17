@@ -38,15 +38,6 @@ export interface RecompensaAdminResponse {
   fechaObtenida: string | null;
 }
 
-export interface SupermercadoResponse {
-  id: string;
-  nombre: string;
-  descripcion: string;
-  valoracion: number | null;
-  direccion: string;
-  horario: string;
-  fotoUrl: string | null;
-}
 
 export interface TipoComidaResponse {
   id: string;
@@ -122,14 +113,6 @@ export interface RecompensaRequest {
   probabilidad?: number;
 }
 
-export interface SupermercadoRequest {
-  nombre: string;
-  descripcion?: string;
-  valoracion?: number;
-  direccion?: string;
-  horario?: string;
-  fotoUrl?: string;
-}
 
 export interface TipoComidaRequest {
   nombre: string;
@@ -226,19 +209,6 @@ export class AdminService {
     return this.http.delete<void>(`${API}/admin/recompensas/${id}`);
   }
 
-  /* ── Supermercados (/supermercados) ── */
-  getSupermercados(): Observable<SupermercadoResponse[]> {
-    return this.http.get<SupermercadoResponse[]>(`${API}/supermercados/todos`);
-  }
-  crearSupermercado(dto: SupermercadoRequest): Observable<SupermercadoResponse> {
-    return this.http.post<SupermercadoResponse>(`${API}/supermercados`, dto);
-  }
-  actualizarSupermercado(id: string, dto: SupermercadoRequest): Observable<SupermercadoResponse> {
-    return this.http.put<SupermercadoResponse>(`${API}/supermercados/${id}`, dto);
-  }
-  eliminarSupermercado(id: string): Observable<void> {
-    return this.http.delete<void>(`${API}/supermercados/${id}`);
-  }
 
   /* ── Tipos de Comida (/tipos-comida) ── */
   getTiposComida(): Observable<TipoComidaResponse[]> {
