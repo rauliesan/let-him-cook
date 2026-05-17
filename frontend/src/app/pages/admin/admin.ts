@@ -7,13 +7,12 @@ import {
   IaModeloResponse, IaModeloRequest,
   LogroAdminResponse, LogroRequest,
   RecompensaAdminResponse, RecompensaRequest,
-  SupermercadoResponse, SupermercadoRequest,
   TipoComidaResponse, TipoComidaRequest,
   UsuarioAdminResponse, UsuarioRequest,
   RecetaAdminResponse, RecetaRequest,
 } from '../../services/admin.service';
 
-type TabId = 'usuarios' | 'recetas' | 'categorias' | 'supermercados' | 'logros' | 'recompensas' | 'apis' | 'modelos-ia';
+type TabId = 'usuarios' | 'recetas' | 'categorias' | 'logros' | 'recompensas' | 'apis' | 'modelos-ia';
 
 @Component({
   selector: 'app-admin',
@@ -29,7 +28,6 @@ export class Admin implements OnInit {
   usuarios      = signal<UsuarioAdminResponse[]>([]);
   recetas       = signal<RecetaAdminResponse[]>([]);
   categorias    = signal<TipoComidaResponse[]>([]);
-  supermercados = signal<SupermercadoResponse[]>([]);
   logros        = signal<LogroAdminResponse[]>([]);
   recompensas   = signal<RecompensaAdminResponse[]>([]);
   apis          = signal<ApiResponse[]>([]);
@@ -58,7 +56,6 @@ export class Admin implements OnInit {
     { id: 'usuarios',      label: 'Usuarios',      icono: '👥' },
     { id: 'recetas',       label: 'Recetas',        icono: '🍳' },
     { id: 'categorias',    label: 'Categorías',     icono: '🏷️' },
-    { id: 'supermercados', label: 'Supermercados',   icono: '🛒' },
     { id: 'logros',        label: 'Logros',         icono: '🏆' },
     { id: 'recompensas',   label: 'Recompensas',    icono: '🎁' },
     { id: 'apis',          label: 'APIs',           icono: '🔑' },
@@ -70,7 +67,6 @@ export class Admin implements OnInit {
     usuarios:      this.usuarios().length,
     recetas:       this.recetas().length,
     categorias:    this.categorias().length,
-    supermercados: this.supermercados().length,
     logros:        this.logros().length,
     recompensas:   this.recompensas().length,
     apis:          this.apis().length,
@@ -114,12 +110,6 @@ export class Admin implements OnInit {
       case 'categorias':
         this.adminService.getTiposComida().subscribe({
           next: d => { this.categorias.set(d); this.cargando.set(false); },
-          error: onError,
-        });
-        break;
-      case 'supermercados':
-        this.adminService.getSupermercados().subscribe({
-          next: d => { this.supermercados.set(d); this.cargando.set(false); },
           error: onError,
         });
         break;
@@ -205,13 +195,6 @@ export class Admin implements OnInit {
       case 'categorias':
         this.form = { nombre: item.nombre, descripcion: item.descripcion || '', iconoUrl: item.iconoUrl || '' };
         break;
-      case 'supermercados':
-        this.form = {
-          nombre: item.nombre, descripcion: item.descripcion || '',
-          valoracion: item.valoracion, direccion: item.direccion || '',
-          horario: item.horario || '', fotoUrl: item.fotoUrl || '',
-        };
-        break;
       case 'logros':
         this.form = { nombre: item.nombre, descripcion: item.descripcion || '', iconoUrl: item.iconoUrl || '' };
         break;
@@ -271,13 +254,6 @@ export class Admin implements OnInit {
           this.adminService.actualizarTipoComida(id!, this.form as TipoComidaRequest).subscribe({ next: onOk, error: onErr });
         }
         break;
-      case 'supermercados':
-        if (modo === 'crear') {
-          this.adminService.crearSupermercado(this.form as SupermercadoRequest).subscribe({ next: onOk, error: onErr });
-        } else {
-          this.adminService.actualizarSupermercado(id!, this.form as SupermercadoRequest).subscribe({ next: onOk, error: onErr });
-        }
-        break;
       case 'logros':
         if (modo === 'crear') {
           this.adminService.crearLogro(this.form as LogroRequest).subscribe({ next: onOk, error: onErr });
@@ -328,7 +304,6 @@ export class Admin implements OnInit {
       case 'usuarios':      this.adminService.eliminarUsuario(id).subscribe({ next: onOk, error: onErr }); break;
       case 'recetas':       this.adminService.eliminarReceta(id).subscribe({ next: onOk, error: onErr }); break;
       case 'categorias':    this.adminService.eliminarTipoComida(id).subscribe({ next: onOk, error: onErr }); break;
-      case 'supermercados': this.adminService.eliminarSupermercado(id).subscribe({ next: onOk, error: onErr }); break;
       case 'logros':        this.adminService.eliminarLogro(id).subscribe({ next: onOk, error: onErr }); break;
       case 'recompensas':   this.adminService.eliminarRecompensa(id).subscribe({ next: onOk, error: onErr }); break;
       case 'apis':          this.adminService.eliminarApi(id).subscribe({ next: onOk, error: onErr }); break;

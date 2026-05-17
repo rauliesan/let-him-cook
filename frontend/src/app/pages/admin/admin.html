@@ -200,38 +200,6 @@
           </div>
         }
 
-        <!-- ═══ TABLA SUPERMERCADOS ═══ -->
-        @if (tabActiva() === 'supermercados' && !cargando()) {
-          <div class="admin-tabla-wrap">
-            <table class="admin-tabla">
-              <thead>
-                <tr>
-                  <th>Nombre</th>
-                  <th>Dirección</th>
-                  <th>Horario</th>
-                  <th>Valoración</th>
-                  <th class="th-acciones">Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (s of supermercados(); track s.id) {
-                  <tr>
-                    <td><strong>{{ s.nombre }}</strong></td>
-                    <td class="celda-gris">{{ truncar(s.direccion) }}</td>
-                    <td class="celda-gris">{{ s.horario || '—' }}</td>
-                    <td class="celda-center">⭐ {{ s.valoracion !== null && s.valoracion !== undefined ? s.valoracion : '—' }}</td>
-                    <td class="celda-acciones">
-                      <button class="btn-icono btn-editar" (click)="abrirEditar('supermercados', s)">✏️</button>
-                      <button class="btn-icono btn-eliminar" (click)="eliminar('supermercados', s.id, s.nombre)">🗑️</button>
-                    </td>
-                  </tr>
-                } @empty {
-                  <tr><td colspan="5" class="celda-vacia">No hay supermercados</td></tr>
-                }
-              </tbody>
-            </table>
-          </div>
-        }
 
         <!-- ═══ TABLA LOGROS ═══ -->
         @if (tabActiva() === 'logros' && !cargando()) {
@@ -453,35 +421,6 @@
         </label>
       }
 
-      <!-- ── Form: Supermercados ── -->
-      @if (modalEntidad() === 'supermercados') {
-        <label class="campo">
-          <span>Nombre *</span>
-          <input type="text" [(ngModel)]="form['nombre']" placeholder="Ej: Mercadona" />
-        </label>
-        <label class="campo">
-          <span>Descripción</span>
-          <textarea [(ngModel)]="form['descripcion']" rows="2"></textarea>
-        </label>
-        <label class="campo">
-          <span>Dirección</span>
-          <input type="text" [(ngModel)]="form['direccion']" />
-        </label>
-        <label class="campo">
-          <span>Horario</span>
-          <input type="text" [(ngModel)]="form['horario']" placeholder="09:00 - 21:00" />
-        </label>
-        <div class="campo-fila">
-          <label class="campo">
-            <span>Valoración (0-5)</span>
-            <input type="number" [(ngModel)]="form['valoracion']" min="0" max="5" step="0.1" />
-          </label>
-          <label class="campo">
-            <span>Foto URL</span>
-            <input type="text" [(ngModel)]="form['fotoUrl']" />
-          </label>
-        </div>
-      }
 
       <!-- ── Form: Logros ── -->
       @if (modalEntidad() === 'logros') {
