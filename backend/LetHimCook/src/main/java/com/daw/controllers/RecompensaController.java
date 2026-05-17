@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.daw.dtos.request.RecompensaRequestDTO;
 import com.daw.dtos.response.RecompensaResponseDTO;
@@ -43,18 +44,21 @@ public class RecompensaController {
         return ResponseEntity.ok().body(recompensaService.buscarPorId(id));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<RecompensaResponseDTO> crear(@Valid @RequestBody RecompensaRequestDTO dto) {
         RecompensaResponseDTO response = recompensaService.crear(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<RecompensaResponseDTO> actualizar(@PathVariable UUID id,
             @Valid @RequestBody RecompensaRequestDTO dto) {
         return ResponseEntity.ok().body(recompensaService.actualizar(id, dto));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable UUID id) {
         recompensaService.eliminar(id);

@@ -195,18 +195,18 @@ export class AdminService {
     return this.http.delete<void>(`${API}/admin/logros/${id}`);
   }
 
-  /* ── Recompensas (/admin/recompensas) ── */
+  /* ── Recompensas (/recompensas) ── */
   getRecompensas(): Observable<RecompensaAdminResponse[]> {
-    return this.http.get<RecompensaAdminResponse[]>(`${API}/admin/recompensas`);
+    return this.http.get<RecompensaAdminResponse[]>(`${API}/recompensas`);
   }
   crearRecompensa(dto: RecompensaRequest): Observable<RecompensaAdminResponse> {
-    return this.http.post<RecompensaAdminResponse>(`${API}/admin/recompensas`, dto);
+    return this.http.post<RecompensaAdminResponse>(`${API}/recompensas`, dto);
   }
   actualizarRecompensa(id: string, dto: RecompensaRequest): Observable<RecompensaAdminResponse> {
-    return this.http.put<RecompensaAdminResponse>(`${API}/admin/recompensas/${id}`, dto);
+    return this.http.put<RecompensaAdminResponse>(`${API}/recompensas/${id}`, dto);
   }
   eliminarRecompensa(id: string): Observable<void> {
-    return this.http.delete<void>(`${API}/admin/recompensas/${id}`);
+    return this.http.delete<void>(`${API}/recompensas/${id}`);
   }
 
 
