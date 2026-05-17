@@ -335,4 +335,13 @@ public class UsuarioService {
         usuario.setPuntos(usuario.getPuntos() - coste);
         usuarioRepository.save(usuario);
     }
+
+    /**
+     * Actualiza la marca de tiempo de última conexión (heartbeat de presencia).
+     */
+    public void registrarConexion(UUID usuarioId) {
+        Usuario usuario = buscarEntidadPorId(usuarioId);
+        usuario.setUltimaConexion(java.time.ZonedDateTime.now(java.time.ZoneId.of("Europe/Madrid")));
+        usuarioRepository.save(usuario);
+    }
 }

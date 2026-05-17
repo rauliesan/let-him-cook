@@ -102,6 +102,11 @@ public class PostService {
         comentario.setPost(post);
         comentario.setUsuario(usuario);
 
+        if (dto.getRecetaVinculadaId() != null) {
+            recetaRepository.findById(dto.getRecetaVinculadaId())
+                .ifPresent(comentario::setRecetaVinculada);
+        }
+
         return comentarioMapper.toResponseDTO(comentarioRepository.save(comentario));
     }
 

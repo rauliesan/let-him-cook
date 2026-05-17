@@ -121,6 +121,10 @@ public class Usuario {
 	@Column(name = "fecha_ultima_receta_recompensa")
 	private java.time.LocalDate fechaUltimaRecetaRecompensa;
 
+	/* --- Presencia online --- */
+	@Column(name = "ultima_conexion")
+	private ZonedDateTime ultimaConexion;
+
 	@PrePersist
 	protected void onCreate() {
 		// Solo asigna la fecha automática si el campo está vacío (es null)

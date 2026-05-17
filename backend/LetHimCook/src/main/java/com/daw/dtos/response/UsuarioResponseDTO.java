@@ -44,4 +44,7 @@ public class UsuarioResponseDTO {
     /** Nombre del modelo de la IA personalizada */
     private String iaCustomModelo;
 
+    /** Última conexión del usuario (para indicador de presencia online) */
+    private ZonedDateTime ultimaConexion;
+
 }

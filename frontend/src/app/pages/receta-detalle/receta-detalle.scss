@@ -146,6 +146,13 @@
     font-weight: 700;
     color: #E8B84B;
   }
+
+  .autor-link {
+    text-decoration: none;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    &:hover { opacity: 0.8; text-decoration: underline; }
+  }
 }
 
 .hero-descripcion {
@@ -205,10 +212,40 @@
   }
 
   &.likes {
+    cursor: pointer;
+    border: none;
+    font: inherit;
+    color: inherit;
+
     .stat-val {
       color: #ff4b2b;
     }
+
+    &.liked {
+      background: rgba(255, 75, 43, 0.12);
+      border-color: rgba(255, 75, 43, 0.35);
+    }
+
+    &.like-anim {
+      animation: like-pulse 0.5s ease;
+    }
+
+    &.like-disabled {
+      cursor: default;
+    }
+
+    &:not(.like-disabled):hover {
+      background: rgba(255, 75, 43, 0.18);
+      transform: translateY(-5px) scale(1.05);
+    }
   }
+}
+
+@keyframes like-pulse {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.25); }
+  70%  { transform: scale(0.9); }
+  100% { transform: scale(1); }
 }
 
 /* ── Body ── */

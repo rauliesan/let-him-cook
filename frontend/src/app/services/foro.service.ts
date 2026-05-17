@@ -24,6 +24,8 @@ export interface PostComentarioResponse {
   usuarioNombre: string;
   usuarioFotoUrl: string | null;
   postId: string;
+  recetaVinculadaId: string | null;
+  recetaVinculadaNombre: string | null;
 }
 
 const API = 'http://localhost:9999';
@@ -59,8 +61,8 @@ export class ForoService {
   }
 
   /* Comenta en un post (requiere auth) */
-  comentar(postId: string, contenido: string): Observable<PostComentarioResponse> {
-    return this.http.post<PostComentarioResponse>(`${API}/posts/${postId}/comentarios`, { contenido });
+  comentar(postId: string, contenido: string, recetaVinculadaId?: string): Observable<PostComentarioResponse> {
+    return this.http.post<PostComentarioResponse>(`${API}/posts/${postId}/comentarios`, { contenido, recetaVinculadaId });
   }
 
   /* Elimina un comentario (requiere auth) */

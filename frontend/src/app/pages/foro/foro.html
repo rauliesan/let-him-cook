@@ -77,6 +77,56 @@
         <span class="char-count">{{ nuevoContenido.length }}/{{ MAX_CONTENIDO }}</span>
       </div>
 
+      <!-- Preview de imagen seleccionada -->
+      @if (nuevoPostImagen()) {
+        <div class="modal-img-preview">
+          <img [src]="nuevoPostImagen()!" alt="Preview" />
+          <button class="modal-img-quitar" (click)="quitarImagenPost()" type="button">✕</button>
+        </div>
+      }
+
+      <!-- Receta adjunta al post -->
+      @if (recetaSeleccionadaPost()) {
+        <div class="reply-receta-chip">
+          🍳 {{ recetaSeleccionadaPost()!.nombre }}
+          <button class="reply-receta-quitar" (click)="quitarRecetaPost()">×</button>
+        </div>
+      }
+
+      <!-- Buscador de recetas para el post -->
+      @if (mostrarBuscadorRecetaPost()) {
+        <div class="reply-receta-buscador">
+          <input class="reply-receta-input" type="text" placeholder="Buscar receta..."
+                 [value]="busquedaRecetaPost"
+                 (input)="onBusquedaRecetaPostInput($event)" autofocus />
+          @if (buscandoRecetaPost()) { <div class="reply-receta-cargando">Buscando...</div> }
+          @if (resultadosBusquedaPost().length > 0) {
+            <div class="reply-receta-lista">
+              @for (r of resultadosBusquedaPost(); track r.id) {
+                <button class="reply-receta-opcion" (click)="seleccionarRecetaPost(r)">
+                  🍽️ {{ r.nombre }}
+                  <span class="reply-receta-autor">por {{ r.usuarioCreadorNombre }}</span>
+                </button>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Fila de adjuntos -->
+      <div class="modal-attach-row">
+        <label class="modal-attach-btn" [class.modal-attach-activo]="!!nuevoPostImagen()">
+          📷 Foto
+          <input #imgInput type="file" accept="image/*" (change)="onImagenPostChange($event)" style="display:none" />
+        </label>
+        @if (!recetaSeleccionadaPost()) {
+          <button class="modal-attach-btn" type="button"
+                  (click)="mostrarBuscadorRecetaPost.set(!mostrarBuscadorRecetaPost())">
+            🍳 Receta
+          </button>
+        }
+      </div>
+
       <div class="modal-footer">
         <button class="modal-btn-cancel" (click)="cerrarForm()">Cancelar</button>
         <button
@@ -89,6 +139,16 @@
         </button>
       </div>
     </div>
+  </div>
+}
+
+<!-- ════════════════════════════════════
+     LIGHTBOX
+════════════════════════════════════ -->
+@if (lightboxSrc()) {
+  <div class="lightbox-backdrop" (click)="cerrarLightbox()">
+    <button class="lightbox-close" (click)="cerrarLightbox()" aria-label="Cerrar">✕</button>
+    <img class="lightbox-img" [src]="lightboxSrc()!" (click)="$event.stopPropagation()" />
   </div>
 }
 
@@ -157,7 +217,8 @@
               <span class="p-time">{{ formatearFecha(post.fechaCreacion) }}</span>
             </div>
             @if (post.recetaVinculadaNombre) {
-              <span class="p-recipe-tag">🍳 {{ post.recetaVinculadaNombre }}</span>
+              <a class="p-recipe-tag" [routerLink]="['/receta', post.recetaVinculadaId]"
+                 (click)="$event.stopPropagation()">🍳 {{ post.recetaVinculadaNombre }}</a>
             }
             <div class="p-controls">
               @if (esAutor(post.usuarioNombre)) {
@@ -182,6 +243,10 @@
           <!-- Título y preview -->
           <h3 class="p-title">{{ post.titulo }}</h3>
           <p class="p-preview">{{ post.contenido | slice:0:220 }}{{ post.contenido.length > 220 ? '…' : '' }}</p>
+          @if (post.imagenUrl) {
+            <img class="p-img" [src]="post.imagenUrl" alt="Imagen del post" loading="lazy"
+                 (click)="abrirLightbox(post.imagenUrl); $event.stopPropagation()" />
+          }
 
           <!-- Footer estadísticas -->
           <div class="p-footer">
@@ -235,6 +300,11 @@
                         }
                       </div>
                       <p class="t-text">{{ com.contenido }}</p>
+                      @if (com.recetaVinculadaNombre) {
+                        <a class="t-recipe-tag" [routerLink]="['/receta', com.recetaVinculadaId]">
+                          🍳 {{ com.recetaVinculadaNombre }}
+                        </a>
+                      }
                     </div>
                   </div>
                 }
@@ -254,13 +324,57 @@
                     [(ngModel)]="nuevoComentario"
                     rows="2"
                   ></textarea>
-                  <button
-                    class="reply-btn"
-                    (click)="publicarComentario()"
-                    [disabled]="enviandoComentario() || !nuevoComentario.trim()"
-                  >
-                    {{ enviandoComentario() ? '…' : 'Responder' }}
-                  </button>
+
+                  <!-- Receta adjunta seleccionada -->
+                  @if (recetaSeleccionadaComentario()) {
+                    <div class="reply-receta-chip">
+                      🍳 {{ recetaSeleccionadaComentario()!.nombre }}
+                      <button class="reply-receta-quitar" (click)="quitarRecetaComentario()">×</button>
+                    </div>
+                  }
+
+                  <!-- Buscador de recetas -->
+                  @if (mostrarBuscadorReceta()) {
+                    <div class="reply-receta-buscador">
+                      <input
+                        class="reply-receta-input"
+                        type="text"
+                        placeholder="Buscar receta..."
+                        [value]="busquedaRecetaComentario"
+                        (input)="onBusquedaRecetaInput($event)"
+                        autofocus
+                      />
+                      @if (buscandoReceta()) {
+                        <div class="reply-receta-cargando">Buscando...</div>
+                      }
+                      @if (resultadosBusqueda().length > 0) {
+                        <div class="reply-receta-lista">
+                          @for (r of resultadosBusqueda(); track r.id) {
+                            <button class="reply-receta-opcion" (click)="seleccionarRecetaComentario(r)">
+                              🍽️ {{ r.nombre }}
+                              <span class="reply-receta-autor">por {{ r.usuarioCreadorNombre }}</span>
+                            </button>
+                          }
+                        </div>
+                      }
+                    </div>
+                  }
+
+                  <div class="reply-actions">
+                    @if (!recetaSeleccionadaComentario()) {
+                      <button class="reply-attach-btn" (click)="mostrarBuscadorReceta.set(!mostrarBuscadorReceta())"
+                              title="Adjuntar receta">
+                        🍳 Adjuntar receta
+                      </button>
+                    }
+                    <button
+                      class="reply-btn"
+                      (click)="publicarComentario()"
+                      [disabled]="enviandoComentario() || !nuevoComentario.trim()"
+                    >
+                      {{ enviandoComentario() ? '…' : 'Responder' }}
+                    </button>
+                  </div>
                 </div>
               </div>
             } @else {

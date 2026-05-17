@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { Revela } from '../../shared/revela/revela';
 import { ForoService, PostResponse, PostComentarioResponse } from '../../services/foro.service';
 import { AuthService } from '../../services/auth.service';
+import { RecetaService, RecetaResponse } from '../../services/receta.service';
 
 @Component({
   selector: 'app-foro',
@@ -30,13 +31,31 @@ export class Foro implements OnInit {
   enviandoPost  = signal(false);
   errorPost     = signal<string | null>(null);
 
+  /* Imagen y receta adjunta al nuevo post */
+  nuevoPostImagen              = signal<string | null>(null);
+  recetaSeleccionadaPost       = signal<RecetaResponse | null>(null);
+  mostrarBuscadorRecetaPost    = signal(false);
+  busquedaRecetaPost           = '';
+  resultadosBusquedaPost       = signal<RecetaResponse[]>([]);
+  buscandoRecetaPost           = signal(false);
+  private debounceTimerPost: any;
+
   /* Formulario comentario */
   nuevoComentario = '';
   enviandoComentario = signal(false);
 
+  /* Receta adjunta al comentario */
+  busquedaRecetaComentario = '';
+  resultadosBusqueda = signal<RecetaResponse[]>([]);
+  recetaSeleccionadaComentario = signal<RecetaResponse | null>(null);
+  mostrarBuscadorReceta = signal(false);
+  buscandoReceta = signal(false);
+  private debounceTimer: any;
+
   constructor(
     private foroService: ForoService,
     public  auth: AuthService,
+    private recetaService: RecetaService,
   ) {}
 
   ngOnInit() {
@@ -67,6 +86,9 @@ export class Foro implements OnInit {
     }
     this.postAbierto.set(postId);
     this.nuevoComentario = '';
+    this.recetaSeleccionadaComentario.set(null);
+    this.mostrarBuscadorReceta.set(false);
+    this.busquedaRecetaComentario = '';
     this.cargarComentarios(postId);
   }
 
@@ -89,11 +111,18 @@ export class Foro implements OnInit {
     }
     this.enviandoPost.set(true);
     this.errorPost.set(null);
-    this.foroService.crearPost(this.nuevoTitulo.trim(), this.nuevoContenido.trim()).subscribe({
+    const imagenUrl = this.nuevoPostImagen() ?? undefined;
+    const recetaId  = this.recetaSeleccionadaPost()?.id;
+    this.foroService.crearPost(
+      this.nuevoTitulo.trim(), this.nuevoContenido.trim(), imagenUrl, recetaId
+    ).subscribe({
       next: (post) => {
         this.posts.update(lista => [post, ...lista]);
         this.nuevoTitulo = '';
         this.nuevoContenido = '';
+        this.nuevoPostImagen.set(null);
+        this.recetaSeleccionadaPost.set(null);
+        this.mostrarBuscadorRecetaPost.set(false);
         this.mostrarFormPost.set(false);
         this.enviandoPost.set(false);
       },
@@ -104,16 +133,67 @@ export class Foro implements OnInit {
     });
   }
 
+  /* Imagen para el nuevo post */
+  onImagenPostChange(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      // Comprimir a JPEG 0.75 via canvas
+      const img = new Image();
+      img.onload = () => {
+        const MAX = 900;
+        let w = img.width, h = img.height;
+        if (w > MAX || h > MAX) {
+          if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+          else { w = Math.round(w * MAX / h); h = MAX; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d')!.drawImage(img, 0, 0, w, h);
+        this.nuevoPostImagen.set(canvas.toDataURL('image/jpeg', 0.75));
+      };
+      img.src = reader.result as string;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  quitarImagenPost() { this.nuevoPostImagen.set(null); }
+
+  /* Búsqueda de recetas para adjuntar al post */
+  onBusquedaRecetaPostInput(event: Event) {
+    const val = (event.target as HTMLInputElement).value;
+    this.busquedaRecetaPost = val;
+    clearTimeout(this.debounceTimerPost);
+    if (!val.trim()) { this.resultadosBusquedaPost.set([]); return; }
+    this.debounceTimerPost = setTimeout(() => {
+      this.buscandoRecetaPost.set(true);
+      this.recetaService.buscarDinamico(val, 'Cualquiera', []).subscribe({
+        next: r => { this.resultadosBusquedaPost.set(r.content.slice(0, 6)); this.buscandoRecetaPost.set(false); },
+        error: () => this.buscandoRecetaPost.set(false),
+      });
+    }, 350);
+  }
+
+  seleccionarRecetaPost(receta: RecetaResponse) {
+    this.recetaSeleccionadaPost.set(receta);
+    this.mostrarBuscadorRecetaPost.set(false);
+    this.busquedaRecetaPost = '';
+    this.resultadosBusquedaPost.set([]);
+  }
+
+  quitarRecetaPost() { this.recetaSeleccionadaPost.set(null); }
+
   /* Envía un comentario al post abierto */
   publicarComentario() {
     const postId = this.postAbierto();
     if (!postId || !this.nuevoComentario.trim()) return;
 
+    const recetaId = this.recetaSeleccionadaComentario()?.id;
     this.enviandoComentario.set(true);
-    this.foroService.comentar(postId, this.nuevoComentario.trim()).subscribe({
+    this.foroService.comentar(postId, this.nuevoComentario.trim(), recetaId).subscribe({
       next: (comentario) => {
         this.comentariosDelPost.update(lista => [...lista, comentario]);
-        /* Actualizar contador del post en la lista */
         this.posts.update(lista =>
           lista.map(p => p.id === postId
             ? { ...p, totalComentarios: p.totalComentarios + 1 }
@@ -121,10 +201,39 @@ export class Foro implements OnInit {
           )
         );
         this.nuevoComentario = '';
+        this.recetaSeleccionadaComentario.set(null);
+        this.mostrarBuscadorReceta.set(false);
+        this.busquedaRecetaComentario = '';
         this.enviandoComentario.set(false);
       },
       error: () => this.enviandoComentario.set(false),
     });
+  }
+
+  /* Búsqueda de recetas para adjuntar */
+  onBusquedaRecetaInput(event: Event) {
+    const val = (event.target as HTMLInputElement).value;
+    this.busquedaRecetaComentario = val;
+    clearTimeout(this.debounceTimer);
+    if (!val.trim()) { this.resultadosBusqueda.set([]); return; }
+    this.debounceTimer = setTimeout(() => {
+      this.buscandoReceta.set(true);
+      this.recetaService.buscarDinamico(val, 'Cualquiera', []).subscribe({
+        next: r => { this.resultadosBusqueda.set(r.content.slice(0, 6)); this.buscandoReceta.set(false); },
+        error: () => this.buscandoReceta.set(false),
+      });
+    }, 350);
+  }
+
+  seleccionarRecetaComentario(receta: RecetaResponse) {
+    this.recetaSeleccionadaComentario.set(receta);
+    this.mostrarBuscadorReceta.set(false);
+    this.busquedaRecetaComentario = '';
+    this.resultadosBusqueda.set([]);
+  }
+
+  quitarRecetaComentario() {
+    this.recetaSeleccionadaComentario.set(null);
   }
 
   /* Elimina un post propio */
@@ -164,20 +273,22 @@ export class Foro implements OnInit {
     return fecha.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
   }
 
-  /* Iniciales del autor para el avatar */
   iniciales(nombre: string): string {
     return nombre.split(' ').slice(0, 2).map(p => p[0]).join('').toUpperCase();
   }
 
-  /* Cierra el formulario de nuevo post */
   cerrarForm() {
     this.mostrarFormPost.set(false);
     this.nuevoTitulo = '';
     this.nuevoContenido = '';
+    this.nuevoPostImagen.set(null);
+    this.recetaSeleccionadaPost.set(null);
+    this.mostrarBuscadorRecetaPost.set(false);
+    this.busquedaRecetaPost = '';
+    this.resultadosBusquedaPost.set([]);
     this.errorPost.set(null);
   }
 
-  /* Nombre del usuario en sesión — se usa para detectar si eres el autor */
   get miNombre(): string {
     return this.auth.sesion()?.nombre ?? '';
   }
@@ -186,7 +297,6 @@ export class Foro implements OnInit {
     return this.auth.estaAutenticado() && nombreUsuario === this.miNombre;
   }
 
-  /* Paleta de colores para avatares — determinista según el nombre */
   private readonly AVATAR_PALETTE = [
     '#C13E28','#2563eb','#059669','#d97706',
     '#7c3aed','#db2777','#0891b2','#65a30d',
@@ -199,7 +309,12 @@ export class Foro implements OnInit {
     return this.AVATAR_PALETTE[Math.abs(h) % this.AVATAR_PALETTE.length];
   }
 
-  /* Límites de caracteres */
   readonly MAX_TITULO    = 120;
   readonly MAX_CONTENIDO = 2000;
+  // v2 — imagen + receta en nuevo post
+
+  /* Lightbox */
+  lightboxSrc = signal<string | null>(null);
+  abrirLightbox(src: string) { this.lightboxSrc.set(src); }
+  cerrarLightbox() { this.lightboxSrc.set(null); }
 }

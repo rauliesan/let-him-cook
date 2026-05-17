@@ -131,6 +131,40 @@
   </div>
 </section>
 
+<!-- ═══════════ LOGROS ═══════════ -->
+<section class="logros-seccion">
+  <div class="contenedor">
+    <h2 class="seccion-titulo" revela>🏆 Logros</h2>
+    <p class="logros-subtitulo" revela>Consigue logros completando acciones en la plataforma. Los obtenidos se iluminan.</p>
+
+    @if (cargandoLogros()) {
+      <div class="logros-cargando">Cargando logros...</div>
+    } @else if (todosLogros().length === 0) {
+      <div class="logros-vacio" revela>
+        <span>🔒</span><p>No hay logros configurados todavía.</p>
+      </div>
+    } @else {
+      <div class="logros-grid">
+        @for (logro of todosLogros(); track logro.id; let i = $index) {
+          <div class="logro-card" revela [retardo]="(i % 8) * 40"
+               [class.logro-obtenido]="tieneLogro(logro.id)"
+               [class.logro-bloqueado]="!tieneLogro(logro.id)">
+            <div class="logro-icono">{{ logro.iconoUrl || '🏆' }}</div>
+            <div class="logro-info">
+              <span class="logro-nombre">{{ logro.nombre }}</span>
+              @if (tieneLogro(logro.id)) {
+                <span class="logro-badge-ok">✓ Obtenido</span>
+              } @else {
+                <span class="logro-nombre-desc">{{ logro.descripcion }}</span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</section>
+
 <!-- Catálogo de Probabilidades -->
 <section class="catalogo-seccion">
   <div class="contenedor">

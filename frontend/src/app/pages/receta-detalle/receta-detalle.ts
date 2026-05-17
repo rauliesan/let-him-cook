@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { Revela } from '../../shared/revela/revela';
 import { RecetaService, RecetaResponse } from '../../services/receta.service';
+import { FavoritoService } from '../../services/favorito.service';
+import { AuthService } from '../../services/auth.service';
 import { IaService } from '../../services/ia.service';
 
 @Component({
@@ -17,6 +19,12 @@ export class RecetaDetalle implements OnInit {
   receta   = signal<RecetaResponse | null>(null);
   cargando = signal(true);
   error    = signal<string | null>(null);
+
+  /* Like */
+  liked       = signal(false);
+  likeCount   = signal(0);
+  loadingLike = signal(false);
+  likeAnim    = signal(false);
 
   instrucciones          = signal<string | null>(null);
   generandoInstrucciones = signal(false);
@@ -65,6 +73,8 @@ export class RecetaDetalle implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private recetaService: RecetaService,
+    private favoritoService: FavoritoService,
+    public  auth: AuthService,
     private iaService: IaService,
   ) {}
 
@@ -80,12 +90,52 @@ export class RecetaDetalle implements OnInit {
 
   private cargarReceta(id: string) {
     this.recetaService.getPorId(id).subscribe({
-      next: (r) => { 
-        this.receta.set(r); 
-        this.cargando.set(false); 
+      next: (r) => {
+        this.receta.set(r);
+        this.likeCount.set(r.totalLikes);
+        this.cargando.set(false);
+        // Comprobar si el usuario ya tiene like
+        if (this.auth.estaAutenticado()) {
+          this.favoritoService.getMisFavoritos().subscribe({
+            next: (favs) => this.liked.set(favs.some(f => f.recetaId === r.id)),
+            error: () => {},
+          });
+        }
       },
       error: () => { this.error.set('No se pudo cargar la receta.'); this.cargando.set(false); },
     });
+  }
+
+  toggleLike() {
+    if (!this.auth.estaAutenticado() || this.loadingLike()) return;
+    const recetaId = this.receta()?.id;
+    if (!recetaId) return;
+
+    const estabaMarcado = this.liked();
+    this.liked.set(!estabaMarcado);
+    this.likeCount.update(n => estabaMarcado ? Math.max(0, n - 1) : n + 1);
+    this.likeAnim.set(true);
+    setTimeout(() => this.likeAnim.set(false), 600);
+
+    this.loadingLike.set(true);
+
+    const revertir = () => {
+      this.liked.set(estabaMarcado);
+      this.likeCount.update(n => estabaMarcado ? n + 1 : Math.max(0, n - 1));
+      this.loadingLike.set(false);
+    };
+
+    if (estabaMarcado) {
+      this.favoritoService.eliminar(recetaId).subscribe({
+        next: () => this.loadingLike.set(false),
+        error: revertir,
+      });
+    } else {
+      this.favoritoService.agregar(recetaId).subscribe({
+        next: () => this.loadingLike.set(false),
+        error: revertir,
+      });
+    }
   }
 
   generarInstruccionesIA() {

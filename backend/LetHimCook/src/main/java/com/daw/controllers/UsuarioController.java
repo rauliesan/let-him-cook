@@ -216,4 +216,14 @@ public class UsuarioController {
         usuarioService.cobrarTirada(userDetails.getUsuario().getId(), coste);
         return ResponseEntity.ok().build();
     }
+
+    /**
+     * Heartbeat de presencia — actualiza ultimaConexion del usuario autenticado.
+     * El frontend lo llama cada ~60 segundos para indicar que sigue activo.
+     */
+    @PostMapping("/me/heartbeat")
+    public ResponseEntity<Void> heartbeat(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        usuarioService.registrarConexion(userDetails.getUsuario().getId());
+        return ResponseEntity.ok().build();
+    }
 }

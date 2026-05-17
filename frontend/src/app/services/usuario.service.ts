@@ -20,6 +20,8 @@ export interface UsuarioResponse {
   iaCustomEndpoint: string | null;
   /** Nombre del modelo de la IA personalizada */
   iaCustomModelo: string | null;
+  /** Última conexión (para badge "en línea") */
+  ultimaConexion: string | null;
 }
 
 const API = 'http://localhost:9999';
@@ -81,5 +83,16 @@ export class UsuarioService {
 
   getMisAmigos(): Observable<UsuarioResponse[]> {
     return this.http.get<UsuarioResponse[]>(`${API}/usuarios/me/amigos`);
+  }
+
+  /** Heartbeat de presencia — actualiza ultimaConexion en el servidor */
+  heartbeat(): Observable<void> {
+    return this.http.post<void>(`${API}/usuarios/me/heartbeat`, {});
+  }
+
+  /** ¿El usuario con esta ultima_conexion está "en línea"? (< 3 minutos) */
+  static estaEnLinea(ultimaConexion: string | null): boolean {
+    if (!ultimaConexion) return false;
+    return Date.now() - new Date(ultimaConexion).getTime() < 3 * 60 * 1000;
   }
 }

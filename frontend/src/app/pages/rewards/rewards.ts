@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Revela } from '../../shared/revela/revela';
 import { RecompensaService, RecompensaResponse, UsuarioRecompensaResponse } from '../../services/recompensa.service';
 import { UsuarioService } from '../../services/usuario.service';
+import { LogroService, LogroResponse, UsuarioLogroResponse } from '../../services/logro.service';
 import { finalize } from 'rxjs';
 
 @Component({
@@ -34,17 +35,24 @@ export class Rewards implements OnInit {
   misPremios      = signal<RecompensaResponse[]>([]);
   cargandoMisPremios = signal(false);
 
+  /* Logros */
+  todosLogros     = signal<LogroResponse[]>([]);
+  misLogrosIds    = signal<Set<string>>(new Set());
+  cargandoLogros  = signal(false);
+
   puedeGirar = computed(() => this.coins() >= this.COSTE_TIRADA && !this.girando());
 
   constructor(
     private recompensaService: RecompensaService,
     private usuarioService: UsuarioService,
+    private logroService: LogroService,
   ) {}
 
   ngOnInit() {
     this.cargarUsuario();
     this.cargarCatalogo();
     this.cargarMisPremios();
+    this.cargarLogros();
   }
 
   private cargarUsuario() {
@@ -171,19 +179,66 @@ export class Rewards implements OnInit {
     if (premio) {
       this.premioGanado.set(premio);
       this.mostrarPremio.set(true);
-      
+
       // Registrar en la BD
       this.recompensaService.concederRecompensa(premio.id).subscribe({
-        next: () => this.cargarMisPremios(true),
+        next: () => {
+          this.cargarMisPremios(true);
+          // Comprobar logros desbloqueables tras ganar
+          this.intentarLogrosSlot();
+        },
         error: (err) => {
-          // Si ya lo tiene, no pasa nada, el backend lanza error pero es normal
           if (err.status === 409) {
              console.log('Ya tienes este premio.');
           }
+          // Intentar logros igualmente (p.ej. si el premio era duplicado)
+          this.intentarLogrosSlot();
         }
       });
     }
   }
+
+  /**
+   * Intenta conceder logros relacionados con la tragaperras.
+   * Busca en el catálogo de logros los que tengan iconoUrl de tipo slot/casino
+   * o cuyo nombre contenga palabras clave relevantes.
+   */
+  private intentarLogrosSlot() {
+    const logros = this.todosLogros();
+    const palabrasClave = ['slot', 'casino', 'suerte', 'premio', 'recompensa', 'primera', 'coleccion'];
+    for (const logro of logros) {
+      const texto = (logro.nombre + ' ' + (logro.descripcion ?? '')).toLowerCase();
+      if (palabrasClave.some(p => texto.includes(p))) {
+        // Intentar conceder; silencioso si ya lo tiene (409)
+        this.logroService.concederLogro(logro.id).subscribe({
+          next: () => {
+            this.misLogrosIds.update(s => new Set([...s, logro.id]));
+          },
+          error: () => {},
+        });
+      }
+    }
+  }
+
+  cargarLogros() {
+    this.cargandoLogros.set(true);
+    this.logroService.getTodosLogros().subscribe({
+      next: (todos) => {
+        this.todosLogros.set(todos);
+        // Cargar cuáles tiene el usuario
+        this.logroService.getMisLogros(0, 200).subscribe({
+          next: (res) => {
+            this.misLogrosIds.set(new Set(res.content.map(ul => ul.logro.id)));
+            this.cargandoLogros.set(false);
+          },
+          error: () => this.cargandoLogros.set(false),
+        });
+      },
+      error: () => this.cargandoLogros.set(false),
+    });
+  }
+
+  tieneLogro(id: string): boolean { return this.misLogrosIds().has(id); }
 
   recogerPremio(): void {
     this.mostrarPremio.set(false);

@@ -43,6 +43,12 @@
         <div class="pub-nombre-fila">
           <h1>{{ u.nombre }}</h1>
           <span class="badge-titulo">{{ tituloPorNivel() }}</span>
+          @if (estaEnLinea()) {
+            <span class="online-badge">
+              <span class="online-dot"></span>
+              En línea
+            </span>
+          }
         </div>
 
         <div class="pub-stats">

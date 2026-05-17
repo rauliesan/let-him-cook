@@ -15,10 +15,12 @@ public interface PostComentarioMapper {
     @Mapping(target = "post",    ignore = true)
     PostComentario toEntity(PostComentarioRequestDTO dto);
 
-    @Mapping(target = "usuarioId",     source = "usuario.id")
-    @Mapping(target = "usuarioNombre", source = "usuario.nombre")
-    @Mapping(target = "usuarioFotoUrl",source = "usuario.fotoUrl")
-    @Mapping(target = "postId",        source = "post.id")
+    @Mapping(target = "usuarioId",          source = "usuario.id")
+    @Mapping(target = "usuarioNombre",      source = "usuario.nombre")
+    @Mapping(target = "usuarioFotoUrl",     source = "usuario.fotoUrl")
+    @Mapping(target = "postId",             source = "post.id")
+    @Mapping(target = "recetaVinculadaId",  source = "recetaVinculada.id")
+    @Mapping(target = "recetaVinculadaNombre", source = "recetaVinculada.nombre")
     PostComentarioResponseDTO toResponseDTO(PostComentario entity);
 
     List<PostComentarioResponseDTO> toListDTO(List<PostComentario> list);

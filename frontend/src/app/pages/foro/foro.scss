@@ -168,6 +168,8 @@
   padding: 2rem;
   width: 100%;
   max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 1.1rem;
@@ -315,6 +317,121 @@
   flex-shrink: 0;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Modal: adjuntos (foto + receta) ── */
+.modal-attach-row {
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+  margin-bottom: .25rem;
+}
+
+.modal-attach-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  padding: .4rem .85rem;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--pill);
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--txt-2);
+  cursor: pointer;
+  transition: all .18s;
+
+  &:hover { border-color: var(--red); color: var(--red); }
+  &.modal-attach-activo { border-color: var(--red); color: var(--red); background: var(--red-faint); }
+}
+
+/* Preview de imagen en modal */
+.modal-img-preview {
+  position: relative;
+  display: inline-block;
+  margin-bottom: .5rem;
+
+  img {
+    display: block;
+    max-height: 180px;
+    max-width: 100%;
+    border-radius: var(--radius-s);
+    object-fit: cover;
+    border: 1.5px solid var(--border);
+  }
+
+  .modal-img-quitar {
+    position: absolute;
+    top: 5px; right: 5px;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0,0,0,.6);
+    color: white;
+    font-size: .8rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    line-height: 1;
+    &:hover { background: rgba(0,0,0,.85); }
+  }
+}
+
+/* ── Lightbox ── */
+.lightbox-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  animation: fadeIn .18s ease;
+  cursor: zoom-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.lightbox-img {
+  max-width: 100%;
+  max-height: 90vh;
+  border-radius: 12px;
+  box-shadow: 0 32px 80px rgba(0,0,0,.6);
+  object-fit: contain;
+  cursor: default;
+  animation: zoomIn .2s ease;
+}
+
+@keyframes zoomIn {
+  from { transform: scale(.93); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+.lightbox-close {
+  position: fixed;
+  top: 1.25rem;
+  right: 1.25rem;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,.15);
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s;
+  z-index: 501;
+  &:hover { background: rgba(255,255,255,.28); }
+}
+
+/* Imagen en feed — cursor pointer para indicar que es clicable */
+.p-img { cursor: zoom-in; }
 
 /* ================================================================
    Feed
@@ -517,6 +634,10 @@
   border-radius: var(--pill);
   padding: .18rem .65rem;
   white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background .15s;
+  &:hover { background: rgba(193,62,40,.15); }
 }
 
 .p-controls {
@@ -564,6 +685,16 @@
   color: var(--txt-2);
   line-height: 1.6;
   margin: 0 0 .75rem;
+}
+
+.p-img {
+  display: block;
+  width: 100%;
+  max-height: 240px;
+  object-fit: cover;
+  border-radius: var(--radius-s);
+  margin-bottom: .75rem;
+  border: 1px solid var(--border);
 }
 
 /* Footer */
@@ -765,6 +896,130 @@
     transform: translateY(-1px);
   }
   &:disabled { opacity: .5; cursor: not-allowed; }
+}
+
+/* Receta en comentario */
+.t-recipe-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: .25rem;
+  margin-top: .4rem;
+  font-size: .72rem;
+  font-weight: 600;
+  color: var(--red);
+  background: var(--red-faint);
+  border: 1px solid rgba(193,62,40,.2);
+  border-radius: var(--pill);
+  padding: .18rem .65rem;
+  text-decoration: none;
+  &:hover { background: rgba(193,62,40,.15); }
+}
+
+/* Acciones del reply (adjuntar + enviar) */
+.reply-actions {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  justify-content: flex-end;
+}
+
+.reply-attach-btn {
+  padding: .4rem .9rem;
+  background: transparent;
+  border: 1.5px solid var(--border);
+  border-radius: var(--pill);
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--txt-2);
+  cursor: pointer;
+  transition: all .2s;
+  &:hover { border-color: var(--red); color: var(--red); background: var(--red-faint); }
+}
+
+/* Chip de receta seleccionada */
+.reply-receta-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .3rem .75rem;
+  background: var(--red-faint);
+  border: 1px solid rgba(193,62,40,.25);
+  border-radius: var(--pill);
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--red);
+}
+
+.reply-receta-quitar {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  color: var(--red);
+  padding: 0;
+  opacity: .7;
+  &:hover { opacity: 1; }
+}
+
+/* Buscador desplegable */
+.reply-receta-buscador {
+  background: white;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-s);
+  overflow: hidden;
+}
+
+.reply-receta-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: .55rem .75rem;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  font-family: inherit;
+  font-size: .85rem;
+  outline: none;
+  &:focus { border-bottom-color: var(--red); }
+}
+
+.reply-receta-cargando {
+  padding: .5rem .75rem;
+  font-size: .8rem;
+  color: var(--txt-3);
+}
+
+.reply-receta-lista {
+  display: flex;
+  flex-direction: column;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.reply-receta-opcion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  padding: .55rem .75rem;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  font-family: inherit;
+  font-size: .83rem;
+  font-weight: 600;
+  color: var(--txt);
+  cursor: pointer;
+  text-align: left;
+  transition: background .15s;
+  &:last-child { border-bottom: none; }
+  &:hover { background: #f9fafb; }
+}
+
+.reply-receta-autor {
+  font-size: .72rem;
+  font-weight: 400;
+  color: var(--txt-3);
+  flex-shrink: 0;
 }
 
 .reply-login {

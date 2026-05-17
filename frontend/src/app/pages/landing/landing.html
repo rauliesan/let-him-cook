@@ -140,7 +140,6 @@
 
   <!-- Indicador de scroll -->
   <div class="scroll-indicador" aria-hidden="true">
-    <span class="scroll-hint">scroll</span>
     <div class="scroll-chevrons">
       <svg viewBox="0 0 16 9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <path d="M2 2L8 7L14 2"/>
@@ -199,7 +198,6 @@
         <div class="feature-cuerpo">
           <h3>Recetas con IA al instante</h3>
           <p>Introduce los ingredientes que tienes y recibe una receta personalizada en segundos. Compatible con restricciones dietéticas, preferencias de sabor y tiempo disponible.</p>
-          <span class="feature-badge">Groq · ChatGPT · Deepseek</span>
         </div>
         <div class="feature-deco" aria-hidden="true"></div>
       </div>
@@ -320,25 +318,27 @@
   </div>
 </section>
 
-<!-- Sección CTA de registro -->
-<section class="cta-sec" revela>
-  <div class="contenedor cta-inner">
-    <div class="cta-texto">
-      <span class="cta-kicker">Gratis para siempre</span>
-      <h2>¿Listo para cocinar de verdad?</h2>
-      <p>Únete a 50.000 cocineros que ya usan LetHimCook a diario.</p>
-      <div class="cta-btns">
-        <a routerLink="/login" class="btn-cta-blanco">Crear cuenta gratis</a>
-        <a routerLink="/explorar" class="btn-cta-contorno">Explorar sin cuenta</a>
+<!-- Sección CTA de registro — sólo visible para usuarios no autenticados -->
+@if (!auth.estaAutenticado()) {
+  <section class="cta-sec" revela>
+    <div class="contenedor cta-inner">
+      <div class="cta-texto">
+        <span class="cta-kicker">Gratis para siempre</span>
+        <h2>¿Listo para cocinar de verdad?</h2>
+        <p>Únete a miles de cocineros que ya usan LetHimCook a diario.</p>
+        <div class="cta-btns">
+          <a routerLink="/login" class="btn-cta-blanco">Crear cuenta gratis</a>
+          <a routerLink="/explorar" class="btn-cta-contorno">Explorar sin cuenta</a>
+        </div>
+      </div>
+      <div class="cta-decoracion" aria-hidden="true">
+        <div class="cta-circulo cta-c1"></div>
+        <div class="cta-circulo cta-c2"></div>
+        <div class="cta-circulo cta-c3"></div>
       </div>
     </div>
-    <div class="cta-decoracion" aria-hidden="true">
-      <div class="cta-circulo cta-c1"></div>
-      <div class="cta-circulo cta-c2"></div>
-      <div class="cta-circulo cta-c3"></div>
-    </div>
-  </div>
-</section>
+  </section>
+}
 
 <!-- Acordeón FAQ -->
 <section class="faq-sec">

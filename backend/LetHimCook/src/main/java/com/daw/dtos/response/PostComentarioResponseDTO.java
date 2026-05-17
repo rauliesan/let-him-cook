@@ -22,4 +22,7 @@ public class PostComentarioResponseDTO {
     private String usuarioFotoUrl;
 
     private UUID postId;
+
+    private UUID recetaVinculadaId;
+    private String recetaVinculadaNombre;
 }

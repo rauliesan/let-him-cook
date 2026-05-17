@@ -44,6 +44,10 @@ public class PostComentario {
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "receta_vinculada_id")
+    private Receta recetaVinculada;
+
     @PrePersist
     protected void onCreate() {
         if (this.fechaCreacion == null) {

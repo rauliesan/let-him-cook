@@ -1,49 +1,47 @@
 <footer class="footer">
   <div class="contenedor footer-inner">
 
+    <!-- Marca -->
     <div class="col-marca">
       <div class="footer-logo">
         <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
           <circle cx="16" cy="16" r="15" fill="#C13E28" />
-          <path d="M8 20 Q8 12 16 12 Q24 12 24 20" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-          <rect x="22" y="16" width="7" height="3.5" rx="1.75" fill="white" />
-          <ellipse cx="16" cy="20" rx="7" ry="2.5" fill="white" opacity="0.9" />
+          <!-- Asa izquierda -->
+          <rect x="3" y="15.5" width="7" height="3.5" rx="1.75" fill="white" />
+          <!-- Cuerpo -->
+          <rect x="8" y="13" width="16" height="11" rx="2" fill="white" opacity="0.9" />
+          <!-- Tapa -->
+          <rect x="7" y="11" width="18" height="3" rx="1.5" fill="white" />
+          <!-- Vapor -->
+          <path d="M13 10 Q13.5 8.5 13 7" fill="none" stroke="white" stroke-width="1.2" stroke-linecap="round" opacity="0.7"/>
+          <path d="M16 10 Q16.5 8.5 16 7" fill="none" stroke="white" stroke-width="1.2" stroke-linecap="round" opacity="0.7"/>
+          <path d="M19 10 Q19.5 8.5 19 7" fill="none" stroke="white" stroke-width="1.2" stroke-linecap="round" opacity="0.7"/>
         </svg>
         <span>LetHimCook</span>
       </div>
       <p class="footer-desc">
-        La plataforma culinaria que combina inteligencia artificial, comunidad y gamificación para que cocinar sea una aventura.
+        Inteligencia artificial, comunidad y gamificación para convertir cada comida en una aventura.
       </p>
       <p class="footer-tagline">"Porque cada comida merece ser especial"</p>
     </div>
 
+    <!-- Navegación -->
     <div class="col-nav">
       <h4>Plataforma</h4>
       <ul>
         <li><a routerLink="/">Inicio</a></li>
         <li><a routerLink="/explorar">Explorar recetas</a></li>
-        <li><a routerLink="/perfil">Mi perfil</a></li>
-        <li><a routerLink="/login">Crear cuenta</a></li>
+        <li><a routerLink="/foro">Foro</a></li>
+        <li><a routerLink="/rewards">Rewards</a></li>
       </ul>
     </div>
 
-    <div class="col-nav">
-      <h4>Funcionalidades</h4>
-      <ul>
-        <li><a href="#">Generación con IA</a></li>
-        <li><a href="#">Sistema de logros</a></li>
-        <li><a href="#">Supermercados cercanos</a></li>
-        <li><a href="#">Comunidad</a></li>
-      </ul>
-    </div>
-
+    <!-- Contacto -->
     <div class="col-nav">
       <h4>Soporte</h4>
       <ul>
         <li><a routerLink="/contacto">Contacto</a></li>
-        <li><a href="#">Preguntas frecuentes</a></li>
-        <li><a href="#">Privacidad</a></li>
-        <li><a href="#">Términos de uso</a></li>
+        <li><a routerLink="/perfil">Mi perfil</a></li>
       </ul>
     </div>
 
@@ -54,7 +52,7 @@
       <p>© 2025 LetHimCook · Antonio Laínez, Ricardo Montes y Raúl Liébana</p>
       <div class="footer-badge">
         <span class="dot"></span>
-        Totalmente gratuito
+        100% gratuito
       </div>
     </div>
   </div>

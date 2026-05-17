@@ -37,10 +37,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Servicio que gestiona la generación de recetas mediante IA y su publicación.
  */
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -117,12 +119,16 @@ public class IaGeneracionService {
             // 5. Fallback 100% gratuito (Pollinations.ai) - ¡Funciona sin API Key!
             apiKey   = "free-key"; // Pollinations ignora este campo
             endpoint = "https://text.pollinations.ai/openai";
-            modelo   = "openai";
+            modelo   = "openai"; // único modelo anónimo disponible en Pollinations
         }
 
         String ingredientesList = String.join(", ", dto.getIngredientes());
         String preferencias = dto.getPreferencias() != null ? dto.getPreferencias() : "";
-        String prompt = buildPrompt(ingredientesList, preferencias);
+        // Para Pollinations usamos prompt corto: deja más tokens para la respuesta
+        boolean esPollinationsEndpoint = endpoint.contains("pollinations");
+        String prompt = esPollinationsEndpoint
+                ? buildPromptCorto(ingredientesList, preferencias)
+                : buildPrompt(ingredientesList, preferencias);
 
         return callAiApi(endpoint, apiKey, modelo, prompt);
     }
@@ -217,11 +223,13 @@ public class IaGeneracionService {
         } else {
             apiKey   = "free-key";
             endpoint = "https://text.pollinations.ai/openai";
-            modelo   = "openai";
+            modelo   = "openai"; // único modelo anónimo disponible en Pollinations
         }
 
         String prompt = "Receta: \"" + recetaNombre + "\". Ingredientes: " + ingredientes +
                 ". Escribe los pasos de preparacion numerados. Solo JSON: {\"instrucciones\":\"1. Paso...\\n2. Paso...\"}";
+
+        boolean esPollinationsInstr = endpoint.contains("pollinations");
 
         try {
             HttpHeaders headers = new HttpHeaders();
@@ -231,7 +239,9 @@ public class IaGeneracionService {
             Map<String, Object> requestBody = new LinkedHashMap<>();
             requestBody.put("model", modelo);
             requestBody.put("messages", List.of(Map.of("role", "user", "content", prompt)));
-            requestBody.put("response_format", Map.of("type", "json_object"));
+            if (!esPollinationsInstr) {
+                requestBody.put("response_format", Map.of("type", "json_object"));
+            }
             requestBody.put("temperature", 0.7);
             requestBody.put("max_tokens", 512);
 
@@ -244,10 +254,17 @@ public class IaGeneracionService {
 
             JsonNode apiResponse = objectMapper.readTree(rawBody);
             String content = apiResponse.path("choices").get(0).path("message").path("content").asText("");
+            // Fallback: si content viene vacío (modelos reasoning) intentar el campo reasoning
+            if (content.isBlank()) {
+                content = apiResponse.path("choices").get(0).path("message").path("reasoning").asText("");
+            }
             content = content.trim();
             if (content.startsWith("```")) {
                 content = content.replaceFirst("```(?:json)?\\s*", "").replaceAll("\\s*```\\s*$", "").trim();
             }
+            int jStart = content.indexOf('{');
+            int jEnd   = content.lastIndexOf('}');
+            if (jStart >= 0 && jEnd > jStart) content = content.substring(jStart, jEnd + 1);
 
             JsonNode root = objectMapper.readTree(content);
             String instrucciones = root.path("instrucciones").asText("");
@@ -274,16 +291,36 @@ public class IaGeneracionService {
 
     private String buildPrompt(String ingredientes, String preferencias) {
         StringBuilder sb = new StringBuilder();
-        sb.append("Eres un chef. Ingredientes disponibles: ").append(ingredientes).append(".");
+        sb.append("Eres un chef experto. Ingredientes disponibles: ").append(ingredientes).append(".");
         if (!preferencias.isBlank()) {
-            sb.append(" Preferencias: ").append(preferencias).append(".");
+            sb.append(" Preferencias del usuario: ").append(preferencias).append(".");
         }
-        sb.append(" Genera 3 recetas COMPLETAS y DETALLADAS en JSON con esta estructura exacta, sin texto fuera del JSON:\n");
+        sb.append("\n\nDEBES responder ÚNICAMENTE con un objeto JSON válido. Sin texto antes ni después. Sin markdown. Sin explicaciones.");
+        sb.append("\nEl JSON debe contener EXACTAMENTE 3 recetas diferentes en el array 'recetas'.");
+        sb.append("\n\nEstructura obligatoria:\n");
+        sb.append("{\"recetas\":[\n");
+        sb.append("  {\"nombre\":\"Receta 1\",\"descripcion\":\"Una frase corta\",\"tiempoPreparacion\":20,\"dificultad\":\"BAJA\",\"calorias\":350,\"alergenos\":\"Ninguno\",\"categoria\":\"Ensalada\",\"categoriaEmoji\":\"🥗\",\"categoriaColor\":\"#4CAF50\",\"ingredientes\":\"1. 200g de ingrediente A. 2. 1 unidad de ingrediente B.\",\"instrucciones\":\"1. Primer paso. 2. Segundo paso. 3. Tercer paso.\"},\n");
+        sb.append("  {\"nombre\":\"Receta 2\",\"descripcion\":\"Una frase corta\",\"tiempoPreparacion\":35,\"dificultad\":\"MEDIA\",\"calorias\":500,\"alergenos\":\"Gluten\",\"categoria\":\"Principal\",\"categoriaEmoji\":\"🍳\",\"categoriaColor\":\"#FF9800\",\"ingredientes\":\"1. 300g de ingrediente C. 2. 2 cucharadas de ingrediente D.\",\"instrucciones\":\"1. Primer paso. 2. Segundo paso. 3. Tercer paso.\"},\n");
+        sb.append("  {\"nombre\":\"Receta 3\",\"descripcion\":\"Una frase corta\",\"tiempoPreparacion\":50,\"dificultad\":\"ALTA\",\"calorias\":650,\"alergenos\":\"Lactosa\",\"categoria\":\"Postre\",\"categoriaEmoji\":\"🍰\",\"categoriaColor\":\"#E91E63\",\"ingredientes\":\"1. 150g de ingrediente E. 2. 3 unidades de ingrediente F.\",\"instrucciones\":\"1. Primer paso. 2. Segundo paso. 3. Tercer paso.\"}\n");
+        sb.append("]}\n");
+        sb.append("\nReglas: dificultad solo puede ser BAJA, MEDIA o ALTA. tiempoPreparacion en minutos (número entero). colorHex válido. Incluye ingredientes con cantidades exactas e instrucciones detalladas paso a paso.");
+        return sb.toString();
+    }
+
+    /**
+     * Versión compacta del prompt para modelos con pocos tokens disponibles (Pollinations.ai).
+     * Usa un solo ejemplo en línea para reducir tokens del prompt y dejar más espacio para la respuesta.
+     */
+    private String buildPromptCorto(String ingredientes, String preferencias) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("You are a chef. Ingredients: ").append(ingredientes).append(".");
+        if (!preferencias.isBlank()) sb.append(" Preferences: ").append(preferencias).append(".");
+        sb.append("\nReply ONLY with a JSON object containing exactly 3 recipes. No text outside the JSON.");
+        sb.append("\nFormat (repeat 3 times in the array):\n");
         sb.append("{\"recetas\":[");
-        sb.append("{\"nombre\":\"Nombre de la receta\", \"descripcion\":\"Descripción atractiva de 2 líneas\", \"tiempoPreparacion\":30, \"dificultad\":\"MEDIA\", \"calorias\":400, \"alergenos\":\"Ninguno\", \"categoria\":\"Principal\", \"categoriaEmoji\":\"🍳\", \"categoriaColor\":\"#FFA500\", \"ingredientes\":\"1. Ingrediente con cantidad exacta. 2. Otro ingrediente...\", \"instrucciones\":\"1. Paso inicial detallado. 2. Siguiente paso...\"}");
+        sb.append("{\"nombre\":\"Name\",\"descripcion\":\"Short description\",\"tiempoPreparacion\":20,\"dificultad\":\"BAJA\",\"calorias\":300,\"alergenos\":\"None\",\"categoria\":\"Category\",\"categoriaEmoji\":\"🍳\",\"categoriaColor\":\"#FF9800\",\"ingredientes\":\"1. 200g X. 2. 1 unit Y.\",\"instrucciones\":\"1. Step one. 2. Step two. 3. Step three.\"}");
         sb.append("]}");
-        sb.append("\nIMPORTANTE: Los campos 'ingredientes' e 'instrucciones' no deben ser un resumen. Incluye TODOS los ingredientes con sus cantidades exactas y TODOS los pasos detallados para cocinar el plato.");
-        sb.append("Reglas: dificultad=BAJA|MEDIA|ALTA, tiempo en minutos, color hex. Descripcion maxima 1 frase corta.");
+        sb.append("\nRules: dificultad must be BAJA, MEDIA or ALTA. tiempoPreparacion is an integer (minutes). Return exactly 3 items.");
         return sb.toString();
     }
 
@@ -304,11 +341,14 @@ public class IaGeneracionService {
             requestBody.put("response_format", Map.of("type", "json_object"));
         }
 
+        log.info("[IA] Llamando a endpoint={} modelo={} jsonMode={}", endpoint, modelo, soportaJsonMode);
+
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
         try {
             ResponseEntity<String> rawResponse = restTemplate.postForEntity(endpoint, entity, String.class);
             String rawBody = rawResponse.getBody();
+            log.info("[IA] Respuesta HTTP status={} body={}", rawResponse.getStatusCode(), rawBody);
             if (rawBody == null || rawBody.isBlank()) {
                 throw new OperacionInvalidaException("La IA no devolvió respuesta.");
             }
@@ -318,6 +358,14 @@ public class IaGeneracionService {
                     .path("choices").get(0)
                     .path("message")
                     .path("content").asText("");
+            // Fallback: modelos reasoning (gpt-oss-20b de Pollinations) escriben en reasoning cuando content viene vacío
+            if (content.isBlank()) {
+                content = apiResponse.path("choices").get(0).path("message").path("reasoning").asText("");
+                if (!content.isBlank()) {
+                    log.info("[IA] content vacío → usando campo reasoning como fallback ({} chars)", content.length());
+                }
+            }
+            log.info("[IA] Content extraído: {}", content.length() > 500 ? content.substring(0, 500) + "..." : content);
 
             // Limpiar code fences: ```json ... ``` o ``` ... ```
             content = content.trim();

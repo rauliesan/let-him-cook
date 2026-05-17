@@ -39,7 +39,7 @@
           <h1>{{ r.nombre }}</h1>
           <div class="autor-pill">
             <span class="autor-prefijo">Receta de</span>
-            <span class="autor-nombre">{{ r.usuarioCreadorNombre }}</span>
+            <a class="autor-nombre autor-link" [routerLink]="['/usuario', r.usuarioCreadorId]">{{ r.usuarioCreadorNombre }}</a>
           </div>
           
           @if (r.descripcion) {
@@ -65,11 +65,17 @@
               <span class="stat-label">kcal</span>
             </div>
           }
-          <div class="stat-card likes">
-            <span class="stat-icon">❤️</span>
-            <span class="stat-val">{{ r.totalLikes }}</span>
+          <button class="stat-card likes"
+                  [class.liked]="liked()"
+                  [class.like-anim]="likeAnim()"
+                  [class.like-disabled]="!auth.estaAutenticado()"
+                  (click)="toggleLike()"
+                  [attr.title]="auth.estaAutenticado() ? (liked() ? 'Quitar like' : 'Dar like') : 'Inicia sesión para dar like'"
+                  type="button">
+            <span class="stat-icon">{{ liked() ? '❤️' : '🤍' }}</span>
+            <span class="stat-val">{{ likeCount() }}</span>
             <span class="stat-label">Likes</span>
-          </div>
+          </button>
         </div>
       </div>
     </div>

@@ -38,6 +38,10 @@ export class PerfilPublico implements OnInit {
     return n.split(' ').map(p => p[0]).join('').toUpperCase().slice(0, 2) || '?';
   });
 
+  estaEnLinea = computed(() =>
+    UsuarioService.estaEnLinea(this.usuario()?.ultimaConexion ?? null)
+  );
+
   tituloPorNivel = computed(() => {
     const nivel = this.usuario()?.nivel ?? 0;
     if (nivel >= 20) return 'Chef Maestro';

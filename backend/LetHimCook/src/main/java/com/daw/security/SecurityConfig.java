@@ -84,6 +84,9 @@ public class SecurityConfig {
                         // Formulario de contacto — público
                         .requestMatchers(HttpMethod.POST, "/contacto").permitAll()
 
+                        // Listado de logros (lectura) accesible a cualquier usuario autenticado
+                        .requestMatchers(HttpMethod.GET, "/admin/logros", "/admin/logros/**").authenticated()
+
                         // Rutas exclusivas de ADMIN
                         .requestMatchers("/admin/**").hasRole("ADMIN")
 

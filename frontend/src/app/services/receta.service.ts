@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 /* Estructura que devuelve el backend para cada receta */
 export interface RecetaResponse {
@@ -48,11 +49,25 @@ const API = 'http://localhost:9999';
 @Injectable({ providedIn: 'root' })
 export class RecetaService {
 
+  /* ── Caché en memoria (5 minutos TTL) ─────────────────────────────── */
+  private readonly CACHE_TTL = 5 * 60 * 1000;
+  private cacheRecetas: RecetaResponse[] | null = null;
+  private cacheCategorias: TipoComidaResponse[] | null = null;
+  private cacheRecetasTiempo = 0;
+
   constructor(private http: HttpClient) {}
 
-  /* Lista todas las recetas (sin paginación — endpoint público) */
+  /** Invalida la caché de recetas (llamar al crear/editar/borrar una receta) */
+  invalidarCacheRecetas() { this.cacheRecetas = null; }
+
+  /* Lista todas las recetas — caché 5 min */
   getTodas(): Observable<RecetaResponse[]> {
-    return this.http.get<RecetaResponse[]>(`${API}/recetas/todas`);
+    if (this.cacheRecetas && Date.now() - this.cacheRecetasTiempo < this.CACHE_TTL) {
+      return of(this.cacheRecetas);
+    }
+    return this.http.get<RecetaResponse[]>(`${API}/recetas/todas`).pipe(
+      tap(r => { this.cacheRecetas = r; this.cacheRecetasTiempo = Date.now(); })
+    );
   }
 
   /* Lista paginada de recetas */
@@ -62,9 +77,12 @@ export class RecetaService {
     );
   }
 
-  /* Lista todas las categorías (sin paginación — endpoint público) */
+  /* Lista todas las categorías — caché permanente en sesión (raramente cambian) */
   getCategorias(): Observable<TipoComidaResponse[]> {
-    return this.http.get<TipoComidaResponse[]>(`${API}/tipos-comida`);
+    if (this.cacheCategorias) return of(this.cacheCategorias);
+    return this.http.get<TipoComidaResponse[]>(`${API}/tipos-comida`).pipe(
+      tap(r => { this.cacheCategorias = r; })
+    );
   }
 
   /* Obtiene una receta por su ID */
