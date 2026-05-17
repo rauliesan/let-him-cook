@@ -88,19 +88,51 @@
   }
 }
 
-/* Avatar circular con anillo en hover */
+/* Avatar circular con anillo de XP */
 .avatar-wrapper {
   position: relative;
   flex-shrink: 0;
+  width: 132px;
+  height: 132px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &:hover .avatar {
-    box-shadow: 0 0 0 4px rgba(193, 62, 40, 0.3), var(--sombra-md);
-    transform: scale(1.04);
+    box-shadow: 0 0 0 3px rgba(193, 62, 40, 0.25), var(--sombra-md);
+    transform: scale(1.03);
   }
 
   &:hover .avatar-editar {
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* Anillo SVG de progreso de XP */
+.xp-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  transform: rotate(-90deg);
+  z-index: 0;
+  overflow: visible;
+
+  .xp-ring-track {
+    fill: none;
+    stroke: rgba(0, 0, 0, 0.08);
+    stroke-width: 4;
+  }
+
+  .xp-ring-progress {
+    fill: none;
+    stroke: var(--primario, #C13E28);
+    stroke-width: 4;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.5s;
+    filter: drop-shadow(0 0 4px rgba(193, 62, 40, 0.45));
   }
 }
 
@@ -118,7 +150,10 @@
   border: 4px solid var(--crema);
   box-shadow: var(--sombra-md);
   cursor: pointer;
+  position: relative;
+  z-index: 1;
   transition: box-shadow 0.3s, transform 0.3s;
+  flex-shrink: 0;
 }
 
 /* Botón de editar foto que aparece en hover */
@@ -182,17 +217,17 @@
 
 .nivel-badge {
   position: absolute;
-  bottom: 4px;
-  right: -4px;
+  bottom: 8px;
+  right: 6px;
   background: var(--amarillo);
   color: var(--negro);
   font-size: 0.65rem;
   font-weight: 800;
-  padding: 2px 6px;
+  padding: 2px 7px;
   border-radius: var(--radio-full);
   border: 2px solid var(--crema);
-  animation: nivelPop 0.4s ease 0.5s both;
-  z-index: 1;
+  animation: nivelPop 0.4s ease 0.8s both;
+  z-index: 3;
 }
 
 @keyframes nivelPop {

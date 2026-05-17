@@ -147,11 +147,13 @@
 
           <!-- Fila autor + acciones -->
           <div class="post-top">
-            <div class="p-avatar" [style.background]="avatarColor(post.usuarioNombre)">
+            <a class="p-avatar" [style.background]="avatarColor(post.usuarioNombre)"
+               [routerLink]="['/usuario', post.usuarioId]" (click)="$event.stopPropagation()">
               {{ iniciales(post.usuarioNombre) }}
-            </div>
+            </a>
             <div class="p-author">
-              <span class="p-name">{{ post.usuarioNombre }}</span>
+              <a class="p-name p-name-link" [routerLink]="['/usuario', post.usuarioId]"
+                 (click)="$event.stopPropagation()">{{ post.usuarioNombre }}</a>
               <span class="p-time">{{ formatearFecha(post.fechaCreacion) }}</span>
             </div>
             @if (post.recetaVinculadaNombre) {

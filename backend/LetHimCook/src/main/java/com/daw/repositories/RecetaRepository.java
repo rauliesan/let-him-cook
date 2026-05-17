@@ -35,4 +35,9 @@ public interface RecetaRepository extends JpaRepository<Receta, UUID> {
     boolean existsByIdAndUsuarioId(UUID id, UUID usuarioId);
 
     java.util.List<Receta> findByUsuario_IdOrderByFechaCreacionDesc(UUID usuarioId);
+
+    @Query("SELECT r FROM Receta r WHERE r.usuario IN " +
+           "(SELECT a FROM Usuario u JOIN u.amigos a WHERE u.id = :userId) " +
+           "AND r.esPublica = true ORDER BY r.fechaCreacion DESC")
+    java.util.List<Receta> findRecetasDeAmigos(@Param("userId") UUID userId);
 }

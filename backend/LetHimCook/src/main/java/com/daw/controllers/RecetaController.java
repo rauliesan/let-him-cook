@@ -108,6 +108,19 @@ public class RecetaController {
         return ResponseEntity.noContent().build();
     }
 
+    /** Recetas públicas de los amigos del usuario autenticado. */
+    @GetMapping("/amigos")
+    public ResponseEntity<List<RecetaResponseDTO>> recetasDeAmigos(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(recetaService.listarRecetasDeAmigos(userDetails.getUsuario().getId()));
+    }
+
+    /** Recetas públicas de un usuario concreto (para perfiles públicos). */
+    @GetMapping("/usuario/{usuarioId}")
+    public ResponseEntity<List<RecetaResponseDTO>> recetasPorUsuario(@PathVariable UUID usuarioId) {
+        return ResponseEntity.ok(recetaService.listarPublicasPorUsuario(usuarioId));
+    }
+
     /**
      * Marca una receta como completada (cocinada) por el usuario y devuelve las monedas ganadas.
      */

@@ -93,4 +93,14 @@ export class RecetaService {
   completarReceta(id: string): Observable<number> {
     return this.http.post<number>(`${API}/recetas/${id}/completar`, {});
   }
+
+  /* Recetas públicas de los amigos del usuario autenticado */
+  getRecetasDeAmigos(): Observable<RecetaResponse[]> {
+    return this.http.get<RecetaResponse[]>(`${API}/recetas/amigos`);
+  }
+
+  /* Recetas públicas de un usuario concreto */
+  getRecetasDeUsuario(usuarioId: string): Observable<RecetaResponse[]> {
+    return this.http.get<RecetaResponse[]>(`${API}/recetas/usuario/${usuarioId}`);
+  }
 }

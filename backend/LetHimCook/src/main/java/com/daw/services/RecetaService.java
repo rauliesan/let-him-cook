@@ -54,6 +54,23 @@ public class RecetaService {
         return recetaMapper.toListDTO(recetaRepository.findByUsuario_IdOrderByFechaCreacionDesc(usuarioId));
     }
 
+    /** Recetas públicas de un usuario concreto (para perfiles públicos). */
+    @Transactional(readOnly = true)
+    public List<RecetaResponseDTO> listarPublicasPorUsuario(UUID usuarioId) {
+        return recetaMapper.toListDTO(
+            recetaRepository.findByUsuario_IdOrderByFechaCreacionDesc(usuarioId)
+                .stream()
+                .filter(r -> Boolean.TRUE.equals(r.getEsPublica()))
+                .collect(java.util.stream.Collectors.toList())
+        );
+    }
+
+    /** Recetas públicas de los amigos del usuario autenticado. */
+    @Transactional(readOnly = true)
+    public List<RecetaResponseDTO> listarRecetasDeAmigos(UUID usuarioId) {
+        return recetaMapper.toListDTO(recetaRepository.findRecetasDeAmigos(usuarioId));
+    }
+
     /** Lista paginada con filtros opcionales. */
     @Transactional(readOnly = true)
     public Page<RecetaResponseDTO> buscarPaginado(String nombre, Dificultad dificultad, Pageable pageable) {

@@ -37,6 +37,12 @@ export const routes: Routes = [
     path: 'receta/:id',
     loadComponent: () => import('./pages/receta-detalle/receta-detalle').then(m => m.RecetaDetalle),
   },
+  /* Perfil público de otro usuario */
+  {
+    path: 'usuario/:id',
+    loadComponent: () => import('./pages/perfil-publico/perfil-publico').then(m => m.PerfilPublico),
+    canActivate: [authGuard],
+  },
   /* Panel de administración — solo ADMIN */
   {
     path: 'admin',

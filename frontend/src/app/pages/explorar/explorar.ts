@@ -73,6 +73,10 @@ export class Explorar implements OnInit, OnDestroy {
   categorias = signal<TipoComidaResponse[]>([]);
   todasRecetas = signal<RecetaResponse[]>([]);
 
+  /* Modo amigos */
+  modoAmigos    = signal(false);
+  recetasAmigos = signal<RecetaResponse[]>([]);
+
   private categoriasMapa = computed(() =>
     new Map(this.categorias().map(c => [c.nombre, c]))
   );
@@ -176,6 +180,7 @@ export class Explorar implements OnInit, OnDestroy {
   /* Ejecutar búsqueda en el servidor */
   buscar(event?: Event) {
     if (event) event.preventDefault();
+    this.modoAmigos.set(false);
     const termino = this.terminoBusqueda().trim();
     
     // Convertir nombres de categorías activas a sus IDs reales de la BD
@@ -202,13 +207,16 @@ export class Explorar implements OnInit, OnDestroy {
   }
 
   /* Las recetas se cargan directamente desde el servidor según los filtros aplicados en buscar() */
-  recetasFiltradas = computed(() => this.todasRecetas());
+  recetasFiltradas = computed(() =>
+    this.modoAmigos() ? this.recetasAmigos() : this.todasRecetas()
+  );
 
   /* Toggle de una categoría — si ya está activa la quita, si no la añade */
   seleccionarFiltro(nombre: string) {
+    this.modoAmigos.set(false);
     if (nombre === 'Todas') {
       this.filtrosActivos.set(new Set());
-      this.buscar(); // Ejecutar búsqueda inmediatamente al limpiar filtros
+      this.buscar();
       return;
     }
     this.filtrosActivos.update(s => {
@@ -216,12 +224,28 @@ export class Explorar implements OnInit, OnDestroy {
       n.has(nombre) ? n.delete(nombre) : n.add(nombre);
       return n;
     });
-    this.buscar(); // Ejecutar búsqueda inmediatamente al cambiar categoría
+    this.buscar();
   }
 
-  seleccionarDificultad(d: string) { 
-    this.dificultadActiva.set(d); 
-    this.buscar(); // Ejecutar búsqueda inmediatamente al cambiar dificultad
+  seleccionarDificultad(d: string) {
+    this.modoAmigos.set(false);
+    this.dificultadActiva.set(d);
+    this.buscar();
+  }
+
+  activarModoAmigos() {
+    if (this.modoAmigos()) {
+      this.modoAmigos.set(false);
+      this.buscar();
+      return;
+    }
+    this.modoAmigos.set(true);
+    this.filtrosActivos.set(new Set());
+    this.cargando.set(true);
+    this.recetaService.getRecetasDeAmigos().subscribe({
+      next: r => { this.recetasAmigos.set(r); this.cargando.set(false); },
+      error: () => { this.recetasAmigos.set([]); this.cargando.set(false); },
+    });
   }
 
   toggleGrupo(nombre: string) {

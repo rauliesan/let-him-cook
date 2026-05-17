@@ -5,6 +5,7 @@ import { Observable, tap } from 'rxjs';
 
 /* Respuesta que devuelve el backend al hacer login o registro */
 export interface AuthResponse {
+  id: string;
   token: string;
   email: string;
   nombre: string;
@@ -13,6 +14,7 @@ export interface AuthResponse {
 
 /* Datos que se guardan en localStorage para sesión persistente */
 export interface SesionUsuario {
+  usuarioId: string;
   token: string;
   email: string;
   nombre: string;
@@ -84,6 +86,7 @@ export class AuthService {
   /* Guarda token y datos de sesión en localStorage y actualiza signals */
   private guardarSesion(res: AuthResponse): void {
     const sesion: SesionUsuario = {
+      usuarioId: res.id,
       token: res.token,
       email: res.email,
       nombre: res.nombre,

@@ -39,10 +39,19 @@
     <div class="categorias-acordeon" revela [retardo]="120">
 
       <!-- "Todas" siempre visible -->
-      <div class="cat-todas" [class.activa]="filtrosActivos().size === 0" (click)="seleccionarFiltro('Todas')">
+      <div class="cat-todas" [class.activa]="filtrosActivos().size === 0 && !modoAmigos()" (click)="seleccionarFiltro('Todas')">
         <span class="cat-todas-emoji">🍽️</span>
         <span class="cat-todas-nombre">Todas las recetas</span>
         <span class="cat-todas-count">{{ todasRecetas().length }}</span>
+      </div>
+
+      <!-- "De amigos" -->
+      <div class="cat-todas cat-amigos" [class.activa]="modoAmigos()" (click)="activarModoAmigos()">
+        <span class="cat-todas-emoji">👥</span>
+        <span class="cat-todas-nombre">De amigos</span>
+        @if (modoAmigos()) {
+          <span class="cat-todas-count">{{ recetasAmigos().length }}</span>
+        }
       </div>
 
       <!-- Un bloque plegable por grupo -->
@@ -208,7 +217,10 @@
               <span [countUp]="receta.totalLikes"></span>
             </span>
           </div>
-          <p class="receta-autor">por {{ receta.usuarioCreadorNombre }}</p>
+          <p class="receta-autor">por
+            <a class="receta-autor-link" [routerLink]="['/usuario', receta.usuarioCreadorId]"
+               (click)="$event.stopPropagation()">{{ receta.usuarioCreadorNombre }}</a>
+          </p>
           <div class="receta-datos">
             <span class="dato">
               <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" class="dato-icono">

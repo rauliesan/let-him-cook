@@ -28,6 +28,15 @@
 
     <div class="contenedor perfil-info">
       <div class="avatar-wrapper">
+        <!-- Anillo de progreso XP (SVG circular) -->
+        <svg class="xp-ring" viewBox="0 0 132 132" aria-hidden="true">
+          <circle class="xp-ring-track" cx="66" cy="66" r="62"/>
+          <circle class="xp-ring-progress"
+                  cx="66" cy="66" r="62"
+                  [attr.stroke-dasharray]="RING_CIRCUMFERENCE"
+                  [attr.stroke-dashoffset]="xpRingOffset()"/>
+        </svg>
+
         <!-- Foto si existe, iniciales si no -->
         @if (usuario()?.fotoUrl) {
           <img class="avatar avatar-img" [src]="usuario()!.fotoUrl!" [alt]="usuario()!.nombre" />
@@ -117,7 +126,7 @@
           <div class="exp-barra-wrapper">
             <div class="exp-info">
               <span>Nivel {{ usuario()?.nivel }}</span>
-              <span class="exp-xp">{{ usuario()?.puntos }} puntos totales</span>
+              <span class="exp-xp">{{ xpEnNivel() }} / 100 XP</span>
               <span>Nivel {{ (usuario()?.nivel ?? 0) + 1 }}</span>
             </div>
             <div class="exp-barra">

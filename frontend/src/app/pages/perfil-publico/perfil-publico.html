@@ -1,0 +1,119 @@
+@if (cargando()) {
+  <div class="estado-carga">
+    <div class="carga-spinner"></div>
+    <p>Cargando perfil...</p>
+  </div>
+}
+
+@if (!cargando() && error()) {
+  <div class="estado-error contenedor">
+    <p>{{ error() }}</p>
+    <a routerLink="/explorar" class="btn-primario btn-sm">Volver a explorar</a>
+  </div>
+}
+
+@if (!cargando() && !error() && usuario(); as u) {
+  <!-- Portada -->
+  <div class="pub-portada">
+    <div class="pub-portada-patron"></div>
+  </div>
+
+  <!-- Info del usuario -->
+  <div class="contenedor pub-info-wrapper">
+    <div class="pub-info">
+
+      <!-- Avatar con anillo de XP -->
+      <div class="pub-avatar-wrapper">
+        <svg class="xp-ring" viewBox="0 0 132 132" aria-hidden="true">
+          <circle class="xp-ring-track" cx="66" cy="66" r="62"/>
+          <circle class="xp-ring-progress" cx="66" cy="66" r="62"
+                  [attr.stroke-dasharray]="RING_CIRCUMFERENCE"
+                  [attr.stroke-dashoffset]="xpRingOffset()"/>
+        </svg>
+        @if (u.fotoUrl) {
+          <img class="pub-avatar pub-avatar-img" [src]="u.fotoUrl" [alt]="u.nombre" />
+        } @else {
+          <div class="pub-avatar">{{ iniciales() }}</div>
+        }
+        <div class="pub-nivel-badge">Nv.{{ u.nivel }}</div>
+      </div>
+
+      <!-- Datos -->
+      <div class="pub-datos">
+        <div class="pub-nombre-fila">
+          <h1>{{ u.nombre }}</h1>
+          <span class="badge-titulo">{{ tituloPorNivel() }}</span>
+        </div>
+
+        <div class="pub-stats">
+          <div class="pub-stat">
+            <strong>{{ u.puntos }}</strong>
+            <span>Puntos</span>
+          </div>
+          <div class="pub-stat">
+            <strong>Nv.{{ u.nivel }}</strong>
+            <span>Nivel</span>
+          </div>
+          <div class="pub-stat">
+            <strong>{{ recetas().length }}</strong>
+            <span>Recetas</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botón de amistad -->
+      <div class="pub-acciones">
+        <button class="btn-amigo"
+                [class.siguiendo]="esAmigo()"
+                [disabled]="actualizandoAmigo()"
+                (click)="toggleAmigo()">
+          @if (actualizandoAmigo()) {
+            <span class="spinner-mini"></span>
+          } @else if (esAmigo()) {
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+              <path d="M2 9l4 4L14 3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Siguiendo
+          } @else {
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+              <circle cx="7" cy="5" r="3"/>
+              <path d="M1 13c0-3.3 2.7-6 6-6" stroke-linecap="round"/>
+              <path d="M13 10v4M11 12h4" stroke-linecap="round"/>
+            </svg>
+            Añadir amigo
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recetas del usuario -->
+  <div class="contenedor pub-recetas-section">
+    <h2 revela>Recetas de {{ u.nombre }}</h2>
+
+    @if (recetas().length === 0) {
+      <p class="sin-recetas">Este usuario aún no ha publicado recetas.</p>
+    } @else {
+      <div class="pub-recetas-grid" revela>
+        @for (r of recetas(); track r.id; let i = $index) {
+          <a class="pub-receta-card" [routerLink]="['/receta', r.id]" revela [retardo]="i * 60">
+            <div class="pub-receta-emoji">
+              {{ r.tipoComidaNombre ? '🍽️' : '🍳' }}
+            </div>
+            <div class="pub-receta-info">
+              <span class="pub-receta-cat">{{ r.tipoComidaNombre ?? 'Sin categoría' }}</span>
+              <h3>{{ r.nombre }}</h3>
+              <div class="pub-receta-meta">
+                <span>{{ etiquetaDificultad(r.dificultad) }}</span>
+                @if (r.tiempoPreparacion) {
+                  <span>{{ formatearTiempo(r.tiempoPreparacion) }}</span>
+                }
+                <span>{{ r.totalLikes }} ❤️</span>
+              </div>
+            </div>
+          </a>
+        }
+      </div>
+    }
+  </div>
+}

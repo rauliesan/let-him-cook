@@ -2,8 +2,10 @@ package com.daw.services;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -283,6 +285,43 @@ public class UsuarioService {
         usuario.setCodigoRecuperacion(null);
         usuario.setFechaExpiracionCodigo(null);
         usuarioRepository.save(usuario);
+    }
+
+    /* ── Amistad ── */
+
+    @Transactional
+    public void agregarAmigo(UUID usuarioId, UUID amigoId) {
+        if (usuarioId.equals(amigoId))
+            throw new OperacionInvalidaException("No puedes añadirte a ti mismo como amigo.");
+        Usuario usuario = buscarEntidadPorId(usuarioId);
+        Usuario amigo   = buscarEntidadPorId(amigoId);
+        if (usuario.getAmigos() == null) usuario.setAmigos(new HashSet<>());
+        usuario.getAmigos().add(amigo);
+        usuarioRepository.save(usuario);
+    }
+
+    @Transactional
+    public void eliminarAmigo(UUID usuarioId, UUID amigoId) {
+        Usuario usuario = buscarEntidadPorId(usuarioId);
+        if (usuario.getAmigos() != null)
+            usuario.getAmigos().removeIf(a -> a.getId().equals(amigoId));
+        usuarioRepository.save(usuario);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean esAmigo(UUID usuarioId, UUID amigoId) {
+        Usuario usuario = buscarEntidadPorId(usuarioId);
+        if (usuario.getAmigos() == null) return false;
+        return usuario.getAmigos().stream().anyMatch(a -> a.getId().equals(amigoId));
+    }
+
+    @Transactional(readOnly = true)
+    public List<UsuarioResponseDTO> getMisAmigos(UUID usuarioId) {
+        Usuario usuario = buscarEntidadPorId(usuarioId);
+        if (usuario.getAmigos() == null) return List.of();
+        return usuario.getAmigos().stream()
+                .map(usuarioMapper::toResponseDTO)
+                .collect(Collectors.toList());
     }
 
     /**

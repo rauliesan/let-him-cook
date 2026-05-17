@@ -1,6 +1,7 @@
 package com.daw.controllers;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -171,6 +172,38 @@ public class UsuarioController {
             @RequestBody FotoUrlRequestDTO dto) {
         return ResponseEntity.ok(
                 usuarioService.actualizarFoto(userDetails.getUsuario().getId(), dto.getFotoUrl()));
+    }
+
+    /* ── Amistad ── */
+
+    @PostMapping("/{id}/amigos")
+    public ResponseEntity<Void> agregarAmigo(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        usuarioService.agregarAmigo(userDetails.getUsuario().getId(), id);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}/amigos")
+    public ResponseEntity<Void> eliminarAmigo(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        usuarioService.eliminarAmigo(userDetails.getUsuario().getId(), id);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/me/amigos")
+    public ResponseEntity<List<UsuarioResponseDTO>> getMisAmigos(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(usuarioService.getMisAmigos(userDetails.getUsuario().getId()));
+    }
+
+    @GetMapping("/{id}/es-amigo")
+    public ResponseEntity<Map<String, Boolean>> esAmigo(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        boolean esAmigo = usuarioService.esAmigo(userDetails.getUsuario().getId(), id);
+        return ResponseEntity.ok(Map.of("esAmigo", esAmigo));
     }
 
     /**

@@ -138,12 +138,18 @@ export class Perfil implements OnInit {
   });
 
   /* Porcentaje de la barra de experiencia */
-  progresoPuntos = computed(() => {
-    const puntos = this.usuario()?.puntos ?? 0;
-    const nivel  = Math.max(1, this.usuario()?.nivel ?? 1);
-    const puntosPorNivel = nivel * 100;
-    return Math.min(100, Math.round(((puntos % puntosPorNivel) / puntosPorNivel) * 100));
-  });
+  readonly RING_CIRCUMFERENCE = 2 * Math.PI * 62;
+
+  /* Progreso dentro del nivel actual (0-99). Cada nivel = 100 pts. */
+  progresoPuntos = computed(() => (this.usuario()?.puntos ?? 0) % 100);
+
+  /* XP dentro del nivel actual para mostrar en pantalla */
+  xpEnNivel = computed(() => (this.usuario()?.puntos ?? 0) % 100);
+
+  /* Offset del anillo SVG: empieza lleno (sin progreso) y se reduce */
+  xpRingOffset = computed(() =>
+    this.RING_CIRCUMFERENCE * (1 - this.progresoPuntos() / 100)
+  );
 
   /* ── Métodos de configuración IA ── */
   abrirEditarIa() {

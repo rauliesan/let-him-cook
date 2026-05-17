@@ -62,4 +62,24 @@ export class UsuarioService {
   cobrarTirada(coste = 100): Observable<void> {
     return this.http.post<void>(`${API}/usuarios/me/cobrar-tirada?coste=${coste}`, {});
   }
+
+  getById(id: string): Observable<UsuarioResponse> {
+    return this.http.get<UsuarioResponse>(`${API}/usuarios/${id}`);
+  }
+
+  agregarAmigo(id: string): Observable<void> {
+    return this.http.post<void>(`${API}/usuarios/${id}/amigos`, {});
+  }
+
+  eliminarAmigo(id: string): Observable<void> {
+    return this.http.delete<void>(`${API}/usuarios/${id}/amigos`);
+  }
+
+  esAmigo(id: string): Observable<{ esAmigo: boolean }> {
+    return this.http.get<{ esAmigo: boolean }>(`${API}/usuarios/${id}/es-amigo`);
+  }
+
+  getMisAmigos(): Observable<UsuarioResponse[]> {
+    return this.http.get<UsuarioResponse[]>(`${API}/usuarios/me/amigos`);
+  }
 }
