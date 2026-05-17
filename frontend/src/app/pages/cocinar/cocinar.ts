@@ -65,8 +65,12 @@ export class Cocinar {
 
     this.iaService.generarSugerencias(req).subscribe({
       next: sugs => {
-        this.st.sugerencias.set(sugs);
         this.st.cargandoIA.set(false);
+        if (!sugs || sugs.length === 0) {
+          this.st.errorIA.set('La IA no pudo generar recetas. Intenta de nuevo o añade más ingredientes.');
+          return;
+        }
+        this.st.sugerencias.set(sugs);
         this.st.paso.set('sugerencias');
       },
       error: err => {

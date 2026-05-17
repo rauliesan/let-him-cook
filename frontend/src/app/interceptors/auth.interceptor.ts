@@ -1,18 +1,25 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { catchError, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 
-/* Interceptor funcional — añade el JWT a todas las peticiones si el usuario está autenticado */
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(AuthService);
+  const router = inject(Router);
   const token = auth.getToken();
 
-  if (token) {
-    const reqConToken = req.clone({
-      setHeaders: { Authorization: `Bearer ${token}` },
-    });
-    return next(reqConToken);
-  }
+  const reqConToken = token
+    ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
+    : req;
 
-  return next(req);
+  return next(reqConToken).pipe(
+    catchError(err => {
+      if (err.status === 401 && auth.estaAutenticado()) {
+        auth.logout();
+        router.navigate(['/login']);
+      }
+      return throwError(() => err);
+    }),
+  );
 };
