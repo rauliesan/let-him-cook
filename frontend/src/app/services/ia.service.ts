@@ -65,4 +65,8 @@ export class IaService {
     const params = iaModeloId ? `?iaModeloId=${iaModeloId}` : '';
     return this.http.put(`${API}/usuarios/me/ia-modelo${params}`, {});
   }
+
+  getModelosDisponibles(): Observable<any[]> {
+    return this.http.get<any[]>(`${API}/ia-modelos`);
+  }
 }

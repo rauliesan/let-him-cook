@@ -617,6 +617,64 @@
   &:hover { color: var(--primario, #C13E28); }
 }
 
+/* IA Selector de modelos BD */
+.ia-modelos-bd {
+  h4 {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--gris-oscuro, #555);
+    margin-bottom: 0.6rem;
+  }
+}
+
+.modelos-lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.5rem;
+}
+
+.modelo-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  padding: 0.6rem 0.8rem;
+  background: var(--blanco);
+  border: 1.5px solid var(--borde, #e0dbd4);
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+
+  span {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--negro);
+  }
+
+  small {
+    font-size: 0.65rem;
+    font-weight: 500;
+    color: var(--gris);
+    word-break: break-all;
+  }
+
+  &:hover {
+    border-color: rgba(193, 62, 40, 0.4);
+    background: rgba(193, 62, 40, 0.02);
+  }
+
+  &.activo {
+    border-color: var(--primario, #C13E28);
+    background: rgba(193, 62, 40, 0.08);
+    box-shadow: 0 2px 8px rgba(193, 62, 40, 0.15);
+
+    span {
+      color: var(--primario, #C13E28);
+    }
+  }
+}
+
 /* IA edit form */
 .ia-error {
   padding: 0.55rem 0.75rem;

@@ -58,6 +58,9 @@ public class IaGeneracionService {
     @Value("${deepseek.api.key:}")
     private String appDeepseekKey;
 
+    @Value("${openrouter.api.key:}")
+    private String appOpenRouterKey;
+
     private static final int PUNTOS_POR_RECETA = 50;
     private static final String DEEPSEEK_ENDPOINT = "https://api.deepseek.com/v1/chat/completions";
     private static final String DEEPSEEK_MODEL = "deepseek-chat";
@@ -89,6 +92,11 @@ public class IaGeneracionService {
             // 2. Modelo asignado al usuario en la BD (tabla ia_modelo)
             Api api  = usuario.getIaModeloSeleccionado().getApi();
             apiKey   = api.getApiKey();
+            
+            if ("MISSING_KEY".equals(apiKey)) {
+                throw new OperacionInvalidaException("Este modelo requiere una API Key global que no está configurada. Usa la IA Automática o introduce tu propia clave en el Perfil.");
+            }
+            
             endpoint = (api.getEndpointUrl() != null && !api.getEndpointUrl().isBlank())
                     ? api.getEndpointUrl() : DEEPSEEK_ENDPOINT;
             modelo   = usuario.getIaModeloSeleccionado().getNombreModelo();
@@ -99,8 +107,14 @@ public class IaGeneracionService {
             endpoint = DEEPSEEK_ENDPOINT;
             modelo   = DEEPSEEK_MODEL;
 
+        } else if (appOpenRouterKey != null && !appOpenRouterKey.isBlank()) {
+            // 4. Clave OpenRouter global de la aplicación
+            apiKey   = appOpenRouterKey;
+            endpoint = "https://openrouter.ai/api/v1/chat/completions";
+            modelo   = "openrouter/free";
+
         } else {
-            // 4. Fallback 100% gratuito (Pollinations.ai) - ¡Funciona sin API Key!
+            // 5. Fallback 100% gratuito (Pollinations.ai) - ¡Funciona sin API Key!
             apiKey   = "free-key"; // Pollinations ignora este campo
             endpoint = "https://text.pollinations.ai/openai";
             modelo   = "openai";
@@ -184,6 +198,11 @@ public class IaGeneracionService {
                 && usuario.getIaModeloSeleccionado().getApi().getApiKey() != null) {
             Api api  = usuario.getIaModeloSeleccionado().getApi();
             apiKey   = api.getApiKey();
+            
+            if ("MISSING_KEY".equals(apiKey)) {
+                throw new OperacionInvalidaException("Este modelo requiere una API Key global que no está configurada. Usa la IA Automática o introduce tu propia clave en el Perfil.");
+            }
+            
             endpoint = (api.getEndpointUrl() != null && !api.getEndpointUrl().isBlank())
                     ? api.getEndpointUrl() : DEEPSEEK_ENDPOINT;
             modelo   = usuario.getIaModeloSeleccionado().getNombreModelo();
@@ -191,6 +210,10 @@ public class IaGeneracionService {
             apiKey   = appDeepseekKey;
             endpoint = DEEPSEEK_ENDPOINT;
             modelo   = DEEPSEEK_MODEL;
+        } else if (appOpenRouterKey != null && !appOpenRouterKey.isBlank()) {
+            apiKey   = appOpenRouterKey;
+            endpoint = "https://openrouter.ai/api/v1/chat/completions";
+            modelo   = "openrouter/free";
         } else {
             apiKey   = "free-key";
             endpoint = "https://text.pollinations.ai/openai";
@@ -232,6 +255,18 @@ public class IaGeneracionService {
 
         } catch (OperacionInvalidaException e) {
             throw e;
+        } catch (org.springframework.web.client.RestClientResponseException e) {
+            if (e.getStatusCode().value() == 429) {
+                throw new OperacionInvalidaException("El modelo seleccionado está temporalmente saturado (Error 429). Por favor, intenta de nuevo en unos segundos o ve a tu perfil y selecciona otro modelo.");
+            } else if (e.getStatusCode().value() == 404) {
+                throw new OperacionInvalidaException("El modelo seleccionado no está disponible (Error 404). Por favor, ve a tu perfil y selecciona un modelo diferente.");
+            } else if (e.getStatusCode().value() == 402) {
+                throw new OperacionInvalidaException("El proveedor de IA requiere pago o se ha quedado sin saldo (Error 402). Por favor, usa un modelo gratuito (como el Auto-router de OpenRouter) en tu perfil.");
+            } else if (e.getStatusCode().value() == 502 || e.getStatusCode().value() == 503 || e.getStatusCode().value() == 504) {
+                throw new OperacionInvalidaException("El proveedor de IA está inactivo (" + e.getStatusCode().value() + "). Por favor, selecciona otro modelo.");
+            } else {
+                throw new OperacionInvalidaException("El proveedor de IA devolvió un error (" + e.getStatusCode().value() + "). Intenta con otro modelo.");
+            }
         } catch (Exception e) {
             throw new OperacionInvalidaException("Error al generar instrucciones: " + e.getMessage());
         }
@@ -243,12 +278,11 @@ public class IaGeneracionService {
         if (!preferencias.isBlank()) {
             sb.append(" Preferencias: ").append(preferencias).append(".");
         }
-        sb.append(" Genera 3 recetas en JSON con esta estructura exacta, sin texto fuera del JSON:\n");
+        sb.append(" Genera 3 recetas COMPLETAS y DETALLADAS en JSON con esta estructura exacta, sin texto fuera del JSON:\n");
         sb.append("{\"recetas\":[");
-        sb.append("{\"nombre\":\"string\",\"descripcion\":\"string breve\",\"ingredientes\":\"string\",");
-        sb.append("\"tiempoPreparacion\":30,\"dificultad\":\"BAJA\",\"calorias\":400,");
-        sb.append("\"alergenos\":\"string\",\"categoria\":\"string\",\"categoriaEmoji\":\"string\",\"categoriaColor\":\"#RRGGBB\"}");
-        sb.append("]}\n");
+        sb.append("{\"nombre\":\"Nombre de la receta\", \"descripcion\":\"Descripción atractiva de 2 líneas\", \"tiempoPreparacion\":30, \"dificultad\":\"MEDIA\", \"calorias\":400, \"alergenos\":\"Ninguno\", \"categoria\":\"Principal\", \"categoriaEmoji\":\"🍳\", \"categoriaColor\":\"#FFA500\", \"ingredientes\":\"1. Ingrediente con cantidad exacta. 2. Otro ingrediente...\", \"instrucciones\":\"1. Paso inicial detallado. 2. Siguiente paso...\"}");
+        sb.append("]}");
+        sb.append("\nIMPORTANTE: Los campos 'ingredientes' e 'instrucciones' no deben ser un resumen. Incluye TODOS los ingredientes con sus cantidades exactas y TODOS los pasos detallados para cocinar el plato.");
         sb.append("Reglas: dificultad=BAJA|MEDIA|ALTA, tiempo en minutos, color hex. Descripcion maxima 1 frase corta.");
         return sb.toString();
     }
@@ -312,6 +346,18 @@ public class IaGeneracionService {
 
         } catch (OperacionInvalidaException e) {
             throw e;
+        } catch (org.springframework.web.client.RestClientResponseException e) {
+            if (e.getStatusCode().value() == 429) {
+                throw new OperacionInvalidaException("El modelo seleccionado está temporalmente saturado (Error 429). Por favor, intenta de nuevo en unos segundos o ve a tu perfil y selecciona otro modelo.");
+            } else if (e.getStatusCode().value() == 404) {
+                throw new OperacionInvalidaException("El modelo seleccionado no está disponible (Error 404). Por favor, ve a tu perfil y selecciona un modelo diferente.");
+            } else if (e.getStatusCode().value() == 402) {
+                throw new OperacionInvalidaException("El proveedor de IA requiere pago o se ha quedado sin saldo (Error 402). Por favor, usa un modelo gratuito (como el Auto-router de OpenRouter) en tu perfil.");
+            } else if (e.getStatusCode().value() == 502 || e.getStatusCode().value() == 503 || e.getStatusCode().value() == 504) {
+                throw new OperacionInvalidaException("El proveedor de IA está inactivo (" + e.getStatusCode().value() + "). Por favor, selecciona otro modelo.");
+            } else {
+                throw new OperacionInvalidaException("El proveedor de IA devolvió un error (" + e.getStatusCode().value() + "). Intenta con otro modelo.");
+            }
         } catch (Exception e) {
             throw new OperacionInvalidaException("Error al comunicarse con la IA: " + e.getMessage());
         }
