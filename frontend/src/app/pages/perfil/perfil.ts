@@ -9,6 +9,7 @@ import { LogroService, UsuarioLogroResponse } from '../../services/logro.service
 import { RecompensaService, UsuarioRecompensaResponse } from '../../services/recompensa.service';
 import { RecetaService, RecetaResponse } from '../../services/receta.service';
 import { ForoService } from '../../services/foro.service';
+import { IaService } from '../../services/ia.service';
 
 @Component({
   selector: 'app-perfil',
@@ -47,6 +48,9 @@ export class Perfil implements OnInit {
   guardandoIa   = signal(false);
   errorIa       = signal<string | null>(null);
 
+  modelosBd       = signal<any[]>([]);
+  cargandoModelos = signal(false);
+
   /* ── Foto de perfil ── */
   subiendoFoto  = signal(false);
   errorFoto     = signal<string | null>(null);
@@ -58,10 +62,23 @@ export class Perfil implements OnInit {
     private recompensaService: RecompensaService,
     private recetaService: RecetaService,
     private foroService: ForoService,
+    private iaService: IaService,
   ) {}
 
   ngOnInit() {
     this.cargarDatos();
+    this.cargarModelosBd();
+  }
+
+  cargarModelosBd() {
+    this.cargandoModelos.set(true);
+    this.iaService.getModelosDisponibles().subscribe({
+      next: m => {
+        this.modelosBd.set(m);
+        this.cargandoModelos.set(false);
+      },
+      error: () => this.cargandoModelos.set(false)
+    });
   }
 
   cargarDatos() {
@@ -137,13 +154,16 @@ export class Perfil implements OnInit {
     this.editandoIa.set(true);
   }
 
-  setPreset(preset: 'deepseek' | 'openai' | 'ollama') {
+  setPreset(preset: 'deepseek' | 'openai' | 'openrouter' | 'ollama') {
     if (preset === 'deepseek') {
       this.iaEndpointInput = 'https://api.deepseek.com/v1/chat/completions';
       this.iaModeloInput   = 'deepseek-chat';
     } else if (preset === 'openai') {
       this.iaEndpointInput = 'https://api.openai.com/v1/chat/completions';
       this.iaModeloInput   = 'gpt-4o-mini';
+    } else if (preset === 'openrouter') {
+      this.iaEndpointInput = 'https://openrouter.ai/api/v1/chat/completions';
+      this.iaModeloInput   = 'deepseek/deepseek-chat:free';
     } else {
       this.iaEndpointInput = 'http://localhost:11434/v1/chat/completions';
       this.iaModeloInput   = 'llama3.2';
@@ -184,9 +204,48 @@ export class Perfil implements OnInit {
           iaCustomEndpoint:   null,
           iaCustomModelo:     null,
         } : curr);
+
+        // Si hay seleccionado un modelo de la BD, también lo limpiamos para volver al global
+        if (this.usuario()?.iaModeloSeleccionadoNombre) {
+            this.iaService.actualizarIaModelo(null).subscribe({
+               next: () => {
+                  this.usuario.update(curr => curr ? { ...curr, iaModeloSeleccionadoNombre: null } : curr);
+               }
+            });
+        }
+        
         this.editandoIa.set(false);
       },
       error: () => {},
+    });
+  }
+
+  seleccionarModeloBD(modeloId: string) {
+    if (!modeloId) {
+       this.eliminarIaConfig(); // Vuelve al por defecto de la aplicación
+       return;
+    }
+
+    this.guardandoIa.set(true);
+    this.iaService.actualizarIaModelo(modeloId).subscribe({
+      next: () => {
+        const selected = this.modelosBd().find(m => m.id === modeloId);
+        this.usuario.update(curr => curr ? { ...curr, 
+            iaModeloSeleccionadoNombre: selected?.nombreModelo 
+        } : curr);
+        
+        // Si teníamos una IA custom, la borramos para que prevalezca la de la BD
+        if (this.usuario()?.iaCustomConfigured) {
+           this.usuarioService.eliminarIaConfig().subscribe({
+             next: () => {
+                this.usuario.update(c => c ? { ...c, iaCustomConfigured: false, iaCustomEndpoint: null, iaCustomModelo: null } : c);
+             }
+           });
+        }
+        this.guardandoIa.set(false);
+        this.editandoIa.set(false);
+      },
+      error: () => this.guardandoIa.set(false)
     });
   }
 

@@ -32,7 +32,7 @@
             <div class="step-dot">
               @if (st.pasoNum() > 3) { ✓ } @else { 3 }
             </div>
-            <span>Editar</span>
+            <span>Revisar</span>
           </div>
           <div class="step-line" [class.lit]="st.pasoNum() > 3"></div>
           <div class="step" [class.active]="st.pasoNum() >= 4">
@@ -168,98 +168,134 @@
     }
 
     <!-- ══════════════════════════════════════════
-         PASO 3 — Editor
+         PASO 3 — Vista previa premium
     ══════════════════════════════════════════ -->
     @if (st.paso() === 'editor') {
-      <div class="wizard-card slide-up">
-        <div class="editor-topbar">
+      <div class="preview-wrap slide-up">
+
+        <!-- Topbar -->
+        <div class="preview-topbar">
           <button class="btn-back" (click)="volver()">← Elegir otra</button>
-          <div class="cat-pill"
-               [style.background]="st.editorCategoriaColor + '20'"
-               [style.border-color]="st.editorCategoriaColor"
-               [style.color]="st.editorCategoriaColor">
-            {{ st.editorCategoriaEmoji }} {{ st.editorCategoriaNombre }}
-          </div>
+          <div class="preview-ia-badge">✨ Generado por IA</div>
         </div>
 
-        <div class="wc-head">
-          <div class="wc-icon-box">✏️</div>
-          <div>
-            <h2>Revisa y personaliza</h2>
-            <p>Modifica cualquier campo antes de publicar</p>
-          </div>
-        </div>
-
-        <div class="editor-grid">
-          <div class="f-group col-full">
-            <label class="f-label">Nombre de la receta <span class="req">*</span></label>
-            <input type="text" class="f-input f-lg" [(ngModel)]="st.editorNombre" placeholder="Nombre..." />
-          </div>
-
-          <div class="f-group col-full">
-            <label class="f-label">Descripción</label>
-            <textarea class="f-input" [(ngModel)]="st.editorDescripcion" rows="2" placeholder="Descripción breve..."></textarea>
-          </div>
-
-          <div class="f-group col-full">
-            <label class="f-label">Instrucciones paso a paso</label>
-            <textarea class="f-input" [(ngModel)]="st.editorInstrucciones" rows="6" placeholder="Paso 1: ...&#10;Paso 2: ..."></textarea>
-          </div>
-
-          <div class="f-group col-full">
-            <label class="f-label">Ingredientes</label>
-            <textarea class="f-input" [(ngModel)]="st.editorIngredientes" rows="3" placeholder="pollo (200g), tomate (2 und)..."></textarea>
-          </div>
-
-          <div class="f-group">
-            <label class="f-label">⏱ Tiempo (min)</label>
-            <input type="number" class="f-input" [(ngModel)]="st.editorTiempoPreparacion" min="1" />
-          </div>
-
-          <div class="f-group">
-            <label class="f-label">Dificultad</label>
-            <select class="f-input" [(ngModel)]="st.editorDificultad">
-              <option value="BAJA">🟢 Fácil</option>
-              <option value="MEDIA">🟡 Media</option>
-              <option value="ALTA">🔴 Difícil</option>
-            </select>
-          </div>
-
-          <div class="f-group">
-            <label class="f-label">🔥 Calorías</label>
-            <input type="number" class="f-input" [(ngModel)]="st.editorCalorias" min="0" />
-          </div>
-
-          <div class="f-group">
-            <label class="f-label">⚠️ Alérgenos</label>
-            <input type="text" class="f-input" [(ngModel)]="st.editorAlergenos" placeholder="gluten, lactosa..." />
-          </div>
-
-          <div class="f-group col-full">
-            <div class="visibility-row" (click)="st.editorEsPublica = !st.editorEsPublica">
-              <div class="toggle" [class.on]="st.editorEsPublica"><div class="toggle-knob"></div></div>
-              <span>{{ st.editorEsPublica ? '🌍 Pública — visible para toda la comunidad' : '🔒 Privada — solo tú puedes verla' }}</span>
+        <!-- Hero de la receta -->
+        <div class="preview-hero"
+             [style.--cat-color]="st.editorCategoriaColor || '#C13E28'">
+          <div class="preview-hero-bg"></div>
+          <div class="preview-hero-content">
+            <div class="preview-cat-pill">
+              {{ st.editorCategoriaEmoji }} {{ st.editorCategoriaNombre }}
+            </div>
+            <h2 class="preview-titulo">{{ st.editorNombre }}</h2>
+            @if (st.editorDescripcion) {
+              <p class="preview-desc">{{ st.editorDescripcion }}</p>
+            }
+            <!-- Stats -->
+            <div class="preview-stats-row">
+              <div class="preview-stat">
+                <span class="ps-icon">⏱️</span>
+                <span class="ps-val">{{ st.editorTiempoPreparacion }} min</span>
+              </div>
+              <div class="preview-stat">
+                <span class="ps-icon">📊</span>
+                <span class="ps-val">{{ dificuladLabel() }}</span>
+              </div>
+              @if (st.editorCalorias) {
+                <div class="preview-stat">
+                  <span class="ps-icon">🔥</span>
+                  <span class="ps-val">{{ st.editorCalorias }} kcal</span>
+                </div>
+              }
             </div>
           </div>
         </div>
 
-        @if (st.errorPublicar()) {
-          <div class="alert-err">⚠️ {{ st.errorPublicar() }}</div>
-        }
+        <!-- Cuerpo -->
+        <div class="preview-body">
 
-        <button
-          class="btn-cta btn-publish"
-          (click)="publicarReceta()"
-          [disabled]="!st.editorNombre.trim() || st.publicando()"
-        >
-          @if (st.publicando()) {
-            <span class="cta-spin"></span> Publicando...
-          } @else {
-            🚀 Publicar y ganar <strong>+50 puntos</strong>
+          <!-- Ingredientes -->
+          <section class="preview-section">
+            <div class="preview-section-header">
+              <span class="ps-header-icon">🛒</span>
+              <h3>Ingredientes</h3>
+              <span class="ps-count">{{ ingredientesLista.length }}</span>
+            </div>
+            <div class="preview-ings-grid">
+              @for (ing of ingredientesLista; track $index) {
+                <div class="preview-ing-chip">
+                  <span class="ing-dot-mini"></span>
+                  {{ ing }}
+                </div>
+              }
+            </div>
+          </section>
+
+          <!-- Instrucciones -->
+          <section class="preview-section">
+            <div class="preview-section-header">
+              <span class="ps-header-icon">👨‍🍳</span>
+              <h3>Pasos</h3>
+              <span class="ps-count">{{ pasosLista.length }}</span>
+            </div>
+            <div class="preview-pasos-lista">
+              @for (paso of pasosLista; track $index; let i = $index) {
+                <div class="preview-paso">
+                  <div class="preview-paso-num">{{ i + 1 }}</div>
+                  <div class="preview-paso-linea" *ngIf="i < pasosLista.length - 1"></div>
+                  <p class="preview-paso-texto">{{ paso }}</p>
+                </div>
+              }
+            </div>
+          </section>
+
+          <!-- Alérgenos -->
+          @if (st.editorAlergenos && st.editorAlergenos !== 'Ninguno') {
+            <section class="preview-section preview-section--alergenos">
+              <span class="ps-header-icon">⚠️</span>
+              <span class="alergenos-texto">{{ st.editorAlergenos }}</span>
+            </section>
           }
-        </button>
+
+          <!-- Toggles de publicación -->
+          <div class="preview-toggles">
+            <div class="preview-toggle-row" (click)="st.editorEsPublica = !st.editorEsPublica">
+              <div class="toggle" [class.on]="st.editorEsPublica"><div class="toggle-knob"></div></div>
+              <div class="preview-toggle-info">
+                <span>{{ st.editorEsPublica ? '🌍 Pública' : '🔒 Privada' }}</span>
+                <small>{{ st.editorEsPublica ? 'Visible para toda la comunidad' : 'Solo tú podrás verla' }}</small>
+              </div>
+            </div>
+
+            <div class="preview-toggle-row preview-toggle-row--foro"
+                 (click)="compartirEnForoAlPublicar = !compartirEnForoAlPublicar">
+              <div class="toggle" [class.on]="compartirEnForoAlPublicar"><div class="toggle-knob"></div></div>
+              <div class="preview-toggle-info">
+                <span>📢 Publicar en el foro</span>
+                <small>Comparte tu receta con la comunidad al instante</small>
+              </div>
+            </div>
+          </div>
+
+          @if (st.errorPublicar()) {
+            <div class="alert-err">⚠️ {{ st.errorPublicar() }}</div>
+          }
+
+          <button
+            class="btn-cta btn-publish"
+            (click)="publicarReceta()"
+            [disabled]="!st.editorNombre.trim() || st.publicando()"
+          >
+            @if (st.publicando()) {
+              <span class="cta-spin"></span> Publicando...
+            } @else {
+              🚀 Publicar y ganar <strong>+50 puntos</strong>
+            }
+          </button>
+        </div>
       </div>
     }
+
 
     <!-- ══════════════════════════════════════════
          PASO 4 — Éxito
@@ -300,3 +336,41 @@
 
   </div>
 </div>
+
+<!-- Modal: compartir receta en el foro -->
+@if (modalForoAbierto()) {
+  <div class="modal-overlay" (click)="cerrarModalForo()">
+    <div class="modal-foro" (click)="$event.stopPropagation()">
+      @if (foroExito()) {
+        <div class="modal-exito">
+          <span class="exito-icono">✅</span>
+          <p>¡Publicado en el foro!</p>
+        </div>
+      } @else {
+        <h3>Subir al foro</h3>
+        <p class="modal-receta-nombre">{{ st.resultado()?.receta?.nombre }}</p>
+
+        @if (errorForo()) {
+          <div class="modal-error">{{ errorForo() }}</div>
+        }
+
+        <div class="modal-campo">
+          <label>Título del post</label>
+          <input type="text" [(ngModel)]="foroTitulo" maxlength="120" class="modal-input" />
+        </div>
+        <div class="modal-campo">
+          <label>Descripción <span class="opt">(opcional)</span></label>
+          <textarea [(ngModel)]="foroContenido" maxlength="2000" rows="3" class="modal-input"></textarea>
+        </div>
+
+        <div class="modal-acciones">
+          <button class="btn-publish btn-sm" style="padding: 10px 20px;" (click)="compartirEnForo()"
+                  [disabled]="publicandoEnForo() || !foroTitulo.trim()">
+            {{ publicandoEnForo() ? 'Publicando...' : 'Publicar en foro' }}
+          </button>
+          <button class="btn-ghost btn-sm" (click)="cerrarModalForo()">Cancelar</button>
+        </div>
+      }
+    </div>
+  </div>
+}

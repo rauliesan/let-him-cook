@@ -148,17 +148,48 @@
                 <div class="ia-detail ia-sm">{{ usuario()?.iaCustomEndpoint }}</div>
               }
               <button class="ia-reset-btn" (click)="eliminarIaConfig()">
-                Usar DeepSeek predeterminado
+                Usar IA de la aplicación
               </button>
             } @else if (usuario()?.iaModeloSeleccionadoNombre) {
               <div class="ia-status-badge">🤖 {{ usuario()?.iaModeloSeleccionadoNombre }}</div>
-              <div class="ia-detail ia-sm">Modelo del perfil</div>
+              <div class="ia-detail ia-sm">Modelo seleccionado de la aplicación</div>
+              <button class="ia-reset-btn" (click)="eliminarIaConfig()">
+                Restablecer a por defecto
+              </button>
             } @else {
-              <div class="ia-status-badge ia-default">⚡ DeepSeek (predeterminado)</div>
-              <div class="ia-detail ia-sm">IA de la aplicación — configura la tuya propia</div>
+              <div class="ia-status-badge ia-default">⚡ IA Predeterminada</div>
+              <div class="ia-detail ia-sm">La mejor IA gratuita elegida por la aplicación</div>
             }
           } @else {
-            <!-- Formulario de edición -->
+            <!-- Selector de Modelos de la Aplicación -->
+            <div class="ia-modelos-bd">
+              <h4>Modelos disponibles en la aplicación</h4>
+              @if (cargandoModelos()) {
+                 <div class="foto-spinner"></div>
+              } @else {
+                 <div class="modelos-lista">
+                    <button class="modelo-btn" 
+                            [class.activo]="!usuario()?.iaModeloSeleccionadoNombre && !usuario()?.iaCustomConfigured"
+                            (click)="seleccionarModeloBD('')">
+                       <span>⚡ Automático</span>
+                       <small>Recomendado</small>
+                    </button>
+                    @for (m of modelosBd(); track m.id) {
+                       <button class="modelo-btn" 
+                               [class.activo]="usuario()?.iaModeloSeleccionadoNombre === m.nombreModelo && !usuario()?.iaCustomConfigured"
+                               (click)="seleccionarModeloBD(m.id)">
+                          <span>{{ m.apiNombreServicio }}</span>
+                          <small>{{ m.nombreModelo }}</small>
+                       </button>
+                    }
+                 </div>
+              }
+            </div>
+
+            <hr style="opacity: 0.2; margin: 15px 0;">
+
+            <!-- Formulario de edición Manual -->
+            <h4>O utiliza tu propia clave API (Avanzado)</h4>
             @if (errorIa()) {
               <div class="ia-error">{{ errorIa() }}</div>
             }
@@ -166,6 +197,7 @@
               <span>Preset:</span>
               <button (click)="setPreset('deepseek')">DeepSeek</button>
               <button (click)="setPreset('openai')">OpenAI</button>
+              <button (click)="setPreset('openrouter')">OpenRouter</button>
               <button (click)="setPreset('ollama')">Ollama local</button>
             </div>
             <div class="ia-f-group">
@@ -184,7 +216,7 @@
             <div class="ia-form-actions">
               <button class="ia-save" (click)="guardarIaConfig()"
                       [disabled]="guardandoIa() || !iaApiKeyInput.trim()">
-                {{ guardandoIa() ? 'Guardando...' : 'Guardar' }}
+                {{ guardandoIa() ? 'Guardando...' : 'Guardar API Key' }}
               </button>
               <button class="ia-cancel" (click)="editandoIa.set(false)">Cancelar</button>
             </div>

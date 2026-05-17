@@ -1,4 +1,4 @@
-import { Component, computed } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -9,6 +9,7 @@ import {
   RecetaSugerencia,
 } from '../../services/ia.service';
 import { CocinarStateService } from '../../services/cocinar-state.service';
+import { ForoService } from '../../services/foro.service';
 
 @Component({
   selector: 'app-cocinar',
@@ -18,7 +19,18 @@ import { CocinarStateService } from '../../services/cocinar-state.service';
 })
 export class Cocinar {
 
-  constructor(private iaService: IaService, public st: CocinarStateService) {}
+  /* Modal compartir en foro */
+  foroTitulo        = '';
+  foroContenido     = '';
+  publicandoEnForo  = signal(false);
+  errorForo         = signal<string | null>(null);
+  foroExito         = signal(false);
+  modalForoAbierto  = signal(false);
+
+  /** Toggle del paso 3: publicar automáticamente en el foro al guardar */
+  compartirEnForoAlPublicar = false;
+
+  constructor(private iaService: IaService, public st: CocinarStateService, private foroService: ForoService) {}
 
   /* ── Ingredientes ── */
   agregarIngrediente() {
@@ -80,6 +92,7 @@ export class Cocinar {
     this.st.editorCategoriaNombre = s.categoria;
     this.st.editorCategoriaEmoji = s.categoriaEmoji;
     this.st.editorCategoriaColor = s.categoriaColor;
+    this.compartirEnForoAlPublicar = false;
     this.st.paso.set('editor');
   }
 
@@ -109,6 +122,17 @@ export class Cocinar {
         this.st.resultado.set(res);
         this.st.publicando.set(false);
         this.st.paso.set('exito');
+
+        // Si el toggle de foro estaba activo, publicamos automáticamente
+        if (this.compartirEnForoAlPublicar) {
+          this.foroService.crearPost(
+            `Receta: ${res.receta.nombre}`,
+            res.receta.descripcion || '',
+            undefined,
+            res.receta.id
+          ).subscribe();
+          this.compartirEnForoAlPublicar = false;
+        }
       },
       error: err => {
         this.st.publicando.set(false);
@@ -119,9 +143,35 @@ export class Cocinar {
     });
   }
 
-  /* ── Helpers ── */
+  /* ── Helpers para parsear texto de la IA ── */
+  /** Parsea ingredientes: "1. X. 2. Y." → ['X', 'Y'] */
+  get ingredientesLista(): string[] {
+    return this.parsearLista(this.st.editorIngredientes);
+  }
+
+  /** Parsea instrucciones: "1. Paso uno. 2. Paso dos." → ['Paso uno', 'Paso dos'] */
+  get pasosLista(): string[] {
+    return this.parsearLista(this.st.editorInstrucciones);
+  }
+
+  private parsearLista(texto: string): string[] {
+    if (!texto) return [];
+    // Divide en los límites ". N. " entre pasos numerados
+    // Usar \.\\s+(?=\\d+\\.\\s) evita partir números de dos cifras como "10" → "1" + "0"
+    const byBoundary = texto
+      .split(/\.\s+(?=\d+\.\s)/)
+      .map(s => s.replace(/^\d+\.\s*/, '').trim())
+      .filter(Boolean);
+    if (byBoundary.length > 1) return byBoundary;
+    // Fallback: salto de línea
+    const byNewline = texto.split(/\n+/).map(s => s.replace(/^\d+\.\s*/, '').trim()).filter(Boolean);
+    if (byNewline.length > 1) return byNewline;
+    // Fallback final: coma
+    return texto.split(',').map(s => s.trim()).filter(Boolean);
+  }
+
   dificuladLabel = computed(() => {
-    const map: Record<string, string> = { BAJA: 'Fácil', MEDIA: 'Media', ALTA: 'Difícil' };
+    const map: Record<string, string> = { BAJA: '🟢 Fácil', MEDIA: '🟡 Media', ALTA: '🔴 Difícil' };
     return map[this.st.editorDificultad] ?? this.st.editorDificultad;
   });
 
@@ -129,6 +179,45 @@ export class Cocinar {
     const p = this.st.paso();
     if (p === 'sugerencias') this.st.paso.set('ingredientes');
     else if (p === 'editor') this.st.paso.set('sugerencias');
+  }
+
+  /* ── Compartir en foro (modal post-publicación) ── */
+  abrirCompartirForo() {
+    const res = this.st.resultado();
+    if (!res) return;
+    this.foroTitulo    = `Receta: ${res.receta.nombre}`;
+    this.foroContenido = res.receta.descripcion || '';
+    this.errorForo.set(null);
+    this.foroExito.set(false);
+    this.modalForoAbierto.set(true);
+  }
+
+  cerrarModalForo() {
+    this.modalForoAbierto.set(false);
+    this.foroExito.set(false);
+  }
+
+  compartirEnForo() {
+    const res = this.st.resultado();
+    if (!res || !this.foroTitulo.trim()) return;
+    this.publicandoEnForo.set(true);
+    this.errorForo.set(null);
+    this.foroService.crearPost(
+      this.foroTitulo.trim(),
+      this.foroContenido.trim(),
+      undefined,
+      res.receta.id
+    ).subscribe({
+      next: () => {
+        this.publicandoEnForo.set(false);
+        this.foroExito.set(true);
+        setTimeout(() => this.cerrarModalForo(), 1800);
+      },
+      error: (err) => {
+        this.publicandoEnForo.set(false);
+        this.errorForo.set(err.error?.mensaje ?? err.error?.message ?? 'Error al publicar en el foro.');
+      },
+    });
   }
 
   confettiItems = [1,2,3,4,5,6,7,8,9,10,11,12];

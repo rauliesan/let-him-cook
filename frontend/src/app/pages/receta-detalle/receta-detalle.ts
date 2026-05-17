@@ -18,11 +18,10 @@ export class RecetaDetalle implements OnInit {
   cargando = signal(true);
   error    = signal<string | null>(null);
 
-<<<<<<< HEAD
   instrucciones          = signal<string | null>(null);
   generandoInstrucciones = signal(false);
   errorInstrucciones     = signal<string | null>(null);
-=======
+
   // Estado del modo cocina: Índices de pasos completados
   pasosCompletados = signal<number[]>([]);
 
@@ -44,24 +43,15 @@ export class RecetaDetalle implements OnInit {
   // Notificación flotante
   mostrarNotificacion = signal(false);
   mensajeNotificacion = signal('');
->>>>>>> feature-recetas-info
 
   ingredientesList = computed(() => {
-    const ing = this.receta()?.ingredientes ?? '';
-    return ing.split(',').map(s => s.trim()).filter(Boolean);
-  });
-
-  instruccionesPasos = computed(() => {
-    const text = this.instrucciones();
-    if (!text) return [];
-    return text.split(/\n+/).map(s => s.trim().replace(/^\d+[.)]\s*/, '')).filter(Boolean);
+    const raw = this.receta()?.ingredientes ?? '';
+    return this.parseLista(raw);
   });
 
   instruccionesList = computed(() => {
     const raw = this.receta()?.instrucciones ?? '';
-    const pasos = raw.split(/Paso\s*\d+\s*:\s*/i).map(s => s.trim()).filter(Boolean);
-    if (pasos.length > 1) return pasos;
-    return raw.split('\n').map(s => s.trim()).filter(Boolean);
+    return this.parseLista(raw);
   });
 
   alergenosList = computed(() => {
@@ -82,14 +72,6 @@ export class RecetaDetalle implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.cargarReceta(id);
-      this.cargarProgresoLocal(id);
-      
-      // Si ya estaba al 100% al cargar, intentamos reclamar (el backend ya controla el límite diario)
-      setTimeout(() => {
-        if (this.todoCompletado() && !this.recompensaReclamada()) {
-          this.reclamarRecompensa();
-        }
-      }, 500);
     } else {
       this.error.set('ID de receta no válido.');
       this.cargando.set(false);
@@ -106,7 +88,6 @@ export class RecetaDetalle implements OnInit {
     });
   }
 
-<<<<<<< HEAD
   generarInstruccionesIA() {
     const r = this.receta();
     if (!r || this.generandoInstrucciones()) return;
@@ -124,25 +105,6 @@ export class RecetaDetalle implements OnInit {
     });
   }
 
-=======
-  private cargarProgresoLocal(recetaId: string): void {
-    const guardado = localStorage.getItem(`progreso_receta_${recetaId}`);
-    if (guardado) {
-      try {
-        this.pasosCompletados.set(JSON.parse(guardado));
-      } catch (e) {
-        console.error('Error cargando progreso local', e);
-      }
-    }
-  }
-
-  private guardarProgresoLocal(): void {
-    const id = this.receta()?.id;
-    if (id) {
-      localStorage.setItem(`progreso_receta_${id}`, JSON.stringify(this.pasosCompletados()));
-    }
-  }
-
   togglePaso(idx: number): void {
     const actuales = this.pasosCompletados();
     let nuevos: number[];
@@ -152,7 +114,6 @@ export class RecetaDetalle implements OnInit {
       nuevos = [...actuales, idx];
     }
     this.pasosCompletados.set(nuevos);
-    this.guardarProgresoLocal();
 
     // Si acaba de completar todo y no ha reclamado en esta sesión
     if (this.todoCompletado() && !this.recompensaReclamada()) {
@@ -185,7 +146,6 @@ export class RecetaDetalle implements OnInit {
 
   reiniciarPasos(): void {
     this.pasosCompletados.set([]);
-    this.guardarProgresoLocal();
   }
 
   isPasoCompletado(idx: number): boolean {
@@ -206,14 +166,32 @@ export class RecetaDetalle implements OnInit {
     if (n.includes('sésamo')) return '🥯';
     return '⚠️';
   }
-
->>>>>>> feature-recetas-info
   formatearTiempo(minutos: number | null): string {
     if (!minutos) return '—';
     if (minutos < 60) return `${minutos} min`;
     const h = Math.floor(minutos / 60);
     const m = minutos % 60;
     return m > 0 ? `${h}h ${m}min` : `${h}h`;
+  }
+
+  /**
+   * Parsea "1. Step. 2. Step. 10. Step" en array de strings limpios.
+   * Divide por el patrón de límite entre pasos: ". N. " para evitar
+   * partir números de dos cifras (ej: "10" no debe partirse en "1" + "0").
+   */
+  parseLista(texto: string): string[] {
+    if (!texto) return [];
+    // Divide en los límites " . N. " entre pasos numerados
+    const byBoundary = texto
+      .split(/\.\s+(?=\d+\.\s)/)
+      .map(s => s.replace(/^\d+\.\s*/, '').trim())
+      .filter(Boolean);
+    if (byBoundary.length > 1) return byBoundary;
+    // Fallback: salto de línea
+    const byNewline = texto.split(/\n+/).map(s => s.replace(/^\d+\.\s*/, '').trim()).filter(Boolean);
+    if (byNewline.length > 1) return byNewline;
+    // Fallback final: coma
+    return texto.split(',').map(s => s.trim()).filter(Boolean);
   }
 
   etiquetaDificultad(d: string | null): string {
