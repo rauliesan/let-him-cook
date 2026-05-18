@@ -340,6 +340,21 @@
   text-align: right;
 }
 
+/* Banner receta ya cocinada */
+.ya-cocinada-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  margin: 12px 0 0;
+  background: rgba(5, 150, 105, 0.08);
+  border: 1px solid rgba(5, 150, 105, 0.25);
+  border-radius: var(--radio-md);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #065f46;
+}
+
 /* ── Mensaje de Éxito ── */
 .exito-cocina {
   padding: 3rem 2rem;

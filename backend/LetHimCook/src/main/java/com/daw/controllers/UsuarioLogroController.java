@@ -47,4 +47,12 @@ public class UsuarioLogroController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+    /** Verifica y concede todos los logros que el usuario haya desbloqueado. */
+    @PostMapping("/verificar")
+    public ResponseEntity<Void> verificarLogros(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        usuarioLogroService.verificarLogros(userDetails.getUsuario().getId());
+        return ResponseEntity.ok().build();
+    }
 }

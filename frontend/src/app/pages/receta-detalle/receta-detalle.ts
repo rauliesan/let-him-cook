@@ -6,6 +6,7 @@ import { RecetaService, RecetaResponse } from '../../services/receta.service';
 import { FavoritoService } from '../../services/favorito.service';
 import { AuthService } from '../../services/auth.service';
 import { IaService } from '../../services/ia.service';
+import { LogroService } from '../../services/logro.service';
 
 @Component({
   selector: 'app-receta-detalle',
@@ -46,6 +47,7 @@ export class RecetaDetalle implements OnInit {
 
   // Recompensa por cocinar
   recompensaReclamada = signal(false);
+  yaCompletadaAntes   = signal(false);
   monedasGanadas      = signal<number | null>(null);
 
   // Notificación flotante
@@ -76,6 +78,7 @@ export class RecetaDetalle implements OnInit {
     private favoritoService: FavoritoService,
     public  auth: AuthService,
     private iaService: IaService,
+    private logroService: LogroService,
   ) {}
 
   ngOnInit() {
@@ -94,10 +97,20 @@ export class RecetaDetalle implements OnInit {
         this.receta.set(r);
         this.likeCount.set(r.totalLikes);
         this.cargando.set(false);
-        // Comprobar si el usuario ya tiene like
         if (this.auth.estaAutenticado()) {
+          // Comprobar like
           this.favoritoService.getMisFavoritos().subscribe({
             next: (favs) => this.liked.set(favs.some(f => f.recetaId === r.id)),
+            error: () => {},
+          });
+          // Comprobar si ya la cocinó antes
+          this.recetaService.haCompletado(r.id).subscribe({
+            next: (completada) => {
+              if (completada) {
+                this.yaCompletadaAntes.set(true);
+                this.recompensaReclamada.set(true);
+              }
+            },
             error: () => {},
           });
         }
@@ -179,9 +192,14 @@ export class RecetaDetalle implements OnInit {
       next: (monedas) => {
         this.monedasGanadas.set(monedas);
         this.recompensaReclamada.set(true);
-        
-        if (monedas > 0) {
+
+        if (monedas === -1) {
+          // Ya la había cocinado antes
+          this.yaCompletadaAntes.set(true);
+        } else if (monedas > 0) {
           this.lanzarToast(`+${monedas} 🪙`);
+          // Verificar logros tras cocinar
+          this.logroService.verificarLogros().subscribe({ error: () => {} });
         }
       },
       error: (err) => console.error('Error al reclamar recompensa', err)

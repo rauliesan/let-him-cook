@@ -154,6 +154,13 @@
             }
           </div>
 
+          <!-- Banner: receta ya cocinada anteriormente -->
+          @if (yaCompletadaAntes() && !todoCompletado()) {
+            <div class="ya-cocinada-banner">
+              <span>✅ Ya cocinaste esta receta</span>
+            </div>
+          }
+
           <!-- Mensaje de éxito al completar -->
           <div class="exito-cocina" *ngIf="todoCompletado()" revela>
             <div class="exito-inner">
@@ -162,7 +169,9 @@
               <p>Has completado todos los pasos de la receta.</p>
 
               <div class="reward-pill" *ngIf="recompensaReclamada()">
-                @if (monedasGanadas()! > 0) {
+                @if (yaCompletadaAntes()) {
+                  <p class="reward-limit">Ya habías cocinado esta receta — sin monedas adicionales</p>
+                } @else if (monedasGanadas()! > 0) {
                   <div class="reward-content">
                     <span class="reward-amount">+{{ monedasGanadas() }} 🪙</span>
                     <p class="reward-text">Monedas añadidas a tu perfil</p>

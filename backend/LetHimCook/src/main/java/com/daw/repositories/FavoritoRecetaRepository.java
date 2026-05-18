@@ -22,4 +22,6 @@ public interface FavoritoRecetaRepository extends JpaRepository<FavoritoReceta, 
     void deleteByUsuarioIdAndRecetaId(UUID usuarioId, UUID recetaId);
 
     long countByRecetaId(UUID recetaId);
+
+    long countByUsuarioId(UUID usuarioId);
 }

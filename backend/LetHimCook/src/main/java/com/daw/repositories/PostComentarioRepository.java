@@ -10,4 +10,6 @@ import java.util.UUID;
 public interface PostComentarioRepository extends JpaRepository<PostComentario, UUID> {
 
     List<PostComentario> findAllByPostIdOrderByFechaCreacionAsc(UUID postId);
+
+    long countByUsuarioId(UUID usuarioId);
 }

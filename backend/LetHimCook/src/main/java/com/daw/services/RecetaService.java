@@ -161,11 +161,23 @@ public class RecetaService {
 
     /**
      * Registra que se ha completado una receta y otorga monedas al usuario.
+     * Devuelve -1 si la receta ya fue completada antes por este usuario.
      * Recompensa: 50 monedas. Máximo diario: 150 monedas.
      */
     public int completarReceta(UUID usuarioId, UUID recetaId) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado"));
+
+        Receta receta = recetaRepository.findById(recetaId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Receta no encontrada"));
+
+        // Si ya la completó antes, no dar monedas
+        if (usuarioRepository.haCompletadoReceta(usuarioId, recetaId)) {
+            return -1;
+        }
+
+        // Marcar como completada
+        usuario.getRecetasCompletadas().add(receta);
 
         java.time.LocalDate hoy = java.time.LocalDate.now(java.time.ZoneId.of("Europe/Madrid"));
 
@@ -181,9 +193,15 @@ public class RecetaService {
             ganancia = 50;
             usuario.setPuntos(usuario.getPuntos() + ganancia);
             usuario.setPuntosRecetaHoy(usuario.getPuntosRecetaHoy() + ganancia);
-            usuarioRepository.save(usuario);
         }
 
+        usuarioRepository.save(usuario);
         return ganancia;
+    }
+
+    /** Comprueba si el usuario autenticado ya completó una receta concreta. */
+    @Transactional(readOnly = true)
+    public boolean haCompletado(UUID usuarioId, UUID recetaId) {
+        return usuarioRepository.haCompletadoReceta(usuarioId, recetaId);
     }
 }

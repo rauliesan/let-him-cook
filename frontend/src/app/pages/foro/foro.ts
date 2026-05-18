@@ -6,6 +6,7 @@ import { Revela } from '../../shared/revela/revela';
 import { ForoService, PostResponse, PostComentarioResponse } from '../../services/foro.service';
 import { AuthService } from '../../services/auth.service';
 import { RecetaService, RecetaResponse } from '../../services/receta.service';
+import { LogroService } from '../../services/logro.service';
 
 @Component({
   selector: 'app-foro',
@@ -56,6 +57,7 @@ export class Foro implements OnInit {
     private foroService: ForoService,
     public  auth: AuthService,
     private recetaService: RecetaService,
+    private logroService: LogroService,
   ) {}
 
   ngOnInit() {
@@ -125,6 +127,7 @@ export class Foro implements OnInit {
         this.mostrarBuscadorRecetaPost.set(false);
         this.mostrarFormPost.set(false);
         this.enviandoPost.set(false);
+        this.logroService.verificarLogros().subscribe({ error: () => {} });
       },
       error: () => {
         this.errorPost.set('Error al publicar. Inténtalo de nuevo.');
@@ -237,6 +240,7 @@ export class Foro implements OnInit {
         this.mostrarBuscadorReceta.set(false);
         this.busquedaRecetaComentario = '';
         this.enviandoComentario.set(false);
+        this.logroService.verificarLogros().subscribe({ error: () => {} });
       },
       error: () => this.enviandoComentario.set(false),
     });

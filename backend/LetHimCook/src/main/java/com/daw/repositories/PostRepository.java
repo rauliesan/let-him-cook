@@ -7,4 +7,6 @@ import java.util.UUID;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, UUID> {
+
+    long countByUsuarioId(UUID usuarioId);
 }

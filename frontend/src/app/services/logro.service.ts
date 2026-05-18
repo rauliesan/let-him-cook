@@ -50,4 +50,9 @@ export class LogroService {
   concederLogro(logroId: string): Observable<UsuarioLogroResponse> {
     return this.http.post<UsuarioLogroResponse>(`${API}/mis-logros`, { logroId });
   }
+
+  /* Verificar y conceder todos los logros desbloqueados (llamar tras acciones relevantes) */
+  verificarLogros(): Observable<void> {
+    return this.http.post<void>(`${API}/mis-logros/verificar`, {});
+  }
 }

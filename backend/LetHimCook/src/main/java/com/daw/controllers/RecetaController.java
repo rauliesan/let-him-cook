@@ -115,7 +115,7 @@ public class RecetaController {
         return ResponseEntity.ok(recetaService.listarPublicasPorUsuario(usuarioId));
     }
 
-    /** Registra la receta como cocinada y devuelve las monedas ganadas. */
+    /** Registra la receta como cocinada y devuelve las monedas ganadas (-1 si ya cocinada). */
     @PostMapping("/{id}/completar")
     public ResponseEntity<Integer> completarReceta(
             @PathVariable UUID id,
@@ -123,5 +123,14 @@ public class RecetaController {
         UUID usuarioId = userDetails.getUsuario().getId();
         int monedas = recetaService.completarReceta(usuarioId, id);
         return ResponseEntity.ok(monedas);
+    }
+
+    /** Comprueba si el usuario autenticado ya completó esta receta. */
+    @GetMapping("/{id}/completada")
+    public ResponseEntity<Boolean> haCompletado(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        UUID usuarioId = userDetails.getUsuario().getId();
+        return ResponseEntity.ok(recetaService.haCompletado(usuarioId, id));
     }
 }

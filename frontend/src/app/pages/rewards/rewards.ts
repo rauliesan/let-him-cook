@@ -184,39 +184,18 @@ export class Rewards implements OnInit {
       this.recompensaService.concederRecompensa(premio.id).subscribe({
         next: () => {
           this.cargarMisPremios(true);
-          // Comprobar logros desbloqueables tras ganar
-          this.intentarLogrosSlot();
+          this.logroService.verificarLogros().subscribe({
+            next: () => this.cargarLogros(),
+            error: () => {},
+          });
         },
         error: (err) => {
           if (err.status === 409) {
-             console.log('Ya tienes este premio.');
+            console.log('Ya tienes este premio.');
           }
-          // Intentar logros igualmente (p.ej. si el premio era duplicado)
-          this.intentarLogrosSlot();
+          this.logroService.verificarLogros().subscribe({ error: () => {} });
         }
       });
-    }
-  }
-
-  /**
-   * Intenta conceder logros relacionados con la tragaperras.
-   * Busca en el catálogo de logros los que tengan iconoUrl de tipo slot/casino
-   * o cuyo nombre contenga palabras clave relevantes.
-   */
-  private intentarLogrosSlot() {
-    const logros = this.todosLogros();
-    const palabrasClave = ['slot', 'casino', 'suerte', 'premio', 'recompensa', 'primera', 'coleccion'];
-    for (const logro of logros) {
-      const texto = (logro.nombre + ' ' + (logro.descripcion ?? '')).toLowerCase();
-      if (palabrasClave.some(p => texto.includes(p))) {
-        // Intentar conceder; silencioso si ya lo tiene (409)
-        this.logroService.concederLogro(logro.id).subscribe({
-          next: () => {
-            this.misLogrosIds.update(s => new Set([...s, logro.id]));
-          },
-          error: () => {},
-        });
-      }
     }
   }
 

@@ -102,6 +102,13 @@ public class Usuario {
 	@OneToMany(mappedBy = "usuario", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
 	private Set<UsuarioLogro> misLogros;
 
+	/* Recetas que el usuario ha cocinado (completado todos los pasos) */
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "usuario_receta_completada",
+		joinColumns = @JoinColumn(name = "usuario_id"),
+		inverseJoinColumns = @JoinColumn(name = "receta_id"))
+	private Set<Receta> recetasCompletadas = new java.util.HashSet<>();
+
 	/* --- Gamificación: Recompensas por Cocinar --- */
 	@Column(name = "puntos_receta_hoy")
 	private Integer puntosRecetaHoy = 0;
