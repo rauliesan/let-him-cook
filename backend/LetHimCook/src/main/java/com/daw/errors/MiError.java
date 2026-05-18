@@ -1,4 +1,4 @@
-﻿package com.daw.errors;
+package com.daw.errors;
 
 import java.time.LocalDateTime;
 

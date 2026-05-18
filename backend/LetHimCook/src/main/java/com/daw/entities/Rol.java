@@ -1,4 +1,4 @@
-﻿package com.daw.entities;
+package com.daw.entities;
 
 /**
  * Enum para gestionar los roles de seguridad de la plataforma.

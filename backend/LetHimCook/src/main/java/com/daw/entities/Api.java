@@ -1,4 +1,4 @@
-﻿package com.daw.entities;
+package com.daw.entities;
 
 import java.util.Set;
 import java.util.UUID;

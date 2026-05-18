@@ -1,4 +1,4 @@
-﻿package com.daw.dtos.response;
+package com.daw.dtos.response;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;

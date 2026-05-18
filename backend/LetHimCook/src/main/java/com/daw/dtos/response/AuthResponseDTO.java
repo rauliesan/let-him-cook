@@ -1,4 +1,4 @@
-﻿package com.daw.dtos.response;
+package com.daw.dtos.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

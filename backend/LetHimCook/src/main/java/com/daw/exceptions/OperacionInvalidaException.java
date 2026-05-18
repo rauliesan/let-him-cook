@@ -1,4 +1,4 @@
-﻿package com.daw.exceptions;
+package com.daw.exceptions;
 
 /**
  * Excepción personalizada para operaciones que son lógicamente inválidas por

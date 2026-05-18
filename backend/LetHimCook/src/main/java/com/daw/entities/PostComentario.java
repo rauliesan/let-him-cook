@@ -1,4 +1,4 @@
-﻿package com.daw.entities;
+package com.daw.entities;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;

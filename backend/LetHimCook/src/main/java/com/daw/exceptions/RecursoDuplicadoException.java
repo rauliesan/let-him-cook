@@ -1,4 +1,4 @@
-﻿package com.daw.exceptions;
+package com.daw.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
