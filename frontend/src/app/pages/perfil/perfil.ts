@@ -5,7 +5,7 @@ import { RouterLink } from '@angular/router';
 import { Revela } from '../../shared/revela/revela';
 import { AuthService } from '../../services/auth.service';
 import { UsuarioService, UsuarioResponse } from '../../services/usuario.service';
-import { LogroService, UsuarioLogroResponse } from '../../services/logro.service';
+import { LogroService, LogroResponse, UsuarioLogroResponse } from '../../services/logro.service';
 import { RecompensaService, UsuarioRecompensaResponse } from '../../services/recompensa.service';
 import { RecetaService, RecetaResponse } from '../../services/receta.service';
 import { ForoService } from '../../services/foro.service';
@@ -21,9 +21,19 @@ export class Perfil implements OnInit {
 
   /* Datos cargados desde la API */
   usuario        = signal<UsuarioResponse | null>(null);
+  todosLogros    = signal<LogroResponse[]>([]);
   misLogros      = signal<UsuarioLogroResponse[]>([]);
   misRecompensas = signal<UsuarioRecompensaResponse[]>([]);
   misRecetas     = signal<RecetaResponse[]>([]);
+
+  /* IDs de logros obtenidos para marcar cuáles están desbloqueados */
+  misLogrosIds = computed(() => new Set(this.misLogros().map(ul => ul.logro.id)));
+
+  tieneLogro(id: string): boolean { return this.misLogrosIds().has(id); }
+
+  fechaLogro(id: string): string | null {
+    return this.misLogros().find(ul => ul.logro.id === id)?.fechaObtenido ?? null;
+  }
 
   /* Modal compartir en foro */
   recetaACompartir  = signal<RecetaResponse | null>(null);
@@ -89,6 +99,11 @@ export class Perfil implements OnInit {
     this.usuarioService.getMe().subscribe({
       next: (u) => {
         this.usuario.set(u);
+
+        this.logroService.getTodosLogros().subscribe({
+          next: (todos) => this.todosLogros.set(todos),
+          error: () => this.todosLogros.set([]),
+        });
 
         this.logroService.getMisLogros().subscribe({
           next: (p) => this.misLogros.set(p.content),

@@ -269,31 +269,35 @@
     @if (tabActiva() === 'logros') {
       <div class="tab-panel">
         <div revela>
-          <h2>Logros obtenidos</h2>
+          <h2>Logros</h2>
           <p class="panel-desc">
-            {{ misLogros().length }} logros desbloqueados.
-            Sigue cocinando para conseguir más.
+            {{ misLogros().length }} de {{ todosLogros().length }} desbloqueados.
+            Los que están en gris aún no los has conseguido.
           </p>
         </div>
 
-        @if (misLogros().length === 0) {
+        @if (todosLogros().length === 0) {
           <div class="sin-resultados">
-            <p>Aún no tienes logros. Explora recetas para empezar.</p>
-            <a routerLink="/explorar" class="btn-primario btn-sm">Explorar</a>
+            <p>Cargando logros...</p>
           </div>
         } @else {
           <div class="logros-grid">
-            @for (ul of misLogros(); track ul.id; let i = $index) {
-              <div class="logro-card" revela [retardo]="i * 80">
-                <div class="logro-icono" style="background: var(--primario)">
-                  <!-- Icono: si el backend devuelve un emoji en iconoUrl se muestra,
-                       si no, se usa un ícono por defecto -->
-                  <span>{{ ul.logro.iconoUrl ?? '🏆' }}</span>
+            @for (logro of todosLogros(); track logro.id; let i = $index) {
+              <div class="logro-card"
+                   [class.bloqueado]="!tieneLogro(logro.id)"
+                   revela [retardo]="i * 60">
+                <div class="logro-icono"
+                     [style.background]="tieneLogro(logro.id) ? 'var(--primario)' : '#b0b0b0'">
+                  <span>{{ logro.iconoUrl ?? '🏆' }}</span>
                 </div>
                 <div class="logro-info">
-                  <strong>{{ ul.logro.nombre }}</strong>
-                  <p>{{ ul.logro.descripcion }}</p>
-                  <span class="logro-fecha">{{ formatearFecha(ul.fechaObtenido) }}</span>
+                  <strong>{{ logro.nombre }}</strong>
+                  <p>{{ logro.descripcion }}</p>
+                  @if (tieneLogro(logro.id)) {
+                    <span class="logro-fecha">✓ {{ formatearFecha(fechaLogro(logro.id)) }}</span>
+                  } @else {
+                    <span class="logro-bloqueado-label">🔒 Bloqueado</span>
+                  }
                 </div>
               </div>
             }
