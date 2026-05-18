@@ -36,9 +36,9 @@ export class UsuarioService {
     return this.http.get<UsuarioResponse>(`${API}/usuarios/me`);
   }
 
-  /* Lista paginada para saber el total de usuarios registrados */
-  contarUsuarios(): Observable<{ totalElements: number }> {
-    return this.http.get<{ totalElements: number }>(`${API}/usuarios/busqueda?size=1`);
+  /* Total de usuarios registrados (endpoint público) */
+  contarUsuarios(): Observable<{ total: number }> {
+    return this.http.get<{ total: number }>(`${API}/usuarios/count`);
   }
 
   /** Guarda configuración de IA personalizada (BYOAI) en el perfil */

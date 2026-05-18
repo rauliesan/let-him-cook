@@ -42,6 +42,10 @@ public class UsuarioService {
     	return usuarioMapper.toListDTO(usuarioRepository.findAll());
     }
 
+    public long contarTodos() {
+        return usuarioRepository.count();
+    }
+
     public Page<UsuarioResponseDTO> buscarPaginado(String nombre, Pageable pageable) {
         Page<Usuario> page;
         if (nombre != null && !nombre.isBlank()) {

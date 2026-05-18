@@ -55,6 +55,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/posts", "/posts/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/recompensas", "/recompensas/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/contacto").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/usuarios/count").permitAll()
                         // logros es lectura pública para mostrar el catálogo a cualquier usuario autenticado
                         .requestMatchers(HttpMethod.GET, "/admin/logros", "/admin/logros/**").authenticated()
                         .requestMatchers("/admin/**").hasRole("ADMIN")

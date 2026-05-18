@@ -44,6 +44,13 @@ public class UsuarioController {
         return ResponseEntity.ok().body(usuarioService.listarTodos());
     }
 
+    /** Devuelve el número total de usuarios registrados (endpoint público para la landing). */
+    @GetMapping("/count")
+    public ResponseEntity<Map<String, Long>> contarUsuarios() {
+        long total = usuarioService.contarTodos();
+        return ResponseEntity.ok(Map.of("total", total));
+    }
+
     /**
      * Búsqueda paginada de usuarios (opcionalmente filtrado por nombre).
      */

@@ -61,7 +61,7 @@ export class Landing implements OnInit {
 
     /* Carga el total de usuarios registrados */
     this.usuarioService.contarUsuarios().subscribe({
-      next:  (res) => this.totalUsuariosRaw.set(res.totalElements ?? 0),
+      next:  (res) => this.totalUsuariosRaw.set(res.total ?? 0),
       error: ()    => this.totalUsuariosRaw.set(0),
     });
 

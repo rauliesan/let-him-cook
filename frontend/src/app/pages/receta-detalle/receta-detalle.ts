@@ -53,6 +53,7 @@ export class RecetaDetalle implements OnInit {
   // Notificación flotante
   mostrarNotificacion = signal(false);
   mensajeNotificacion = signal('');
+  private toastTimer: ReturnType<typeof setTimeout> | null = null;
 
   ingredientesList = computed(() => {
     const raw = this.receta()?.ingredientes ?? '';
@@ -217,9 +218,10 @@ export class RecetaDetalle implements OnInit {
   }
 
   private lanzarToast(msj: string) {
+    if (this.toastTimer) clearTimeout(this.toastTimer);
     this.mensajeNotificacion.set(msj);
     this.mostrarNotificacion.set(true);
-    setTimeout(() => this.mostrarNotificacion.set(false), 4000);
+    this.toastTimer = setTimeout(() => this.mostrarNotificacion.set(false), 4000);
   }
 
   reiniciarPasos(): void {
