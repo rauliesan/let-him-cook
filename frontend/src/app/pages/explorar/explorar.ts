@@ -178,6 +178,12 @@ export class Explorar implements OnInit, OnDestroy {
       next: (favs) => this.favoritosIds.set(new Set(favs.map(f => f.recetaId))),
       error: () => this.favoritosIds.set(new Set()),
     });
+
+    // Precarga silenciosa para que "De amigos" responda al instante
+    this.recetaService.getRecetasDeAmigos().subscribe({
+      next: r => this.recetasAmigos.set(r),
+      error: () => this.recetasAmigos.set([]),
+    });
   }
 
   /* Ejecutar búsqueda en el servidor */
@@ -269,11 +275,14 @@ export class Explorar implements OnInit, OnDestroy {
     }
     this.modoAmigos.set(true);
     this.filtrosActivos.set(new Set());
-    this.cargando.set(true);
-    this.recetaService.getRecetasDeAmigos().subscribe({
-      next: r => { this.recetasAmigos.set(r); this.cargando.set(false); },
-      error: () => { this.recetasAmigos.set([]); this.cargando.set(false); },
-    });
+    // Los datos ya están precargados; solo refrescar si aún están vacíos
+    if (this.recetasAmigos().length === 0) {
+      this.cargando.set(true);
+      this.recetaService.getRecetasDeAmigos().subscribe({
+        next: r => { this.recetasAmigos.set(r); this.cargando.set(false); },
+        error: () => { this.recetasAmigos.set([]); this.cargando.set(false); },
+      });
+    }
   }
 
   toggleGrupo(nombre: string) {
