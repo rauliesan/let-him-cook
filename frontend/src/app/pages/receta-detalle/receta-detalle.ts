@@ -196,10 +196,20 @@ export class RecetaDetalle implements OnInit {
         if (monedas === -1) {
           // Ya la había cocinado antes
           this.yaCompletadaAntes.set(true);
-        } else if (monedas > 0) {
-          this.lanzarToast(`+${monedas} 🪙`);
-          // Verificar logros tras cocinar
-          this.logroService.verificarLogros().subscribe({ error: () => {} });
+        } else {
+          // Primera vez cocinando (monedas puede ser 0 si se alcanzó el límite diario)
+          if (monedas > 0) {
+            this.lanzarToast(`+${monedas} 🪙`);
+          }
+          // Verificar logros y mostrar notificación si se ha desbloqueado alguno
+          this.logroService.verificarLogros().subscribe({
+            next: (nuevos) => {
+              nuevos.forEach((nombre, i) => {
+                setTimeout(() => this.lanzarToast(`🏆 Logro desbloqueado: ${nombre}`), i * 1800);
+              });
+            },
+            error: () => {}
+          });
         }
       },
       error: (err) => console.error('Error al reclamar recompensa', err)

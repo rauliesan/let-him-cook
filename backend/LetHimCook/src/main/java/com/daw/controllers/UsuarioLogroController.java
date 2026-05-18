@@ -1,5 +1,6 @@
 package com.daw.controllers;
 
+import java.util.List;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -48,11 +49,12 @@ public class UsuarioLogroController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    /** Verifica y concede todos los logros que el usuario haya desbloqueado. */
+    /** Verifica y concede todos los logros que el usuario haya desbloqueado.
+     *  Devuelve la lista de nombres de logros recién otorgados (vacía si ninguno). */
     @PostMapping("/verificar")
-    public ResponseEntity<Void> verificarLogros(
+    public ResponseEntity<List<String>> verificarLogros(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        usuarioLogroService.verificarLogros(userDetails.getUsuario().getId());
-        return ResponseEntity.ok().build();
+        List<String> nuevos = usuarioLogroService.verificarLogros(userDetails.getUsuario().getId());
+        return ResponseEntity.ok(nuevos);
     }
 }

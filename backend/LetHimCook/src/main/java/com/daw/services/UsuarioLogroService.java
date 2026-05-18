@@ -1,5 +1,7 @@
 package com.daw.services;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -49,9 +51,11 @@ public class UsuarioLogroService {
 
     /**
      * Verifica todas las condiciones de logros para el usuario y concede
-     * los que aún no tenga. Se llama tras cualquier acción relevante.
+     * los que aún no tenga. Devuelve los nombres de los logros recién otorgados.
      */
-    public void verificarLogros(UUID usuarioId) {
+    public List<String> verificarLogros(UUID usuarioId) {
+        List<String> nuevos = new ArrayList<>();
+
         int recetas  = usuarioRepository.countRecetasCompletadas(usuarioId);
         long posts   = postRepository.countByUsuarioId(usuarioId);
         long comts   = postComentarioRepository.countByUsuarioId(usuarioId);
@@ -59,18 +63,20 @@ public class UsuarioLogroService {
         long premios = usuarioRecompensaRepository.countByUsuarioId(usuarioId);
         int amigos   = usuarioRepository.countAmigos(usuarioId);
 
-        intentarConceder("Primera receta",        recetas >= 1,  usuarioId);
-        intentarConceder("Cocinero en prácticas", recetas >= 5,  usuarioId);
-        intentarConceder("Chef experimentado",    recetas >= 10, usuarioId);
-        intentarConceder("Escritor",              posts   >= 1,  usuarioId);
-        intentarConceder("Primer comentario",     comts   >= 1,  usuarioId);
-        intentarConceder("Foodie",                likes   >= 1,  usuarioId);
-        intentarConceder("Primera tirada",        premios >= 1,  usuarioId);
-        intentarConceder("Coleccionista",         premios >= 5,  usuarioId);
-        intentarConceder("Sociable",              amigos  >= 1,  usuarioId);
+        intentarConceder("Primera receta",        recetas >= 1,  usuarioId, nuevos);
+        intentarConceder("Cocinero en prácticas", recetas >= 5,  usuarioId, nuevos);
+        intentarConceder("Chef experimentado",    recetas >= 10, usuarioId, nuevos);
+        intentarConceder("Escritor",              posts   >= 1,  usuarioId, nuevos);
+        intentarConceder("Primer comentario",     comts   >= 1,  usuarioId, nuevos);
+        intentarConceder("Foodie",                likes   >= 1,  usuarioId, nuevos);
+        intentarConceder("Primera tirada",        premios >= 1,  usuarioId, nuevos);
+        intentarConceder("Coleccionista",         premios >= 5,  usuarioId, nuevos);
+        intentarConceder("Sociable",              amigos  >= 1,  usuarioId, nuevos);
+
+        return nuevos;
     }
 
-    private void intentarConceder(String nombreLogro, boolean condicion, UUID usuarioId) {
+    private void intentarConceder(String nombreLogro, boolean condicion, UUID usuarioId, List<String> nuevos) {
         if (!condicion) return;
         Optional<Logro> logro = logroRepository.findByNombre(nombreLogro);
         if (logro.isEmpty()) return;
@@ -82,6 +88,7 @@ public class UsuarioLogroService {
         ul.setLogro(logro.get());
         usuarioLogroRepository.save(ul);
         log.info("Logro '{}' concedido a usuario {}", nombreLogro, usuarioId);
+        nuevos.add(nombreLogro);
     }
 
     public UsuarioLogroResponseDTO concederLogro(UsuarioLogroRequestDTO dto, UUID usuarioId) {

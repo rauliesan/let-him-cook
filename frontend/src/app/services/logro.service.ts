@@ -51,8 +51,9 @@ export class LogroService {
     return this.http.post<UsuarioLogroResponse>(`${API}/mis-logros`, { logroId });
   }
 
-  /* Verificar y conceder todos los logros desbloqueados (llamar tras acciones relevantes) */
-  verificarLogros(): Observable<void> {
-    return this.http.post<void>(`${API}/mis-logros/verificar`, {});
+  /* Verificar y conceder todos los logros desbloqueados.
+     Devuelve los nombres de los logros recién obtenidos (array vacío si ninguno). */
+  verificarLogros(): Observable<string[]> {
+    return this.http.post<string[]>(`${API}/mis-logros/verificar`, {});
   }
 }
