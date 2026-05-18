@@ -1,0 +1,7 @@
+# Logs de arranque local
+backend-log.txt
+backend-err.txt
+frontend-log.txt
+
+# Claude Code
+.claude/

@@ -1,0 +1,453 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+/* Página dividida en dos mitades: lateral y formulario */
+.login-pagina {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Mitad izquierda con contenido de marca */
+.login-lateral {
+  background: var(--negro);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Manchas de luz animadas */
+  &::before {
+    content: '';
+    position: absolute;
+    top: -100px;
+    left: -100px;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(193, 62, 40, 0.2), transparent 65%);
+    pointer-events: none;
+    animation: manchaFlota 8s ease-in-out infinite;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -80px;
+    right: -80px;
+    width: 360px;
+    height: 360px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(232, 184, 75, 0.12), transparent 65%);
+    pointer-events: none;
+    animation: manchaFlota 10s ease-in-out infinite reverse;
+  }
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+@keyframes manchaFlota {
+  0%, 100% { transform: translate(0, 0); }
+  33% { transform: translate(20px, -15px); }
+  66% { transform: translate(-15px, 10px); }
+}
+
+.lateral-contenido {
+  position: relative;
+  z-index: 1;
+  padding: 60px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  max-width: 480px;
+}
+
+.lateral-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  svg {
+    width: 36px;
+    height: 36px;
+  }
+
+  span {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--crema);
+    letter-spacing: -0.02em;
+  }
+}
+
+.lateral-copy {
+  h2 {
+    font-size: clamp(1.8rem, 2.8vw, 2.4rem);
+    font-weight: 800;
+    color: var(--crema);
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+
+  p {
+    color: rgba(253, 250, 243, 0.55);
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+}
+
+/* Lista de ventajas con efecto de deslizamiento al hacer hover */
+.lateral-ventajas {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ventaja {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.875rem;
+  color: rgba(253, 250, 243, 0.7);
+  padding: 6px 8px;
+  border-radius: var(--radio-sm);
+  transition: color 0.2s, background 0.2s, transform 0.2s;
+
+  &:hover {
+    color: var(--crema);
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateX(4px);
+
+    .ventaja-icono {
+      background: var(--primario);
+      border-color: var(--primario);
+    }
+  }
+}
+
+.ventaja-icono {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(193, 62, 40, 0.3);
+  color: var(--primario);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid rgba(193, 62, 40, 0.4);
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+
+  svg {
+    width: 11px;
+    height: 11px;
+  }
+
+  .ventaja:hover & {
+    color: var(--blanco);
+  }
+}
+
+.lateral-tagline {
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--amarillo);
+  opacity: 0.7;
+}
+
+/* Mitad derecha crema con el formulario centrado */
+.login-formulario {
+  background: var(--crema);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 48px;
+  animation: formularioEntrada 0.6s ease both;
+
+  @media (max-width: 600px) {
+    padding: 100px 24px 48px;
+  }
+}
+
+@keyframes formularioEntrada {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.formulario-contenido {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* Selector de modo login/registro */
+.modo-tabs {
+  display: flex;
+  background: var(--gris-borde);
+  border-radius: var(--radio-full);
+  padding: 4px;
+
+  button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: var(--radio-full);
+    background: none;
+    font-family: var(--fuente-base);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--gris);
+    cursor: pointer;
+    transition: background 0.25s, color 0.25s, box-shadow 0.25s, transform 0.1s;
+
+    &:hover:not(.activo) {
+      color: var(--negro);
+    }
+
+    &:active {
+      transform: scale(0.97);
+    }
+
+    &.activo {
+      background: var(--blanco);
+      color: var(--negro);
+      font-weight: 700;
+      box-shadow: var(--sombra-sm);
+    }
+  }
+}
+
+.form-bloque {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  animation: bloqueEntrada 0.35s ease both;
+}
+
+@keyframes bloqueEntrada {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.form-cabecera {
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+
+  p {
+    font-size: 0.875rem;
+    color: var(--gris);
+  }
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-fila {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* Campos con focus ring animado */
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--negro);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: color 0.2s;
+  }
+
+  &:focus-within label {
+    color: var(--primario);
+  }
+
+  input {
+    padding: 11px 14px;
+    border: 1.5px solid var(--gris-borde);
+    border-radius: var(--radio-sm);
+    font-family: var(--fuente-base);
+    font-size: 0.9rem;
+    color: var(--negro);
+    background: var(--blanco);
+    outline: none;
+    transition: border-color 0.25s, box-shadow 0.25s;
+
+    &:focus {
+      border-color: var(--primario);
+      box-shadow: 0 0 0 3px rgba(193, 62, 40, 0.1);
+    }
+
+    &::placeholder {
+      color: var(--gris-claro);
+    }
+  }
+}
+
+.olvidada {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--primario);
+  text-decoration: none;
+  transition: opacity 0.2s;
+
+  &:hover {
+    text-decoration: underline;
+    opacity: 0.8;
+  }
+}
+
+.campo-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+
+  input[type="checkbox"] {
+    margin-top: 2px;
+    accent-color: var(--primario);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  label {
+    font-size: 0.78rem;
+    color: var(--gris);
+    cursor: pointer;
+    line-height: 1.5;
+  }
+}
+
+.btn-full {
+  width: 100%;
+  justify-content: center;
+}
+
+/* Separador visual "o continúa con" */
+.separador-o {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+
+  span:first-child,
+  span:last-child {
+    height: 1px;
+    background: var(--gris-borde);
+    display: block;
+  }
+
+  span:nth-child(2) {
+    font-size: 0.75rem;
+    color: var(--gris);
+    white-space: nowrap;
+  }
+}
+
+/* Botones de acceso social */
+.social-btns {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.btn-social {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1.5px solid var(--gris-borde);
+  border-radius: var(--radio-full);
+  background: var(--blanco);
+  font-family: var(--fuente-base);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s, background 0.2s;
+
+  svg {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.2s;
+  }
+
+  &:hover {
+    border-color: var(--gris);
+    box-shadow: var(--sombra-sm);
+    transform: translateY(-2px);
+
+    svg {
+      transform: scale(1.15);
+    }
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+/* Bloque de error que aparece cuando falla el login o el registro */
+.form-error {
+  background: rgba(193, 62, 40, 0.08);
+  border: 1px solid rgba(193, 62, 40, 0.3);
+  color: var(--primario);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.84rem;
+  margin-bottom: 16px;
+}
+
+.form-pie {
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--gris);
+}
+
+.enlace {
+  background: none;
+  border: none;
+  font-family: var(--fuente-base);
+  font-size: 0.82rem;
+  color: var(--primario);
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity 0.2s;
+
+  &:hover {
+    text-decoration: underline;
+    opacity: 0.8;
+  }
+}

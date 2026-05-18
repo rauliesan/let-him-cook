@@ -1,0 +1,623 @@
+@use "sass:color";
+
+.rewards-hero {
+  padding: 6rem 0 3rem;
+  background: radial-gradient(circle at top right, rgba(232, 184, 75, 0.15), transparent),
+              radial-gradient(circle at bottom left, rgba(193, 62, 40, 0.1), transparent);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+    opacity: 0.03;
+    pointer-events: none;
+  }
+}
+
+.rewards-hero-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+
+  h1 {
+    font-size: clamp(2.5rem, 8vw, 4rem);
+    font-weight: 900;
+    margin-bottom: 0.5rem;
+    letter-spacing: -1px;
+    text-transform: uppercase;
+  }
+
+  .acento {
+    color: #E8B84B;
+    text-shadow: 0 0 20px rgba(232, 184, 75, 0.4);
+  }
+
+  .rewards-subtitulo {
+    color: var(--texto-secundario);
+    font-size: 1.1rem;
+    max-width: 600px;
+  }
+}
+
+.coins-display {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  padding: 0.75rem 1.5rem;
+  border-radius: 100px;
+  border: 1px solid rgba(232, 184, 75, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+
+  .coins-icono {
+    font-size: 1.5rem;
+    filter: drop-shadow(0 0 5px rgba(232, 184, 75, 0.5));
+  }
+
+  .coins-cantidad {
+    font-size: 1.5rem;
+    font-weight: 800;
+    font-family: 'Outfit', sans-serif;
+    color: #E8B84B;
+  }
+
+  .coins-label {
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    opacity: 0.7;
+  }
+}
+
+/* Slot Machine Styles */
+.slot-machine-seccion {
+  padding: 4rem 0;
+}
+
+.slot-machine-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 0;
+  position: relative;
+  margin-bottom: 3rem;
+}
+
+.slot-machine-frame {
+  background: #2a2a2a;
+  border: 8px solid #3a3a3a;
+  border-radius: 20px;
+  padding: 15px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5),
+              inset 0 0 20px rgba(0,0,0,0.5);
+  position: relative;
+  z-index: 2;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border: 2px solid rgba(232, 184, 75, 0.3);
+    border-radius: 16px;
+    pointer-events: none;
+  }
+}
+
+.slot-machine-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background: #1a1a1a;
+  border-radius: 10px 10px 0 0;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #333;
+
+  .logo {
+    font-weight: 900;
+    font-size: 0.9rem;
+    color: #E8B84B;
+    letter-spacing: 2px;
+  }
+
+  .light {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #444;
+    box-shadow: 0 0 5px rgba(0,0,0,0.5);
+
+    &:nth-child(odd) { animation: flash 1s infinite alternate; }
+    &:nth-child(even) { animation: flash 1s infinite alternate-reverse 0.5s; }
+  }
+}
+
+@keyframes flash {
+  from { background: #E8B84B; box-shadow: 0 0 10px #E8B84B; }
+  to { background: #444; box-shadow: none; }
+}
+
+.reels-container {
+  display: flex;
+  gap: 10px;
+  background: #111;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.reel {
+  width: 120px;
+  height: 180px;
+  background: #fff;
+  border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+}
+
+.reel-window {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reel-strip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.5s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+
+  .icon {
+    font-size: 4rem;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &.spinning {
+    animation: spin-strip 0.1s linear infinite;
+  }
+}
+
+@keyframes spin-strip {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-50%); } /* Ajustado para que el bucle sea fluido */
+}
+
+.reel-shading {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.8) 0%,
+    transparent 20%,
+    transparent 80%,
+    rgba(0,0,0,0.8) 100%
+  );
+  pointer-events: none;
+}
+
+.slot-machine-footer {
+  height: 20px;
+  background: #1a1a1a;
+  border-radius: 0 0 10px 10px;
+  margin-top: 15px;
+  position: relative;
+
+  .win-line {
+    position: absolute;
+    top: 50%;
+    left: -10px;
+    right: -10px;
+    height: 2px;
+    background: rgba(232, 184, 75, 0.5);
+    transform: translateY(-50%);
+    box-shadow: 0 0 10px rgba(232, 184, 75, 0.3);
+  }
+}
+
+/* Handle */
+.slot-machine-handle {
+  width: 30px;
+  height: 200px;
+  position: relative;
+  cursor: pointer;
+  margin-left: -5px;
+  transform-origin: bottom center;
+  transition: transform 0.3s;
+
+  .handle-rod {
+    width: 10px;
+    height: 150px;
+    background: linear-gradient(to right, #555, #888, #555);
+    margin: 0 auto;
+    border-radius: 5px;
+  }
+
+  .handle-knob {
+    width: 40px;
+    height: 40px;
+    background: radial-gradient(circle at 30% 30%, #C13E28, #822213);
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  }
+
+  &.pulled {
+    transform: rotateX(60deg) translateY(40px);
+  }
+
+  &:hover .handle-knob {
+    filter: brightness(1.2);
+  }
+}
+
+.slot-acciones {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.btn-spin {
+  background: linear-gradient(135deg, #E8B84B, #C9952E);
+  color: #000;
+  border: none;
+  padding: 1.25rem 4rem;
+  border-radius: 12px;
+  font-weight: 900;
+  font-size: 1.5rem;
+  letter-spacing: 2px;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(232, 184, 75, 0.3),
+              inset 0 -4px 0 rgba(0,0,0,0.2);
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  &:hover:not(:disabled) {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 15px 35px rgba(232, 184, 75, 0.4);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(2px);
+    box-shadow: 0 5px 15px rgba(232, 184, 75, 0.3);
+  }
+
+  &:disabled {
+    background: #333;
+    color: #666;
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+
+  .btn-coste {
+    display: block;
+    font-size: 0.8rem;
+    opacity: 0.8;
+    margin-top: 0.25rem;
+  }
+}
+
+.sin-coins {
+  color: #C13E28;
+  font-weight: 700;
+  font-size: 0.9rem;
+  animation: shake 0.5s;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* Coleccion Grid */
+.historial-seccion {
+  padding: 4rem 0;
+  background: rgba(0,0,0,0.2);
+}
+
+.seccion-titulo {
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 3rem;
+  text-transform: uppercase;
+  letter-spacing: -1px;
+}
+
+.coleccion-vacia {
+  text-align: center;
+  padding: 4rem;
+  opacity: 0.5;
+
+  .emoji-vacio { font-size: 4rem; display: block; margin-bottom: 1rem; }
+}
+
+.coleccion-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.badge-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+
+  &:hover {
+    background: rgba(255,255,255,0.06);
+    transform: translateY(-5px);
+    border-color: rgba(232, 184, 75, 0.2);
+  }
+
+  .badge-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
+  }
+
+  .badge-nombre {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+  }
+
+  &.new::after {
+    content: 'NUEVO';
+    position: absolute;
+    top: 10px;
+    right: -25px;
+    background: #E8B84B;
+    color: #000;
+    font-size: 0.6rem;
+    font-weight: 900;
+    padding: 2px 30px;
+    transform: rotate(45deg);
+  }
+}
+
+.badge-rareza, .item-rareza, .premio-rareza {
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 1px;
+
+  &.rareza-comun { background: #78716C; color: #fff; }
+  &.rareza-raro { background: #3B82F6; color: #fff; }
+  &.rareza-epico { background: #8B5CF6; color: #fff; }
+  &.rareza-legendario { 
+    background: linear-gradient(135deg, #E8B84B, #C13E28); 
+    color: #fff;
+    box-shadow: 0 0 10px rgba(232, 184, 75, 0.4);
+  }
+}
+
+.ver-mas-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem;
+}
+
+.btn-ver-mas {
+  background: transparent;
+  border: 2px solid rgba(255,255,255,0.1);
+  color: #fff;
+  padding: 0.75rem 2.5rem;
+  border-radius: 100px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+
+  &:hover {
+    background: rgba(255,255,255,0.05);
+    border-color: #E8B84B;
+    color: #E8B84B;
+  }
+}
+
+/* Catalogo Probabilidades */
+.catalogo-seccion {
+  padding: 4rem 0;
+}
+
+/* Sin premio overlay */
+.sin-premio-card {
+  background: #1a1a1a;
+  border: 2px solid #555;
+  border-radius: 24px;
+  padding: 3rem;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  animation: pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  .sin-premio-emoji {
+    font-size: 5rem;
+    display: block;
+    margin-bottom: 1.25rem;
+    animation: floating 3s ease-in-out infinite;
+  }
+
+  .sin-premio-titulo {
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: #fff;
+    margin: 0 0 0.5rem;
+  }
+
+  .sin-premio-desc {
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 2rem;
+    font-size: 1rem;
+  }
+}
+
+.catalogo-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  p { opacity: 0.6; }
+}
+
+.catalogo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.catalogo-item {
+  background: rgba(255,255,255,0.02);
+  padding: 1rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid rgba(255,255,255,0.03);
+
+  .item-emoji { font-size: 1.5rem; }
+  
+  .item-info {
+    display: flex;
+    flex-direction: column;
+    
+    .item-nombre { font-size: 0.8rem; font-weight: 600; opacity: 0.8; }
+    .item-prob { font-size: 0.7rem; font-weight: 800; color: #E8B84B; }
+  }
+
+  &.rareza-legendario { border-color: rgba(232, 184, 75, 0.4); background: rgba(232, 184, 75, 0.05); }
+}
+
+/* Premio Overlay */
+.premio-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.9);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.premio-card {
+  background: #1a1a1a;
+  border: 2px solid #E8B84B;
+  border-radius: 24px;
+  padding: 3rem;
+  width: 90%;
+  max-width: 450px;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 0 50px rgba(232, 184, 75, 0.3);
+  animation: pop-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  .premio-brillo {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(232, 184, 75, 0.2), transparent 70%);
+    pointer-events: none;
+  }
+
+  .premio-emoji {
+    font-size: 6rem;
+    display: block;
+    margin-bottom: 1.5rem;
+    filter: drop-shadow(0 0 20px rgba(232, 184, 75, 0.5));
+    animation: floating 3s ease-in-out infinite;
+  }
+
+  .premio-nombre {
+    font-size: 2rem;
+    font-weight: 900;
+    margin: 1rem 0 0.5rem;
+    color: #fff;
+  }
+
+  .premio-desc {
+    opacity: 0.7;
+    margin-bottom: 2rem;
+  }
+}
+
+@keyframes pop-in {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes floating {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+
+.btn-recoger {
+  width: 100%;
+  background: #E8B84B;
+  color: #000;
+  border: none;
+  padding: 1rem;
+  border-radius: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 20px rgba(232, 184, 75, 0.3);
+  }
+}
+
+/* Confetti */
+.confetti-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.confetti {
+  position: absolute;
+  top: -10px;
+  width: 10px;
+  height: 10px;
+  background: #E8B84B;
+  border-radius: 2px;
+  animation: confetti-fall 3s linear infinite;
+  
+  &:nth-child(even) { background: #C13E28; }
+  &:nth-child(3n) { background: #fff; }
+
+  @for $i from 1 through 12 {
+    &[style*="--i: #{$i}"] {
+      left: random(100) * 1%;
+      animation-delay: random(3000) * 1ms;
+      animation-duration: (random(2000) + 2000) * 1ms;
+    }
+  }
+}
+
+@keyframes confetti-fall {
+  to { transform: translateY(100vh) rotate(360deg); }
+}

@@ -1,0 +1,359 @@
+<!-- Hero a pantalla completa -->
+<section class="hero">
+
+  <!-- Glow suave que persigue al cursor, distinto del spotlight del ::before -->
+  <div class="cursor-aura" aria-hidden="true"></div>
+
+  <!-- Fondo: arcos y círculos animados generados aleatoriamente -->
+  <div class="hero-fondo" aria-hidden="true">
+    <div class="arco arco-1"></div>
+    <div class="arco arco-2"></div>
+    <div class="arco arco-3"></div>
+    @for (c of orbitCirculos; track $index) {
+      <div class="circulo-bg"
+        [style.width.px]="c.size"
+        [style.height.px]="c.size"
+        [style.top.%]="c.top"
+        [style.left.%]="c.left"
+        [style.opacity]="c.opacity"
+        [style.border-color]="c.color"
+        [style.animation-delay]="c.delay + 's'"
+        [style.animation-duration]="c.duration + 's'">
+      </div>
+    }
+  </div>
+
+  <div class="hero-contenido">
+
+      <!-- Titular principal en tres líneas -->
+      <h1 class="hero-h1">
+        <span class="h1-normal">¿Qué</span>
+        <span class="h1-normal">cocinamos</span>
+        <span class="h1-invertido">hoy?</span>
+      </h1>
+
+      <p class="hero-desc">
+        Dinos qué tienes en la nevera. La IA genera la receta perfecta al instante,
+        adaptada a ti. Sin suscripciones, sin límites.
+      </p>
+
+      <div class="hero-acciones">
+        <a routerLink="/explorar" class="btn-hero-primario">
+          Empezar ahora
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M3 8h10M8 3l5 5-5 5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+        <a routerLink="/explorar" class="btn-hero-ghost">Ver recetas</a>
+      </div>
+
+      <!-- Tira horizontal con ingredientes que se desplaza en bucle -->
+      <div class="ingredientes-tira" aria-hidden="true">
+        <div class="tira-pista">
+          @for (ing of ingredientesTira; track ing) {
+            <span class="tira-item">{{ ing }}</span>
+            <span class="tira-sep">·</span>
+          }
+          @for (ing of ingredientesTira; track ing + '_dup') {
+            <span class="tira-item">{{ ing }}</span>
+            <span class="tira-sep">·</span>
+          }
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Panel derecho: pila de tarjetas de receta -->
+    <div class="hero-panel">
+
+      <div class="receta-stack">
+
+        <!-- Carta trasera: Japonesa -->
+        <div class="rstack-card rstack-c3">
+          <div class="rstack-photo" style="background: linear-gradient(145deg, #4A7C59 0%, #2D5A3D 100%)">
+            <span class="rstack-kicker">Japonesa</span>
+          </div>
+          <div class="rstack-foot">
+            <strong>Ramen Casero</strong>
+            <span>55 min · Media · 610 kcal</span>
+          </div>
+        </div>
+
+        <!-- Carta media: Italiana -->
+        <div class="rstack-card rstack-c2">
+          <div class="rstack-photo" style="background: linear-gradient(145deg, #D4901A 0%, #9A6108 100%)">
+            <span class="rstack-kicker">Italiana</span>
+          </div>
+          <div class="rstack-foot">
+            <strong>Pasta al Pesto</strong>
+            <span>20 min · Fácil · 480 kcal</span>
+          </div>
+        </div>
+
+        <!-- Carta principal: Mexicana (frente) -->
+        <div class="rstack-card rstack-c1">
+          <div class="rstack-photo rstack-photo-main" style="background: linear-gradient(145deg, #C13E28 0%, #7A1E10 100%)">
+            <!-- Anillos de fondo -->
+            <div class="rdeco">
+              <div class="rdeco-ring rdeco-r1"></div>
+              <div class="rdeco-ring rdeco-r2"></div>
+              <div class="rdeco-ring rdeco-r3"></div>
+            </div>
+            <!-- Categoría y rating en la base de la foto -->
+            <div class="rstack-photo-footer">
+              <span class="rstack-kicker">Mexicana</span>
+              <span class="rstack-rating">4.8 ★</span>
+            </div>
+          </div>
+          <div class="rstack-body">
+            <h3 class="rstack-nombre">Tacos de<br>Ternera</h3>
+            <div class="rstack-chips">
+              <span>35 min</span>
+              <span>Media</span>
+              <span>520 kcal</span>
+            </div>
+            <div class="rstack-ings">
+              <div class="ring-dot" style="background: #C13E28"></div>
+              <div class="ring-dot" style="background: #E8B84B"></div>
+              <div class="ring-dot" style="background: #4A7C59"></div>
+              <div class="ring-dot" style="background: #3A8ABF"></div>
+              <span class="ring-mas">+5 más</span>
+            </div>
+            <a routerLink="/explorar" class="rstack-cta">Ver receta →</a>
+          </div>
+        </div>
+
+      </div>
+
+
+    </div>
+
+  <!-- Indicador de scroll -->
+  <div class="scroll-indicador" aria-hidden="true">
+    <div class="scroll-chevrons">
+      <svg viewBox="0 0 16 9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 2L8 7L14 2"/>
+      </svg>
+      <svg viewBox="0 0 16 9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 2L8 7L14 2"/>
+      </svg>
+    </div>
+  </div>
+
+</section>
+
+<!-- Barra de estadísticas -->
+<div class="stats-banda">
+  <div class="contenedor stats-fila">
+    <div class="stat-grande" revela [retardo]="0">
+      <strong [countUp]="totalRecetasRaw()" [formato]="formatearMetrica"></strong>
+      <span>Recetas</span>
+    </div>
+    <div class="stat-divisor"></div>
+    <div class="stat-grande" revela [retardo]="80">
+      <strong [countUp]="totalUsuariosRaw()" [formato]="formatearMetrica"></strong>
+      <span>Cocineros</span>
+    </div>
+    <div class="stat-divisor"></div>
+    <div class="stat-grande" revela [retardo]="160">
+      <strong [countUp]="totalRecetasRaw()" [formato]="formatearMetrica"></strong>
+      <span>Recetas creadas</span>
+    </div>
+    <div class="stat-divisor"></div>
+    <div class="stat-grande" revela [retardo]="240">
+      <strong>100%</strong>
+      <span>Gratuito siempre</span>
+    </div>
+  </div>
+</div>
+
+<!-- Sección de características principales -->
+<section class="features">
+  <div class="contenedor">
+
+    <div class="features-cabecera" revela>
+      <span class="etiqueta etiqueta-roja">Por qué elegirnos</span>
+      <h2>Todo lo que necesitas<br>para cocinar mejor</h2>
+    </div>
+
+    <div class="features-grid">
+
+      <!-- Tarjeta de generación con IA -->
+      <div class="feature feature-grande" revela [retardo]="0">
+        <div class="feature-icono-wrapper fondo-rojo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+          </svg>
+        </div>
+        <div class="feature-cuerpo">
+          <h3>Recetas con IA al instante</h3>
+          <p>Introduce los ingredientes que tienes y recibe una receta personalizada en segundos. Compatible con restricciones dietéticas, preferencias de sabor y tiempo disponible.</p>
+        </div>
+        <div class="feature-deco" aria-hidden="true"></div>
+      </div>
+
+      <!-- Tarjeta gamificación -->
+      <div class="feature" revela [retardo]="80">
+        <div class="feature-icono-wrapper fondo-amarillo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          </svg>
+        </div>
+        <h3>Gamificación real</h3>
+        <p>Gana puntos, desbloquea logros y sube de nivel mientras cocinas.</p>
+      </div>
+
+      <!-- Tarjeta comunidad -->
+      <div class="feature" revela [retardo]="160">
+        <div class="feature-icono-wrapper fondo-verde">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <h3>Comunidad activa</h3>
+        <p>Comparte tus creaciones y descubre recetas de miles de cocineros reales.</p>
+      </div>
+
+      <!-- Tarjeta supermercados -->
+      <div class="feature" revela [retardo]="240">
+        <div class="feature-icono-wrapper fondo-coral">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+          </svg>
+        </div>
+        <h3>Supermercados cercanos</h3>
+        <p>Encuentra los súpers más próximos con integración directa de Google Maps.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Sección de recetas destacadas -->
+<section class="recetas-sec">
+  <div class="contenedor">
+
+    <div class="sec-header" revela>
+      <div>
+        <h2>Populares esta semana</h2>
+        <p>Las más cocinadas por nuestra comunidad.</p>
+      </div>
+      <a routerLink="/explorar" class="btn-secundario">Ver todas</a>
+    </div>
+
+    <!-- Estado de carga mientras llegan las recetas de la BD -->
+    @if (cargandoRecetas()) {
+      <div class="recetas-cargando">
+        @for (n of [1,2,3,4,5,6]; track n) {
+          <div class="receta-skeleton"></div>
+        }
+      </div>
+    }
+
+    <!-- Recetas reales de la BD (las 6 más recientes y públicas) -->
+    @if (!cargandoRecetas()) {
+      <div class="recetas-grid">
+        @for (receta of recetasPopulares(); track receta.id; let i = $index) {
+          <article class="receta-card" revela [retardo]="i * 60">
+            <div class="receta-imagen" [style.background]="colorReceta(receta.tipoComidaNombre, i)">
+              <div class="receta-imagen-overlay"></div>
+              <span class="receta-emoji" aria-hidden="true">{{ emojiCategoria(receta.tipoComidaNombre ?? '') }}</span>
+              <span class="receta-tipo-badge">{{ receta.tipoComidaNombre ?? 'Sin categoría' }}</span>
+              <div class="receta-hover-cta">Ver receta</div>
+            </div>
+            <div class="receta-datos">
+              <h4>{{ receta.nombre }}</h4>
+              <div class="receta-meta">
+                <span>{{ formatearTiempo(receta.tiempoPreparacion) }}</span>
+                <span class="sep">·</span>
+                <span>{{ etiquetaDificultad(receta.dificultad) }}</span>
+                @if (receta.calorias) {
+                  <span class="sep">·</span>
+                  <span>{{ receta.calorias }} kcal</span>
+                }
+              </div>
+              <div class="receta-pie">
+                <span class="receta-autor">por {{ receta.usuarioCreadorNombre }}</span>
+                <div class="receta-pie-derecha">
+                  <span class="receta-likes" [class.tiene-likes]="receta.totalLikes > 0">
+                    <svg viewBox="0 0 14 14" fill="currentColor" width="12" height="12">
+                      <path d="M7 12.5 L1.2 7 C1.2 4.8 2.8 3.5 4.5 3.5 C5.4 3.5 6.1 3.9 7 4.8 C7.9 3.9 8.6 3.5 9.5 3.5 C11.2 3.5 12.8 4.8 12.8 7 Z"/>
+                    </svg>
+                    <span [countUp]="receta.totalLikes"></span>
+                  </span>
+                  @if (auth.estaAutenticado()) {
+                    <button class="btn-guardar"
+                            [class.activo]="esFavorito(receta.id)"
+                            [class.animando]="likesAnimando().has(receta.id)"
+                            (click)="toggleFavorito(receta.id, $event)"
+                            [attr.aria-label]="esFavorito(receta.id) ? 'Quitar de favoritos' : 'Guardar receta'">
+                      <svg viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"
+                           [attr.fill]="esFavorito(receta.id) ? 'currentColor' : 'none'">
+                        <path d="M8 14 L1.5 8 C1.5 5.5 3.2 4 5.2 4 C6.2 4 7 4.4 8 5.4 C9 4.4 9.8 4 10.8 4 C12.8 4 14.5 5.5 14.5 8 Z"/>
+                      </svg>
+                    </button>
+                  }
+                </div>
+              </div>
+            </div>
+          </article>
+        }
+
+        <!-- Si la BD no devuelve recetas (BD vacía), mostrar mensaje discreto -->
+        @if (recetasPopulares().length === 0) {
+          <p class="sin-recetas-landing">Aún no hay recetas publicadas. ¡Sé el primero!</p>
+        }
+      </div>
+    }
+  </div>
+</section>
+
+<!-- Sección CTA de registro — sólo visible para usuarios no autenticados -->
+@if (!auth.estaAutenticado()) {
+  <section class="cta-sec" revela>
+    <div class="contenedor cta-inner">
+      <div class="cta-texto">
+        <span class="cta-kicker">Gratis para siempre</span>
+        <h2>¿Listo para cocinar de verdad?</h2>
+        <p>Únete a miles de cocineros que ya usan LetHimCook a diario.</p>
+        <div class="cta-btns">
+          <a routerLink="/login" class="btn-cta-blanco">Crear cuenta gratis</a>
+          <a routerLink="/explorar" class="btn-cta-contorno">Explorar sin cuenta</a>
+        </div>
+      </div>
+      <div class="cta-decoracion" aria-hidden="true">
+        <div class="cta-circulo cta-c1"></div>
+        <div class="cta-circulo cta-c2"></div>
+        <div class="cta-circulo cta-c3"></div>
+      </div>
+    </div>
+  </section>
+}
+
+<!-- Acordeón FAQ -->
+<section class="faq-sec">
+  <div class="contenedor faq-layout">
+
+    <div class="faq-lado" revela>
+      <span class="etiqueta etiqueta-roja">Preguntas</span>
+      <h2>Lo que más nos preguntan</h2>
+      <p>Si no encuentras tu respuesta, escríbenos en la página de contacto.</p>
+      <a routerLink="/contacto" class="btn-secundario faq-cta">Contactar</a>
+    </div>
+
+    <div class="faq-lista">
+      @for (item of faqs; track item.pregunta; let i = $index) {
+        <div class="faq-item" [class.abierta]="faqAbierta() === i" (click)="toggleFaq(i)" revela [retardo]="i * 60">
+          <div class="faq-cabecera">
+            <span>{{ item.pregunta }}</span>
+            <span class="faq-toggle">{{ faqAbierta() === i ? '−' : '+' }}</span>
+          </div>
+          @if (faqAbierta() === i) {
+            <div class="faq-respuesta">{{ item.respuesta }}</div>
+          }
+        </div>
+      }
+    </div>
+
+  </div>
+</section>

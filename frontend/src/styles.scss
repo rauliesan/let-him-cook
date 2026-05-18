@@ -1,0 +1,218 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+
+/* Variables de diseño de LetHimCook */
+:root {
+  --primario:       #C13E28;
+  --primario-claro: #D95A42;
+  --coral:          #E05533;
+  --beige:          #F5EFE0;
+  --crema:          #FDFAF3;
+  --negro:          #1C1917;
+  --negro-suave:    #292524;
+  --gris:           #78716C;
+  --gris-claro:     #D6D3D1;
+  --gris-borde:     #E7E5E4;
+  --amarillo:       #E8B84B;
+  --verde:          #4A7C59;
+  --blanco:         #FFFFFF;
+
+  --fuente-base:    'Poppins', sans-serif;
+
+  --radio-sm:   6px;
+  --radio-md:   12px;
+  --radio-lg:   20px;
+  --radio-full: 9999px;
+
+  --sombra-sm: 0 1px 3px rgba(28, 25, 23, 0.08);
+  --sombra-md: 0 4px 16px rgba(28, 25, 23, 0.1);
+  --sombra-lg: 0 12px 40px rgba(28, 25, 23, 0.14);
+}
+
+/* Reset y base */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  font-family: var(--fuente-base);
+  background-color: var(--crema);
+  color: var(--negro);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Color de selección con identidad de marca */
+::selection {
+  background: rgba(193, 62, 40, 0.18);
+  color: var(--negro);
+}
+
+/* Barra de scroll personalizada con acento de color */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--beige);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--gris-claro);
+  border-radius: var(--radio-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gris);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* Clases utilitarias compartidas en toda la app */
+.contenedor {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.btn-primario {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  background: var(--primario);
+  color: var(--blanco);
+  border: 2px solid var(--primario);
+  border-radius: var(--radio-full);
+  font-family: var(--fuente-base);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  letter-spacing: 0.01em;
+
+  &:hover {
+    background: var(--primario-claro);
+    border-color: var(--primario-claro);
+    transform: translateY(-2px);
+    box-shadow: var(--sombra-md);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.btn-secundario {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  background: transparent;
+  color: var(--negro);
+  border: 2px solid var(--negro);
+  border-radius: var(--radio-full);
+  font-family: var(--fuente-base);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, transform 0.15s;
+
+  &:hover {
+    background: var(--negro);
+    color: var(--blanco);
+    transform: translateY(-2px);
+  }
+}
+
+.btn-contorno {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  background: transparent;
+  color: var(--blanco);
+  border: 2px solid rgba(255,255,255,0.5);
+  border-radius: var(--radio-full);
+  font-family: var(--fuente-base);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+
+  &:hover {
+    border-color: var(--blanco);
+    background: rgba(255,255,255,0.1);
+  }
+}
+
+/* Etiqueta de categoría reutilizable */
+.etiqueta {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: var(--radio-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.etiqueta-roja {
+  background: rgba(193, 62, 40, 0.12);
+  color: var(--primario);
+}
+
+.etiqueta-amarilla {
+  background: rgba(232, 184, 75, 0.18);
+  color: #9A7A1A;
+}
+
+/* Separador decorativo */
+.separador {
+  width: 48px;
+  height: 3px;
+  background: var(--primario);
+  border-radius: var(--radio-full);
+  margin: 16px 0;
+}
+
+/* ==========================================
+   Efectos de like — creados dinámicamente
+   con createElement, necesitan scope global
+   ========================================== */
+
+/* Corazón flotante que sube y se desvanece al dar like */
+.like-fx-heart {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.88rem;
+  color: #C13E28;
+  pointer-events: none;
+  animation: likeHeartFly 0.72s ease forwards;
+  z-index: 100;
+  user-select: none;
+  line-height: 1;
+}
+
+@keyframes likeHeartFly {
+  0%   { opacity: 1;   transform: translateX(-50%) translateY(0)     scale(0.5); }
+  35%  { opacity: 1;   transform: translateX(-50%) translateY(-16px)  scale(1.3); }
+  100% { opacity: 0;   transform: translateX(-50%) translateY(-38px)  scale(0.7); }
+}

@@ -1,0 +1,381 @@
+:host { display: block; }
+
+.estado-carga, .estado-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  gap: 1rem;
+  text-align: center;
+  color: var(--gris);
+}
+
+.carga-spinner {
+  width: 38px;
+  height: 38px;
+  border: 3px solid rgba(193, 62, 40, 0.15);
+  border-top-color: var(--primario);
+  border-radius: 50%;
+  animation: girar 0.8s linear infinite;
+}
+
+@keyframes girar { to { transform: rotate(360deg); } }
+
+/* ── Portada ── */
+.pub-portada {
+  height: 200px;
+  background: linear-gradient(135deg, #1C1917 0%, #3D1A10 40%, #2A1208 70%, #1C1917 100%);
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      -45deg,
+      transparent 0px, transparent 40px,
+      rgba(193, 62, 40, 0.04) 40px, rgba(193, 62, 40, 0.04) 42px
+    );
+  }
+}
+
+.pub-portada-patron {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, rgba(193, 62, 40, 0.18) 1px, transparent 1px),
+    radial-gradient(circle, rgba(232, 184, 75, 0.08) 1px, transparent 1px);
+  background-size: 32px 32px, 48px 48px;
+}
+
+/* ── Info wrapper ── */
+.pub-info-wrapper {
+  margin-top: -56px;
+  position: relative;
+  z-index: 2;
+  padding-bottom: 2rem;
+}
+
+.pub-info {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 1.5rem;
+  align-items: flex-end;
+  background: var(--crema, #fdfaf3);
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+  border: 1px solid rgba(0,0,0,0.05);
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+    align-items: center;
+    text-align: center;
+  }
+}
+
+/* ── Avatar con anillo XP ── */
+.pub-avatar-wrapper {
+  position: relative;
+  width: 132px;
+  height: 132px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.xp-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  transform: rotate(-90deg);
+  z-index: 0;
+  overflow: visible;
+
+  .xp-ring-track {
+    fill: none;
+    stroke: rgba(0, 0, 0, 0.08);
+    stroke-width: 4;
+  }
+
+  .xp-ring-progress {
+    fill: none;
+    stroke: var(--primario, #C13E28);
+    stroke-width: 4;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.5s;
+    filter: drop-shadow(0 0 4px rgba(193, 62, 40, 0.45));
+  }
+}
+
+.pub-avatar {
+  width: 108px;
+  height: 108px;
+  border-radius: 50%;
+  background: var(--primario);
+  color: white;
+  font-size: 2.2rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4px solid var(--crema, #fdfaf3);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+
+  &.pub-avatar-img {
+    object-fit: cover;
+  }
+}
+
+.pub-nivel-badge {
+  position: absolute;
+  bottom: 8px;
+  right: 6px;
+  background: var(--amarillo, #E8B84B);
+  color: var(--negro, #1C1917);
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 999px;
+  border: 2px solid var(--crema, #fdfaf3);
+  z-index: 3;
+  animation: nivelPop 0.4s ease 0.6s both;
+}
+
+@keyframes nivelPop {
+  from { transform: scale(0) rotate(-10deg); }
+  to   { transform: scale(1) rotate(0); }
+}
+
+/* ── Datos del usuario ── */
+.pub-datos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding-top: 3rem;
+}
+
+.pub-nombre-fila {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+}
+
+.online-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(34, 197, 94, 0.12);
+  color: #22c55e;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(34, 197, 94, 0.25);
+}
+
+.online-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  animation: pulso-online 1.8s ease-in-out infinite;
+}
+
+@keyframes pulso-online {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.75); }
+}
+
+.badge-titulo {
+  background: rgba(193, 62, 40, 0.1);
+  color: var(--primario);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(193, 62, 40, 0.2);
+}
+
+.pub-stats {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.pub-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: rgba(193, 62, 40, 0.04);
+  border: 1px solid transparent;
+
+  strong {
+    font-size: 1.15rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
+  span {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--gris);
+    font-weight: 600;
+  }
+}
+
+/* ── Acciones (botón amigo) ── */
+.pub-acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 3rem;
+
+  @media (max-width: 640px) { padding-top: 0; }
+}
+
+.btn-amigo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1.2rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 2px solid var(--primario);
+  background: var(--primario);
+  color: white;
+  white-space: nowrap;
+
+  &:hover:not(:disabled) {
+    opacity: 0.88;
+    transform: scale(1.02);
+  }
+
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  &.siguiendo {
+    background: transparent;
+    color: var(--primario);
+
+    &:hover:not(:disabled) {
+      background: rgba(193, 62, 40, 0.07);
+      transform: none;
+    }
+  }
+}
+
+.spinner-mini {
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: girar 0.7s linear infinite;
+  display: inline-block;
+
+  .siguiendo & {
+    border-color: rgba(193, 62, 40, 0.3);
+    border-top-color: var(--primario);
+  }
+}
+
+/* ── Sección de recetas ── */
+.pub-recetas-section {
+  padding-bottom: 4rem;
+
+  h2 {
+    font-size: 1.2rem;
+    font-weight: 800;
+    margin-bottom: 1.25rem;
+  }
+}
+
+.sin-recetas {
+  color: var(--gris);
+  padding: 2rem 0;
+}
+
+.pub-recetas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.pub-receta-card {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  background: white;
+  border: 1px solid rgba(0,0,0,0.07);
+  border-radius: 14px;
+  padding: 1rem;
+  text-decoration: none;
+  color: inherit;
+  transition: box-shadow 0.2s, transform 0.2s;
+
+  &:hover {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    transform: translateY(-2px);
+  }
+}
+
+.pub-receta-emoji {
+  font-size: 2rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.pub-receta-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.pub-receta-cat {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--primario);
+}
+
+.pub-receta-info h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pub-receta-meta {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  font-size: 0.72rem;
+  color: var(--gris);
+  font-weight: 500;
+}

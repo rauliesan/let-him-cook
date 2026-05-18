@@ -1,0 +1,59 @@
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+/* Logro individual (dentro de UsuarioLogroResponse) */
+export interface LogroResponse {
+  id: string;
+  nombre: string;
+  descripcion: string;
+  iconoUrl: string | null;
+  fechaObtenido?: string | null;
+}
+
+/* Respuesta de GET /mis-logros (paginada) */
+export interface UsuarioLogroResponse {
+  id: string;
+  logro: LogroResponse;
+  fechaObtenido: string;
+}
+
+/* Página genérica del backend */
+export interface Pagina<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+}
+
+const API = 'http://localhost:9999';
+
+@Injectable({ providedIn: 'root' })
+export class LogroService {
+
+  constructor(private http: HttpClient) {}
+
+  /* Todos los logros del catálogo (para mostrar los no conseguidos en gris) */
+  getTodosLogros(): Observable<LogroResponse[]> {
+    return this.http.get<LogroResponse[]>(`${API}/admin/logros`);
+  }
+
+  /* Logros conseguidos por el usuario autenticado */
+  getMisLogros(pagina = 0, tam = 50): Observable<Pagina<UsuarioLogroResponse>> {
+    return this.http.get<Pagina<UsuarioLogroResponse>>(
+      `${API}/mis-logros?page=${pagina}&size=${tam}`
+    );
+  }
+
+  /* Conceder un logro al usuario autenticado (silencioso si ya lo tiene) */
+  concederLogro(logroId: string): Observable<UsuarioLogroResponse> {
+    return this.http.post<UsuarioLogroResponse>(`${API}/mis-logros`, { logroId });
+  }
+
+  /* Verificar y conceder todos los logros desbloqueados.
+     Devuelve los nombres de los logros recién obtenidos (array vacío si ninguno). */
+  verificarLogros(): Observable<string[]> {
+    return this.http.post<string[]>(`${API}/mis-logros/verificar`, {});
+  }
+}

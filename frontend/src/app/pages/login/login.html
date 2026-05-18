@@ -1,0 +1,249 @@
+<!-- Página de login/registro dividida en dos mitades -->
+<div class="login-pagina">
+
+  <!-- Mitad izquierda con la propuesta de valor -->
+  <div class="login-lateral">
+    <div class="lateral-contenido">
+
+      <a routerLink="/" class="lateral-logo">
+        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="16" cy="16" r="15" fill="rgba(255,255,255,0.2)"/>
+          <path d="M8 20 Q8 12 16 12 Q24 12 24 20" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+          <rect x="22" y="16" width="7" height="3.5" rx="1.75" fill="white" />
+          <ellipse cx="16" cy="20" rx="7" ry="2.5" fill="white" opacity="0.9" />
+        </svg>
+        <span>LetHimCook</span>
+      </a>
+
+      <div class="lateral-copy">
+        <h2>Cocina más,<br>desperdicia menos.</h2>
+        <p>La plataforma que convierte tus ingredientes disponibles en recetas deliciosas con un solo clic.</p>
+      </div>
+
+      <div class="lateral-ventajas">
+        <div class="ventaja">
+          <span class="ventaja-icono">
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 6l2.5 2.5 5.5-5.5"/>
+            </svg>
+          </span>
+          <span>Recetas personalizadas con IA</span>
+        </div>
+        <div class="ventaja">
+          <span class="ventaja-icono">
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 6l2.5 2.5 5.5-5.5"/>
+            </svg>
+          </span>
+          <span>Sistema de logros y niveles</span>
+        </div>
+        <div class="ventaja">
+          <span class="ventaja-icono">
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 6l2.5 2.5 5.5-5.5"/>
+            </svg>
+          </span>
+          <span>Comunidad de cocineros activos</span>
+        </div>
+        <div class="ventaja">
+          <span class="ventaja-icono">
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 6l2.5 2.5 5.5-5.5"/>
+            </svg>
+          </span>
+          <span>100% gratuito, sin restricciones</span>
+        </div>
+      </div>
+
+      <p class="lateral-tagline">"Porque cada comida merece ser especial"</p>
+    </div>
+  </div>
+
+  <!-- Mitad derecha con el formulario -->
+  <div class="login-formulario">
+    <div class="formulario-contenido">
+
+      <!-- Selector entre login y registro -->
+      <div class="modo-tabs">
+        <button [class.activo]="modoActivo() === 'login'" (click)="cambiarModo('login')">
+          Iniciar sesión
+        </button>
+        <button [class.activo]="modoActivo() === 'registro'" (click)="cambiarModo('registro')">
+          Crear cuenta
+        </button>
+      </div>
+
+      <!-- Mensaje de error compartido por ambos formularios -->
+      @if (error()) {
+        <div class="form-error">{{ error() }}</div>
+      }
+
+      <!-- Formulario de login -->
+      @if (modoActivo() === 'login') {
+        <div class="form-bloque">
+          <div class="form-cabecera">
+            <h1>Bienvenido de vuelta</h1>
+            <p>Ingresa tus datos para continuar cocinando.</p>
+          </div>
+
+          <form class="form" (ngSubmit)="submitLogin()">
+            <div class="campo">
+              <label>Email</label>
+              <input type="email" placeholder="tu&#64;email.com" [(ngModel)]="loginEmail" name="loginEmail" />
+            </div>
+            <div class="campo">
+              <label>
+                Contraseña
+                <a href="#" class="olvidada" (click)="$event.preventDefault(); cambiarModo('recuperar')">¿La olvidaste?</a>
+              </label>
+              <input type="password" placeholder="••••••••" [(ngModel)]="loginPassword" name="loginPassword" />
+            </div>
+            <button type="submit" class="btn-primario btn-full" [disabled]="cargando()">
+              {{ cargando() ? 'Entrando...' : 'Iniciar sesión' }}
+            </button>
+          </form>
+
+          <div class="separador-o">
+            <span></span><span>o continúa con</span><span></span>
+          </div>
+
+          <div class="social-btns">
+            <button class="btn-social">
+              <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18.77 10.2c0-.63-.05-1.24-.16-1.82H10v3.44h4.91a4.19 4.19 0 0 1-1.82 2.75v2.28h2.94c1.72-1.58 2.74-3.91 2.74-6.65z" fill="#4285F4"/>
+                <path d="M10 19c2.47 0 4.54-.82 6.05-2.21l-2.94-2.28c-.82.55-1.87.87-3.11.87-2.39 0-4.41-1.61-5.13-3.78H1.84v2.35A9 9 0 0 0 10 19z" fill="#34A853"/>
+                <path d="M4.87 11.6A5.39 5.39 0 0 1 4.59 10c0-.55.09-1.09.28-1.6V6.05H1.84A9 9 0 0 0 1 10c0 1.45.35 2.82.84 4.05l3.03-2.35z" fill="#FBBC05"/>
+                <path d="M10 4.62c1.35 0 2.55.46 3.5 1.38l2.62-2.62C14.53 1.89 12.47 1 10 1A9 9 0 0 0 1.84 5.95l3.03 2.35C5.59 6.13 7.61 4.62 10 4.62z" fill="#EA4335"/>
+              </svg>
+              Google
+            </button>
+          </div>
+
+          <p class="form-pie">
+            ¿No tienes cuenta?
+            <button class="enlace" (click)="cambiarModo('registro')">Crear una gratis</button>
+          </p>
+        </div>
+      }
+
+      <!-- Formulario de registro -->
+      @if (modoActivo() === 'registro') {
+        <div class="form-bloque">
+          <div class="form-cabecera">
+            <h1>Empieza a cocinar</h1>
+            <p>Crea tu cuenta gratuita en menos de un minuto.</p>
+          </div>
+
+          <form class="form" (ngSubmit)="submitRegistro()">
+            <div class="campo">
+              <label>Nombre</label>
+              <input type="text" placeholder="Tu nombre" [(ngModel)]="regNombre" name="regNombre" />
+            </div>
+            <div class="campo">
+              <label>Email</label>
+              <input type="email" placeholder="tu&#64;email.com" [(ngModel)]="regEmail" name="regEmail" />
+            </div>
+            <div class="campo">
+              <label>Contraseña</label>
+              <input type="password" placeholder="Mínimo 8 caracteres" [(ngModel)]="regPassword" name="regPassword" />
+            </div>
+            <div class="campo-check">
+              <input type="checkbox" id="terminos" [(ngModel)]="regTerminos" name="regTerminos" />
+              <label for="terminos">Acepto los términos de servicio y la política de privacidad.</label>
+            </div>
+            <button type="submit" class="btn-primario btn-full" [disabled]="cargando()">
+              {{ cargando() ? 'Creando cuenta...' : 'Crear cuenta gratuita' }}
+            </button>
+          </form>
+
+          <p class="form-pie">
+            ¿Ya tienes cuenta?
+            <button class="enlace" (click)="cambiarModo('login')">Inicia sesión</button>
+          </p>
+        </div>
+      }
+
+      <!-- Formulario de recuperación de contraseña -->
+      @if (modoActivo() === 'recuperar') {
+        <div class="form-bloque">
+          
+          <!-- Paso 1: Pedir email -->
+          @if (recuperarPaso() === 1) {
+            <div class="form-cabecera">
+              <h1>Recuperar Contraseña</h1>
+              <p>Introduce tu email y te enviaremos un código de 6 dígitos.</p>
+            </div>
+            <form class="form" (ngSubmit)="submitSolicitarRecuperacion()">
+              <div class="campo">
+                <label>Email de tu cuenta</label>
+                <input type="email" placeholder="tu@email.com" [(ngModel)]="recuperarEmail" name="recuperarEmail" required />
+              </div>
+              <button type="submit" class="btn-primario btn-full" [disabled]="cargando()">
+                {{ cargando() ? 'Enviando...' : 'Enviar Código' }}
+              </button>
+            </form>
+          }
+
+          <!-- Paso 2: Introducir código -->
+          @if (recuperarPaso() === 2) {
+            <div class="form-cabecera">
+              <h1>Introduce el Código</h1>
+              <p>Hemos enviado un código a <strong>{{ recuperarEmail }}</strong>. Introdúcelo abajo.</p>
+            </div>
+            <form class="form" (ngSubmit)="submitVerificarCodigo()">
+              <div class="campo">
+                <label>Código de 6 dígitos</label>
+                <input type="text" placeholder="Ej: 123456" maxlength="6" [(ngModel)]="recuperarCodigo" name="recuperarCodigo" required style="letter-spacing: 5px; font-weight: bold; text-align: center; font-size: 20px;" />
+              </div>
+              <button type="submit" class="btn-primario btn-full" [disabled]="cargando()">
+                {{ cargando() ? 'Verificando...' : 'Verificar Código' }}
+              </button>
+            </form>
+          }
+
+          <!-- Paso 3: Nueva contraseña -->
+          @if (recuperarPaso() === 3) {
+            <div class="form-cabecera">
+              <h1>Nueva Contraseña</h1>
+              <p>Casi listo. Introduce tu nueva contraseña.</p>
+            </div>
+            <form class="form" (ngSubmit)="submitNuevaPassword()">
+              <div class="campo">
+                <label>Nueva Contraseña</label>
+                <input type="password" placeholder="Mínimo 8 caracteres" [(ngModel)]="recuperarNuevaPassword" name="recuperarNuevaPassword" required />
+              </div>
+              <button type="submit" class="btn-primario btn-full" [disabled]="cargando()">
+                {{ cargando() ? 'Guardando...' : 'Actualizar Contraseña' }}
+              </button>
+            </form>
+          }
+
+          <!-- Paso 4: Éxito -->
+          @if (recuperarPaso() === 4) {
+            <div class="form-cabecera">
+              <div style="width: 60px; height: 60px; background: #C13E28; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+              <h1>¡Contraseña actualizada!</h1>
+              <p>Tu contraseña ha sido cambiada correctamente.</p>
+            </div>
+            <button class="btn-primario btn-full" (click)="cambiarModo('login')" style="margin-top: 20px;">
+              Volver al Login
+            </button>
+          }
+
+          @if (recuperarPaso() !== 4) {
+            <p class="form-pie">
+              ¿Te has acordado?
+              <button class="enlace" (click)="cambiarModo('login')">Volver al login</button>
+            </p>
+          }
+        </div>
+      }
+
+    </div>
+  </div>
+
+</div>

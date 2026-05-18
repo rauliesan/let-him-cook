@@ -1,0 +1,199 @@
+@if (cargando()) {
+  <div class="estado-carga">
+    <div class="carga-spinner"></div>
+    <p>Preparando los fogones...</p>
+  </div>
+}
+
+@if (!cargando() && error()) {
+  <div class="estado-error contenedor">
+    <div class="error-card" revela>
+      <span class="error-emoji">👨‍🍳💨</span>
+      <p>{{ error() }}</p>
+      <a [routerLink]="['/explorar']" class="btn-primario btn-sm">Volver a explorar</a>
+    </div>
+  </div>
+}
+
+@if (!cargando() && !error() && receta(); as r) {
+  <div class="detalle-hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-pattern"></div>
+    
+    <div class="contenedor detalle-hero-inner">
+      <div class="hero-top" revela>
+        <a [routerLink]="['/explorar']" class="btn-volver">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16">
+            <path d="M10 3L5 8l5 5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Explorar
+        </a>
+      </div>
+
+      <div class="hero-main">
+        <div class="hero-info" revela [retardo]="100">
+          <div class="cat-badges">
+            @if (r.tipoComidaNombre) { <span class="badge badge-premium">{{ r.tipoComidaNombre }}</span> }
+            @if (r.tipoComida2Nombre) { <span class="badge badge-premium">{{ r.tipoComida2Nombre }}</span> }
+          </div>
+          <h1>{{ r.nombre }}</h1>
+          <div class="autor-pill">
+            <span class="autor-prefijo">Receta de</span>
+            <a class="autor-nombre autor-link" [routerLink]="['/usuario', r.usuarioCreadorId]">{{ r.usuarioCreadorNombre }}</a>
+          </div>
+          
+          @if (r.descripcion) {
+            <p class="hero-descripcion" revela [retardo]="150">{{ r.descripcion }}</p>
+          }
+        </div>
+
+        <div class="hero-stats" revela [retardo]="200">
+          <div class="stat-card">
+            <span class="stat-icon">⏱️</span>
+            <span class="stat-val">{{ formatearTiempo(r.tiempoPreparacion) }}</span>
+            <span class="stat-label">Preparación</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon">📊</span>
+            <span class="stat-val">{{ etiquetaDificultad(r.dificultad) }}</span>
+            <span class="stat-label">Dificultad</span>
+          </div>
+          @if (r.calorias) {
+            <div class="stat-card">
+              <span class="stat-icon">🔥</span>
+              <span class="stat-val">{{ r.calorias }}</span>
+              <span class="stat-label">kcal</span>
+            </div>
+          }
+          <button class="stat-card likes"
+                  [class.liked]="liked()"
+                  [class.like-anim]="likeAnim()"
+                  [class.like-disabled]="!auth.estaAutenticado()"
+                  (click)="toggleLike()"
+                  [attr.title]="auth.estaAutenticado() ? (liked() ? 'Quitar like' : 'Dar like') : 'Inicia sesión para dar like'"
+                  type="button">
+            <span class="stat-icon">{{ liked() ? '❤️' : '🤍' }}</span>
+            <span class="stat-val">{{ likeCount() }}</span>
+            <span class="stat-label">Likes</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="contenedor detalle-body">
+    
+
+    <div class="detalle-grid">
+      <!-- Columna Izquierda: Ingredientes y Alérgenos -->
+      <div class="col-side">
+        <section class="detalle-seccion" revela [retardo]="400">
+          <div class="seccion-tab">
+            <span class="tab-icon">🛒</span>
+            <span class="tab-texto">Ingredientes</span>
+          </div>
+          <div class="ingredientes-grid">
+            @for (ing of ingredientesList(); track $index) {
+              <div class="ingrediente-chip">
+                <span class="ing-dot"></span>
+                <span class="ing-nombre">{{ ing }}</span>
+              </div>
+            }
+          </div>
+        </section>
+
+        @if (alergenosList().length > 0) {
+          <section class="detalle-seccion" revela [retardo]="500">
+            <div class="seccion-tab">
+              <span class="tab-icon">⚠️</span>
+              <span class="tab-texto">Alérgenos</span>
+            </div>
+            <div class="alergenos-seccion">
+              <div class="alergenos-flex">
+                @for (a of alergenosList(); track $index) {
+                  <div class="alergen-pill">
+                    <span class="alergen-icon">{{ a.icono }}</span>
+                    <span class="alergen-nombre">{{ a.nombre }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+          </section>
+        }
+      </div>
+
+      <!-- Columna Derecha: Instrucciones (Modo Cocina) -->
+      <div class="col-main">
+        <section class="detalle-seccion hoja-cocina" revela [retardo]="450">
+          <div class="seccion-tab">
+            <span class="tab-icon">👨‍🍳</span>
+            <span class="tab-texto">Modo Cocina</span>
+            
+            <div class="progreso-wrapper" *ngIf="instruccionesList().length > 0">
+              <div class="progreso-container">
+                <div class="progreso-barra" [style.width.%]="porcentajeProgreso()"></div>
+              </div>
+              <span class="progreso-texto">{{ porcentajeProgreso() }}%</span>
+            </div>
+          </div>
+
+          <div class="timeline-cocina">
+            @for (paso of instruccionesList(); track $index; let i = $index) {
+              <button class="paso-card" 
+                   [class.completado]="isPasoCompletado(i)"
+                   (click)="togglePaso(i)"
+                   type="button">
+                <div class="paso-numero">
+                  <span class="num">{{ i + 1 }}</span>
+                  <span class="check">✓</span>
+                </div>
+                <div class="paso-content">
+                  <p>{{ paso }}</p>
+                </div>
+              </button>
+            }
+          </div>
+
+          <!-- Banner: receta ya cocinada anteriormente -->
+          @if (yaCompletadaAntes() && !todoCompletado()) {
+            <div class="ya-cocinada-banner">
+              <span>✅ Ya cocinaste esta receta</span>
+            </div>
+          }
+
+          <!-- Mensaje de éxito al completar -->
+          <div class="exito-cocina" *ngIf="todoCompletado()" revela>
+            <div class="exito-inner">
+              <span class="exito-emoji">🎉</span>
+              <h3>¡Buen provecho!</h3>
+              <p>Has completado todos los pasos de la receta.</p>
+
+              <div class="reward-pill" *ngIf="recompensaReclamada()">
+                @if (yaCompletadaAntes()) {
+                  <p class="reward-limit">Ya habías cocinado esta receta — sin monedas adicionales</p>
+                } @else if (monedasGanadas()! > 0) {
+                  <div class="reward-content">
+                    <span class="reward-amount">+{{ monedasGanadas() }} 🪙</span>
+                    <p class="reward-text">Monedas añadidas a tu perfil</p>
+                  </div>
+                } @else {
+                  <p class="reward-limit">Límite diario de cocina alcanzado (150 🪙)</p>
+                }
+              </div>
+
+              <button (click)="reiniciarPasos()" class="btn-secundario btn-sm">Reiniciar pasos</button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notificación de Monedas (Toast) -->
+  <div class="toast-notificacion" [class.show]="mostrarNotificacion()">
+    <div class="toast-content">
+      <span class="toast-icon">💰</span>
+      <span class="toast-text">{{ mensajeNotificacion() }}</span>
+    </div>
+  </div>
+}

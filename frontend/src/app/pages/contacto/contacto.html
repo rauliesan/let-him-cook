@@ -1,0 +1,224 @@
+﻿<!-- HERO -->
+<section class="contacto-hero">
+  <div class="contenedor contacto-hero-inner">
+    <div>
+      <span class="hero-badge">💬 Soporte</span>
+      <h1>¿Necesitas<br><span class="hero-accent">ayuda?</span></h1>
+      <p>Estamos aquí para escucharte. Escríbenos con tus dudas, sugerencias o comentarios.</p>
+    </div>
+    <div class="hero-deco">
+      <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" class="hero-burbuja">
+        <circle cx="60" cy="60" r="55" fill="rgba(255,255,255,0.08)" />
+        <path d="M35 50 Q35 30 60 30 Q85 30 85 50 Q85 65 70 70 L70 80 L55 70 Q35 68 35 50Z" fill="none"
+          stroke="rgba(255,255,255,0.4)" stroke-width="2.5" stroke-linecap="round" />
+        <circle cx="48" cy="50" r="3" fill="rgba(255,255,255,0.6)" class="burbuja-punto" />
+        <circle cx="60" cy="50" r="3" fill="rgba(255,255,255,0.6)" class="burbuja-punto burbuja-punto-2" />
+        <circle cx="72" cy="50" r="3" fill="rgba(255,255,255,0.6)" class="burbuja-punto burbuja-punto-3" />
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- CUERPO -->
+<section class="contacto-cuerpo">
+  <div class="contenedor contacto-grid">
+
+    <!-- ── Columna izquierda: info ── -->
+    <div class="contacto-info">
+      <h2 revela>Hablemos</h2>
+      <p revela [retardo]="80">
+        Completa el formulario y abriremos tu cliente de correo listo para enviar.
+        Respondemos en menos de 48 h.
+      </p>
+
+      <div class="info-items">
+
+        <!-- Email real de soporte -->
+        <a class="info-item" [href]="'mailto:' + SOPORTE_EMAIL" revela [retardo]="120">
+          <div class="info-icono">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M3 5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5z" />
+              <path d="M3 5l7 5 7-5" />
+            </svg>
+          </div>
+          <div>
+            <strong>Email de soporte</strong>
+            <span>{{ SOPORTE_EMAIL }}</span>
+          </div>
+          <div class="info-arrow">→</div>
+        </a>
+
+        <!-- Horario -->
+        <div class="info-item" revela [retardo]="180">
+          <div class="info-icono">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="10" cy="10" r="8" />
+              <path d="M10 6v4l2.5 2.5" stroke-linecap="round" />
+            </svg>
+          </div>
+          <div>
+            <strong>Tiempo de respuesta</strong>
+            <span>Menos de 48 h en días laborables</span>
+          </div>
+        </div>
+
+        <!-- Idiomas -->
+        <div class="info-item" revela [retardo]="240">
+          <div class="info-icono">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M10 2a8 8 0 1 0 0 16A8 8 0 0 0 10 2z" />
+              <path d="M2 10h16M10 2c-2 2-3 5-3 8s1 6 3 8M10 2c2 2 3 5 3 8s-1 6-3 8" stroke-linecap="round" />
+            </svg>
+          </div>
+          <div>
+            <strong>Idiomas</strong>
+            <span>Español · English</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- FAQ rápido -->
+      <div class="faq-mini" revela [retardo]="300">
+        <p class="faq-titulo">Preguntas frecuentes</p>
+        <details class="faq-item">
+          <summary>¿Cómo recupero mi contraseña?</summary>
+          <p>En la pantalla de login pulsa "Olvidé mi contraseña" e introduce tu email.</p>
+        </details>
+        <details class="faq-item">
+          <summary>¿Puedo borrar mi cuenta?</summary>
+          <p>Escríbenos desde el email asociado a tu cuenta y lo gestionamos.</p>
+        </details>
+        <details class="faq-item">
+          <summary>¿Cómo reporto una receta inapropiada?</summary>
+          <p>Usa el formulario con el asunto "Reporte de contenido" e indica la URL de la receta.</p>
+        </details>
+        <details class="faq-item">
+          <summary>¿Puedo contactar por teléfono?</summary>
+          <p>Sí, puedes llamarnos al <strong>+34 722 823 313</strong> en horario laboral (Lun - Vie, 9:00 - 18:00).</p>
+        </details>
+      </div>
+    </div>
+
+    <!-- ── Columna derecha: formulario / éxito ── -->
+    <div class="formulario-wrapper" revela [retardo]="160">
+
+      <!-- Estado ÉXITO -->
+      @if (enviado()) {
+      <div class="enviado-state">
+        <div class="enviado-icon">✉️</div>
+        <h3>¡Mensaje enviado!</h3>
+        <p>
+          Tu mensaje ha llegado a <strong>{{ SOPORTE_EMAIL }}</strong>.
+          Te responderemos en menos de 48 h.
+        </p>
+        <button class="btn-otro" (click)="reiniciar()">
+          Enviar otro mensaje
+        </button>
+      </div>
+      }
+
+      <!-- Formulario -->
+      @if (!enviado()) {
+      <h3>Envíanos un mensaje</h3>
+      <p class="form-sub">Todos los campos son obligatorios.</p>
+
+      <form class="formulario" (ngSubmit)="enviar()" novalidate>
+
+        <!-- Nombre + Apellido -->
+        <div class="form-fila">
+          <div class="campo" [class.campo-error]="mostrarError(nombreValido)">
+            <label>Nombre</label>
+            <input type="text" placeholder="Tu nombre" [(ngModel)]="nombre" name="nombre" />
+            @if (mostrarError(nombreValido)) {
+            <span class="error-msg">Mínimo 2 caracteres</span>
+            }
+          </div>
+          <div class="campo" [class.campo-error]="mostrarError(apellidoValido)">
+            <label>Apellido</label>
+            <input type="text" placeholder="Tu apellido" [(ngModel)]="apellido" name="apellido" />
+            @if (mostrarError(apellidoValido)) {
+            <span class="error-msg">Mínimo 2 caracteres</span>
+            }
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="campo" [class.campo-error]="mostrarError(emailValido)">
+          <label>Email</label>
+          <input type="email" placeholder="tu&#64;email.com" [(ngModel)]="email" name="email" />
+          @if (mostrarError(emailValido)) {
+          <span class="error-msg">Introduce un email válido</span>
+          }
+        </div>
+
+        <!-- Asunto -->
+        <div class="campo" [class.campo-error]="mostrarError(asuntoValido)">
+          <label>Asunto</label>
+          <select [(ngModel)]="asunto" name="asunto">
+            <option value="">Selecciona un asunto</option>
+            <option>Problema técnico</option>
+            <option>Sugerencia de mejora</option>
+            <option>Reporte de contenido</option>
+            <option>Colaboración</option>
+            <option>Otro</option>
+          </select>
+          @if (mostrarError(asuntoValido)) {
+          <span class="error-msg">Selecciona un asunto</span>
+          }
+        </div>
+
+        <!-- Mensaje -->
+        <div class="campo" [class.campo-error]="mostrarError(mensajeValido)">
+          <label>
+            Mensaje
+            <span class="char-hint">{{ mensaje.length }}/500</span>
+          </label>
+          <textarea placeholder="Cuéntanos cómo podemos ayudarte..." [(ngModel)]="mensaje" name="mensaje" rows="5"
+            maxlength="500"></textarea>
+          @if (mostrarError(mensajeValido)) {
+          <span class="error-msg">Mínimo 10 caracteres</span>
+          }
+        </div>
+
+        <!-- Privacidad -->
+        <div class="campo-check" [class.campo-check-error]="mostrarError(privacidad)">
+          <input type="checkbox" id="privacidad" [(ngModel)]="privacidad" name="privacidad" />
+          <label for="privacidad">
+            Acepto la política de privacidad y los términos de servicio.
+          </label>
+        </div>
+
+        <!-- Error validación -->
+        @if (intentoEnvio() && !formularioValido) {
+        <div class="form-error-banner">
+          ⚠️ Revisa los campos marcados antes de continuar.
+        </div>
+        }
+
+        <!-- Error de envío -->
+        @if (errorEnvio()) {
+        <div class="form-error-banner">
+          ⚠️ {{ errorEnvio() }}
+        </div>
+        }
+
+        <!-- Submit -->
+        <button type="submit" class="btn-primario btn-submit" [disabled]="enviando()">
+          @if (enviando()) {
+          <span class="btn-spin"></span> Enviando...
+          } @else {
+          Enviar mensaje
+          <svg class="btn-flecha" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M2 8h12M9 3l5 5-5 5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          }
+        </button>
+
+      </form>
+      }
+
+    </div>
+
+  </div>
+</section>

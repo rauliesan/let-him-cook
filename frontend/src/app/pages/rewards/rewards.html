@@ -1,0 +1,166 @@
+<!-- Hero con balance de coins -->
+<section class="rewards-hero">
+  <div class="contenedor rewards-hero-inner">
+    <div revela>
+      <h1>Let Him <span class="acento">Cook</span> Slots</h1>
+      <p class="rewards-subtitulo">Consigue las 50 insignias de comida. ¿Serás capaz de hallar al Dios Pastafarista?</p>
+    </div>
+    <div class="coins-display" revela [retardo]="100">
+      <span class="coins-icono">🪙</span>
+      <span class="coins-cantidad">{{ coins() | number }}</span>
+      <span class="coins-label">coins</span>
+    </div>
+  </div>
+</section>
+
+<!-- Zona de la Máquina Tragaperras -->
+<section class="slot-machine-seccion">
+  <div class="contenedor">
+    
+    <div class="slot-machine-container" [class.is-spinning]="girando()" revela [retardo]="150">
+      <div class="slot-machine-frame">
+        <div class="slot-machine-header">
+          <div class="light"></div>
+          <div class="light"></div>
+          <div class="light"></div>
+          <span class="logo">LHC SLOTS</span>
+          <div class="light"></div>
+          <div class="light"></div>
+          <div class="light"></div>
+        </div>
+
+        <div class="reels-container">
+          <div class="reel" *ngFor="let reel of reels; let i = index">
+            <div class="reel-window">
+              <div class="reel-strip" [class.spinning]="girando()">
+                <!-- Mostramos varios iconos para el efecto de giro, el real es el primero -->
+                <span class="icon">{{ reel() }}</span>
+                <span class="icon">🍔</span>
+                <span class="icon">🍕</span>
+                <span class="icon">🥗</span>
+                <span class="icon">🍣</span>
+                <span class="icon">🍜</span>
+                <span class="icon">{{ reel() }}</span>
+              </div>
+            </div>
+            <div class="reel-shading"></div>
+          </div>
+        </div>
+
+        <div class="slot-machine-footer">
+          <div class="win-line"></div>
+        </div>
+      </div>
+
+      <div class="slot-machine-handle" (click)="girar()" [class.pulled]="girando()">
+        <div class="handle-rod"></div>
+        <div class="handle-knob"></div>
+      </div>
+    </div>
+
+    <div class="slot-acciones" revela [retardo]="250">
+      <button class="btn-spin" [disabled]="!puedeGirar()" (click)="girar()">
+        @if (girando()) {
+          <span class="spinner-dot"></span> Girando...
+        } @else {
+          TIRAR <span class="btn-coste">🪙 {{ COSTE_TIRADA }}</span>
+        }
+      </button>
+      @if (coins() < COSTE_TIRADA && !girando()) {
+        <p class="sin-coins">Necesitas más monedas para jugar</p>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- Overlay sin premio -->
+@if (mostrarSinPremio()) {
+  <div class="premio-overlay" (click)="cerrarSinPremio()">
+    <div class="sin-premio-card" (click)="$event.stopPropagation()">
+      <span class="sin-premio-emoji">😔</span>
+      <h2 class="sin-premio-titulo">¡Mala suerte!</h2>
+      <p class="sin-premio-desc">Esta vez no ha tocado nada. ¡Prueba de nuevo!</p>
+      <button class="btn-recoger" (click)="cerrarSinPremio()">Intentar de nuevo</button>
+    </div>
+  </div>
+}
+
+<!-- Overlay de premio ganado -->
+@if (mostrarPremio() && premioGanado(); as premio) {
+  <div class="premio-overlay" (click)="recogerPremio()">
+    <div class="confetti-container">
+      <div class="confetti" *ngFor="let i of [1,2,3,4,5,6,7,8,9,10,11,12]" [style.--i]="i"></div>
+    </div>
+
+    <div class="premio-card" (click)="$event.stopPropagation()">
+      <div class="premio-brillo"></div>
+      <span class="premio-emoji">{{ premio.emoji }}</span>
+      <span class="premio-rareza rareza-{{ premio.rareza }}">{{ etiquetaRareza(premio.rareza) }}</span>
+      <h2 class="premio-nombre">{{ premio.nombre }}</h2>
+      <p class="premio-desc">{{ premio.descripcion }}</p>
+      <button class="btn-recoger" (click)="recogerPremio()">Añadir a mi colección</button>
+    </div>
+  </div>
+}
+
+<!-- Inventario de Premios Conseguidos -->
+<section class="historial-seccion">
+  <div class="contenedor">
+    <h2 class="seccion-titulo" revela>Mi Colección</h2>
+
+    @if (misPremios().length === 0 && !cargandoMisPremios()) {
+      <div class="coleccion-vacia" revela>
+        <span class="emoji-vacio">🍽️</span>
+        <p>Tu vitrina está vacía. ¡Prueba suerte en la máquina!</p>
+      </div>
+    } @else {
+      <div class="coleccion-grid">
+        @for (premio of misPremios(); track premio.id; let i = $index) {
+          <div class="badge-card" revela [retardo]="(i % 5) * 50" [class.new]="i >= misPremios().length - 5">
+            <div class="badge-icon">
+              <span>{{ premio.emoji }}</span>
+            </div>
+            <div class="badge-info">
+              <span class="badge-nombre">{{ premio.nombre }}</span>
+              <span class="badge-rareza rareza-{{ premio.rareza }}">{{ etiquetaRareza(premio.rareza) }}</span>
+            </div>
+          </div>
+        }
+      </div>
+
+      @if (hayMasPremios()) {
+        <div class="ver-mas-container" revela>
+          <button class="btn-ver-mas" (click)="cargarMisPremios(false)" [disabled]="cargandoMisPremios()">
+            @if (cargandoMisPremios()) {
+              Cargando...
+            } @else {
+              Mostrar más
+            }
+          </button>
+        </div>
+      }
+    }
+  </div>
+</section>
+
+<!-- Catálogo de Probabilidades -->
+<section class="catalogo-seccion">
+  <div class="contenedor">
+    <header class="catalogo-header" revela>
+      <h2 class="seccion-titulo">Probabilidades</h2>
+      <p>Consigue los 3 símbolos iguales para ganar el premio.</p>
+    </header>
+
+    <div class="catalogo-grid">
+      @for (p of catalogoPremios(); track p.id; let i = $index) {
+        <div class="catalogo-item rareza-{{ p.rareza }}" revela [retardo]="(i % 10) * 30">
+          <span class="item-emoji">{{ p.emoji }}</span>
+          <div class="item-info">
+            <span class="item-nombre">{{ p.nombre }}</span>
+            <span class="item-prob">{{ (p.probabilidad * 100) | number:'1.0-3' }}%</span>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>

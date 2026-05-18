@@ -1,0 +1,427 @@
+<!-- Estado de carga inicial -->
+@if (cargando()) {
+  <div class="estado-carga">
+    <div class="carga-spinner"></div>
+    <p>Cargando perfil...</p>
+  </div>
+}
+
+<!-- Error al cargar -->
+@if (!cargando() && errorCarga()) {
+  <div class="estado-error">
+    <p>{{ errorCarga() }}</p>
+    <button class="btn-primario btn-sm" (click)="cargarDatos()">Reintentar</button>
+  </div>
+}
+
+<!-- Contenido principal del perfil -->
+@if (!cargando() && !errorCarga() && usuario()) {
+
+  <!-- Cabecera del perfil con portada y avatar -->
+  <section class="perfil-header">
+    <div class="portada">
+      <div class="portada-patron"></div>
+      <svg class="portada-ondas" viewBox="0 0 1440 60" preserveAspectRatio="none">
+        <path d="M0,40 C360,0 720,60 1080,20 S1440,40 1440,40 L1440,60 L0,60 Z" fill="var(--crema)"/>
+      </svg>
+    </div>
+
+    <div class="contenedor perfil-info">
+      <div class="avatar-wrapper">
+        <!-- Anillo de progreso XP (SVG circular) -->
+        <svg class="xp-ring" viewBox="0 0 132 132" aria-hidden="true">
+          <circle class="xp-ring-track" cx="66" cy="66" r="62"/>
+          <circle class="xp-ring-progress"
+                  cx="66" cy="66" r="62"
+                  [attr.stroke-dasharray]="RING_CIRCUMFERENCE"
+                  [attr.stroke-dashoffset]="xpRingOffset()"/>
+        </svg>
+
+        <!-- Foto si existe, iniciales si no -->
+        @if (usuario()?.fotoUrl) {
+          <img class="avatar avatar-img" [src]="usuario()!.fotoUrl!" [alt]="usuario()!.nombre" />
+        } @else {
+          <div class="avatar">{{ iniciales() }}</div>
+        }
+        <div class="nivel-badge">Nv.{{ usuario()?.nivel }}</div>
+
+        <!-- Botón de editar foto -->
+        <button class="avatar-editar"
+                aria-label="Cambiar foto de perfil"
+                [disabled]="subiendoFoto()"
+                (click)="abrirSelectorFoto()">
+          @if (subiendoFoto()) {
+            <span class="foto-spinner"></span>
+          } @else {
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="1.5" y="4.5" width="13" height="9" rx="2" stroke-linecap="round"/>
+              <path d="M5.5 4.5L6.5 2.5h3l1 2"/>
+              <circle cx="8" cy="9" r="2.5"/>
+            </svg>
+          }
+        </button>
+
+        <!-- Input file oculto -->
+        <input id="foto-input"
+               type="file"
+               accept="image/*"
+               style="display:none"
+               (change)="onFotoSeleccionada($event)" />
+
+        <!-- Error de foto -->
+        @if (errorFoto()) {
+          <div class="foto-error">{{ errorFoto() }}</div>
+        }
+      </div>
+
+      <div class="perfil-datos">
+        <div class="perfil-nombre-fila">
+          <h1>{{ usuario()?.nombre }}</h1>
+          <span class="badge-titulo">{{ tituloPorNivel() }}</span>
+          <span class="badge-online">En línea</span>
+        </div>
+        <p class="perfil-bio">{{ usuario()?.email }}</p>
+
+        <!-- Modelo IA seleccionado como etiqueta si existe -->
+        @if (usuario()?.iaModeloSeleccionadoNombre) {
+          <div class="perfil-prefs">
+            <span class="pref-tag">🤖 {{ usuario()?.iaModeloSeleccionadoNombre }}</span>
+          </div>
+        }
+
+        <!-- Estadísticas reales: puntos y logros -->
+        <div class="perfil-stats">
+          <div class="stat-item">
+            <strong>{{ formatNum(usuario()?.puntos ?? 0) }}</strong>
+            <span>Puntos</span>
+          </div>
+          <div class="stat-item">
+            <strong>{{ misLogros().length }}</strong>
+            <span>Logros</span>
+          </div>
+          <div class="stat-item">
+            <strong>{{ misRecompensas().length }}</strong>
+            <span>Premios</span>
+          </div>
+          <div class="stat-item">
+            <strong>Nv.{{ usuario()?.nivel }}</strong>
+            <span>Nivel</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="perfil-acciones">
+        <button class="btn-secundario" (click)="compartirPerfil()">Compartir</button>
+      </div>
+    </div>
+
+    <!-- Barra de experiencia -->
+    <div class="contenedor">
+      <div class="perfil-resumen-grid">
+        <div class="resumen-card resumen-exp">
+          <div class="resumen-card-titulo">
+            <span class="resumen-icono">⚡</span>
+            Experiencia
+          </div>
+          <div class="exp-barra-wrapper">
+            <div class="exp-info">
+              <span>Nivel {{ usuario()?.nivel }}</span>
+              <span class="exp-xp">{{ xpEnNivel() }} / 100 XP</span>
+              <span>Nivel {{ (usuario()?.nivel ?? 0) + 1 }}</span>
+            </div>
+            <div class="exp-barra">
+              <!-- Ancho controlado desde Angular, no desde CSS -->
+              <div class="exp-progreso" [style.width.%]="progresoPuntos()"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Configuración IA -->
+        <div class="resumen-card resumen-ia">
+          <div class="resumen-card-titulo">
+            <span class="resumen-icono">🤖</span>
+            Asistente IA
+            @if (!editandoIa()) {
+              <button class="ia-edit-btn" (click)="abrirEditarIa()">
+                {{ usuario()?.iaCustomConfigured ? '✏️ Editar' : '+ Configurar' }}
+              </button>
+            }
+          </div>
+
+          @if (!editandoIa()) {
+            <!-- Estado actual -->
+            @if (usuario()?.iaCustomConfigured) {
+              <div class="ia-status-badge ia-custom">🔑 IA personalizada</div>
+              <div class="ia-detail">{{ usuario()?.iaCustomModelo || 'Modelo personalizado' }}</div>
+              @if (usuario()?.iaCustomEndpoint) {
+                <div class="ia-detail ia-sm">{{ usuario()?.iaCustomEndpoint }}</div>
+              }
+              <button class="ia-reset-btn" (click)="eliminarIaConfig()">
+                Usar IA de la aplicación
+              </button>
+            } @else if (usuario()?.iaModeloSeleccionadoNombre) {
+              <div class="ia-status-badge">🤖 {{ usuario()?.iaModeloSeleccionadoNombre }}</div>
+              <div class="ia-detail ia-sm">Modelo seleccionado de la aplicación</div>
+              <button class="ia-reset-btn" (click)="eliminarIaConfig()">
+                Restablecer a por defecto
+              </button>
+            } @else {
+              <div class="ia-status-badge ia-default">⚡ IA Predeterminada</div>
+              <div class="ia-detail ia-sm">La mejor IA gratuita elegida por la aplicación</div>
+            }
+          } @else {
+            <!-- Selector de Modelos de la Aplicación -->
+            <div class="ia-modelos-bd">
+              <h4>Modelos disponibles en la aplicación</h4>
+              @if (cargandoModelos()) {
+                 <div class="foto-spinner"></div>
+              } @else {
+                 <div class="modelos-lista">
+                    <button class="modelo-btn" 
+                            [class.activo]="!usuario()?.iaModeloSeleccionadoNombre && !usuario()?.iaCustomConfigured"
+                            (click)="seleccionarModeloBD('')">
+                       <span>⚡ Automático</span>
+                       <small>Recomendado</small>
+                    </button>
+                    @for (m of modelosBd(); track m.id) {
+                       <button class="modelo-btn" 
+                               [class.activo]="usuario()?.iaModeloSeleccionadoNombre === m.nombreModelo && !usuario()?.iaCustomConfigured"
+                               (click)="seleccionarModeloBD(m.id)">
+                          <span>{{ m.apiNombreServicio }}</span>
+                          <small>{{ m.nombreModelo }}</small>
+                       </button>
+                    }
+                 </div>
+              }
+            </div>
+
+            <hr style="opacity: 0.2; margin: 15px 0;">
+
+            <!-- Formulario de edición Manual -->
+            <h4>O utiliza tu propia clave API (Avanzado)</h4>
+            @if (errorIa()) {
+              <div class="ia-error">{{ errorIa() }}</div>
+            }
+            <div class="ia-presets">
+              <span>Preset:</span>
+              <button (click)="setPreset('deepseek')">DeepSeek</button>
+              <button (click)="setPreset('openai')">OpenAI</button>
+              <button (click)="setPreset('openrouter')">OpenRouter</button>
+              <button (click)="setPreset('ollama')">Ollama local</button>
+            </div>
+            <div class="ia-f-group">
+              <label>API Key <span class="ia-req">*</span></label>
+              <input type="password" [(ngModel)]="iaApiKeyInput" placeholder="sk-..." class="ia-input" />
+            </div>
+            <div class="ia-f-group">
+              <label>Endpoint <span class="ia-opt">(opcional)</span></label>
+              <input type="text" [(ngModel)]="iaEndpointInput"
+                     placeholder="https://api.deepseek.com/v1/chat/completions" class="ia-input" />
+            </div>
+            <div class="ia-f-group">
+              <label>Modelo <span class="ia-opt">(opcional)</span></label>
+              <input type="text" [(ngModel)]="iaModeloInput" placeholder="deepseek-chat" class="ia-input" />
+            </div>
+            <div class="ia-form-actions">
+              <button class="ia-save" (click)="guardarIaConfig()"
+                      [disabled]="guardandoIa() || !iaApiKeyInput.trim()">
+                {{ guardandoIa() ? 'Guardando...' : 'Guardar API Key' }}
+              </button>
+              <button class="ia-cancel" (click)="editandoIa.set(false)">Cancelar</button>
+            </div>
+          }
+        </div>
+
+        <!-- Enlace a rewards con total de premios -->
+        <a routerLink="/rewards" class="resumen-card resumen-coins">
+          <div class="resumen-card-titulo">
+            <span class="resumen-icono">🎁</span>
+            Premios
+          </div>
+          <div class="coins-grande">{{ misRecompensas().length }}</div>
+          <span class="coins-cta">Ir a la Ruleta →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pestañas -->
+  <div class="tabs-wrapper">
+    <div class="contenedor">
+      <nav class="tabs">
+        @for (tab of tabs(); track tab.id) {
+          <button class="tab"
+                  [class.activa]="tabActiva() === tab.id"
+                  (click)="tabActiva.set(tab.id)">
+            <span class="tab-icono">{{ tab.icono }}</span>
+            {{ tab.label }}
+            <span class="tab-cantidad">{{ tab.cantidad }}</span>
+          </button>
+        }
+      </nav>
+    </div>
+  </div>
+
+  <!-- Contenido de cada tab -->
+  <div class="contenedor perfil-contenido">
+
+    <!-- Tab: Logros -->
+    @if (tabActiva() === 'logros') {
+      <div class="tab-panel">
+        <div revela>
+          <h2>Logros</h2>
+          <p class="panel-desc">
+            {{ misLogros().length }} de {{ todosLogros().length }} desbloqueados.
+            Los que están en gris aún no los has conseguido.
+          </p>
+        </div>
+
+        @if (todosLogros().length === 0) {
+          <div class="sin-resultados">
+            <p>Cargando logros...</p>
+          </div>
+        } @else {
+          <div class="logros-grid">
+            @for (logro of todosLogros(); track logro.id; let i = $index) {
+              <div class="logro-card"
+                   [class.bloqueado]="!tieneLogro(logro.id)"
+                   revela [retardo]="i * 60">
+                <div class="logro-icono"
+                     [style.background]="tieneLogro(logro.id) ? 'var(--primario)' : '#b0b0b0'">
+                  <span>{{ logro.iconoUrl ?? '🏆' }}</span>
+                </div>
+                <div class="logro-info">
+                  <strong>{{ logro.nombre }}</strong>
+                  <p>{{ logro.descripcion }}</p>
+                  @if (tieneLogro(logro.id)) {
+                    <span class="logro-fecha">✓ {{ formatearFecha(fechaLogro(logro.id)) }}</span>
+                  } @else {
+                    <span class="logro-bloqueado-label">🔒 Bloqueado</span>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Tab: Mis recetas -->
+    @if (tabActiva() === 'recetas') {
+      <div class="tab-panel">
+        <div revela>
+          <h2>Mis recetas</h2>
+          <p class="panel-desc">{{ misRecetas().length }} recetas publicadas.</p>
+        </div>
+
+        @if (misRecetas().length === 0) {
+          <div class="sin-resultados">
+            <p>Aún no has publicado ninguna receta. Prueba el asistente de cocina.</p>
+            <a routerLink="/cocinar" class="btn-primario btn-sm">Cocinar</a>
+          </div>
+        } @else {
+          <div class="mis-recetas-grid">
+            @for (r of misRecetas(); track r.id; let i = $index) {
+              <div class="mis-receta-card" revela [retardo]="i * 60">
+                <div class="mis-receta-info">
+                  <span class="mis-receta-cat">{{ r.tipoComidaNombre ?? 'Sin categoría' }}</span>
+                  <h3 [routerLink]="['/receta', r.id]" style="cursor:pointer">{{ r.nombre }}</h3>
+                  <div class="mis-receta-meta">
+                    <span class="badge-dif-sm">{{ etiquetaDificultad(r.dificultad) }}</span>
+                    @if (r.tiempoPreparacion) {
+                      <span>{{ r.tiempoPreparacion }} min</span>
+                    }
+                    <span>{{ r.totalLikes }} ❤️</span>
+                  </div>
+                </div>
+                <button class="btn-compartir-foro" (click)="abrirCompartirForo(r)">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14">
+                    <circle cx="13" cy="3" r="2"/>
+                    <circle cx="3" cy="8" r="2"/>
+                    <circle cx="13" cy="13" r="2"/>
+                    <path d="M5 7l6-3M5 9l6 3" stroke-linecap="round"/>
+                  </svg>
+                  Subir al foro
+                </button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Tab: Recompensas -->
+    @if (tabActiva() === 'recompensas') {
+      <div class="tab-panel">
+        <div revela>
+          <h2>Premios ganados</h2>
+          <p class="panel-desc">
+            {{ misRecompensas().length }} premios en tu colección.
+          </p>
+        </div>
+
+        @if (misRecompensas().length === 0) {
+          <div class="sin-resultados">
+            <p>Aún no has ganado recompensas. Prueba la ruleta.</p>
+            <a routerLink="/rewards" class="btn-primario btn-sm">Ir a Rewards</a>
+          </div>
+        } @else {
+          <div class="logros-grid">
+            @for (ur of misRecompensas(); track ur.id; let i = $index) {
+              <div class="logro-card" revela [retardo]="i * 80">
+                <div class="logro-icono" style="background: var(--amarillo)">
+                  <span>🎁</span>
+                </div>
+                <div class="logro-info">
+                  <strong>{{ ur.recompensa.nombre }}</strong>
+                  <p>{{ ur.recompensa.descripcion }}</p>
+                  <span class="logro-fecha">{{ formatearFecha(ur.fechaObtenida) }}</span>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+
+  </div>
+
+}
+
+<!-- Modal: compartir receta en el foro -->
+@if (recetaACompartir()) {
+  <div class="modal-overlay" (click)="cerrarModalForo()">
+    <div class="modal-foro" (click)="$event.stopPropagation()">
+      @if (foroExito()) {
+        <div class="modal-exito">
+          <span class="exito-icono">✅</span>
+          <p>¡Publicado en el foro!</p>
+        </div>
+      } @else {
+        <h3>Subir al foro</h3>
+        <p class="modal-receta-nombre">{{ recetaACompartir()?.nombre }}</p>
+
+        @if (errorForo()) {
+          <div class="modal-error">{{ errorForo() }}</div>
+        }
+
+        <div class="modal-campo">
+          <label>Título del post</label>
+          <input type="text" [(ngModel)]="foroTitulo" maxlength="120" class="modal-input" />
+        </div>
+        <div class="modal-campo">
+          <label>Descripción <span class="opt">(opcional)</span></label>
+          <textarea [(ngModel)]="foroContenido" maxlength="2000" rows="3" class="modal-input"></textarea>
+        </div>
+
+        <div class="modal-acciones">
+          <button class="btn-primario btn-sm" (click)="compartirEnForo()"
+                  [disabled]="publicandoEnForo() || !foroTitulo.trim()">
+            {{ publicandoEnForo() ? 'Publicando...' : 'Publicar' }}
+          </button>
+          <button class="btn-secundario btn-sm" (click)="cerrarModalForo()">Cancelar</button>
+        </div>
+      }
+    </div>
+  </div>
+}

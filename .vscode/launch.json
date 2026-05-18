@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-ApplicationLauncher<LetHimCook>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.daw.ApplicationLauncher",
+            "projectName": "LetHimCook",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
