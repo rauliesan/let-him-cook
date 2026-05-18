@@ -11,23 +11,13 @@ import com.daw.entities.Usuario;
 
 import lombok.RequiredArgsConstructor;
 
-/**
- * Adaptador que envuelve la entidad Usuario para que sea compatible
- * con el contrato UserDetails de Spring Security.
- *
- *
- * @author IES Almudeyne - Raúl Liébana Sánchez
- */
+/** Adaptador que envuelve la entidad Usuario en el contrato UserDetails de Spring Security. */
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
 
     private final Usuario usuario;
 
-    /**
-     * Devuelve la autoridad del usuario basándose en su rol.
-     * Spring Security requiere el prefijo ROLE_ para usar
-     * hasRole().
-     */
+    // Spring Security requiere el prefijo ROLE_ para usar hasRole()
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + usuario.getRol().name()));
@@ -38,9 +28,6 @@ public class CustomUserDetails implements UserDetails {
         return usuario.getPasswordHash();
     }
 
-    /**
-     * Se utiliza el email como identificador de autenticación.
-     */
     @Override
     public String getUsername() {
         return usuario.getEmail();
@@ -66,13 +53,6 @@ public class CustomUserDetails implements UserDetails {
         return true;
     }
 
-    /**
-     * Proporciona acceso a la entidad Usuario subyacente,
-     * útil cuando se necesitan campos adicionales fuera del contrato de
-     * UserDetails.
-     *
-     * @return la entidad Usuario
-     */
     public Usuario getUsuario() {
         return usuario;
     }

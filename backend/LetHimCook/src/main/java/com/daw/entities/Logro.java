@@ -1,4 +1,4 @@
-package com.daw.entities;
+﻿package com.daw.entities;
 
 import java.util.Set;
 import java.util.UUID;
@@ -16,7 +16,6 @@ import lombok.Data;
 /**
  * Clase para la gestión de logros que puede obtener el usuario.
  *
- * @author IES Almudeyne - Raúl Liébana Sánchez
  */
 @Entity
 @Table(name = "logro")

@@ -1,4 +1,4 @@
-package com.daw.exceptions;
+﻿package com.daw.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * (por ejemplo, un usuario con un email que ya está registrado).
  * Devuelve un HTTP 409 Conflict.
  *
- * @author IES Almudeyne - Raúl Liébana Sánchez
  */
 @ResponseStatus(HttpStatus.CONFLICT)
 public class RecursoDuplicadoException extends RuntimeException {

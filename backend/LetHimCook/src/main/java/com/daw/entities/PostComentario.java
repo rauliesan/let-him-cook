@@ -1,4 +1,4 @@
-package com.daw.entities;
+﻿package com.daw.entities;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -19,7 +19,6 @@ import lombok.Data;
 /**
  * Comentario dentro de un post del foro.
  *
- * @author IES Almudeyne - Let Him Cook
  */
 @Entity
 @Table(name = "post_comentario")

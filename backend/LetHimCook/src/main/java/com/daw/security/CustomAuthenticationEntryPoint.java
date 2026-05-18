@@ -1,4 +1,4 @@
-package com.daw.security;
+﻿package com.daw.security;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -16,15 +16,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-/**
- * Punto de entrada personalizado para manejar errores de autenticación (HTTP
- * 401).
- *
- * Se invoca cuando un usuario no autenticado intenta acceder a un recurso
- * protegido.
- *
- * @author IES Almudeyne - Raúl Liébana Sánchez
- */
+/** Devuelve 401 en JSON cuando un usuario no autenticado accede a un recurso protegido. */
 @Component
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 

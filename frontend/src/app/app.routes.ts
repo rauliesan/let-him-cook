@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+﻿import { Routes } from '@angular/router';
 import { Landing } from './pages/landing/landing';
 import { Explorar } from './pages/explorar/explorar';
 import { Perfil } from './pages/perfil/perfil';
@@ -43,7 +43,7 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/perfil-publico/perfil-publico').then(m => m.PerfilPublico),
     canActivate: [authGuard],
   },
-  /* Panel de administración — solo ADMIN */
+  /* Panel de administración, solo ADMIN */
   {
     path: 'admin',
     loadComponent: () => import('./pages/admin/admin').then(m => m.Admin),

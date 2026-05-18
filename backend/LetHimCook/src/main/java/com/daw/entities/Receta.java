@@ -1,4 +1,4 @@
-package com.daw.entities;
+﻿package com.daw.entities;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -23,11 +23,6 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import org.hibernate.annotations.Formula;
 
-/**
- * Clase para gestionar las recetas creadas.
- *
- * @author IES Almudeyne - Raúl Liébana Sánchez
- */
 @Entity
 @Table(name = "receta")
 @Data
@@ -49,11 +44,8 @@ public class Receta {
 	@Column(columnDefinition = "TEXT")
 	private String instrucciones;
 	
-	/**
-	 * Tiempo de preparación en minutos.
-	 */
 	@Column(name = "tiempo_preparacion")
-	private Integer tiempoPreparacion;
+	private Integer tiempoPreparacion; // en minutos
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name= "dificultad")
@@ -73,7 +65,7 @@ public class Receta {
 	@Column(name = "fecha_creacion", nullable = false, updatable = false)
 	private ZonedDateTime fechaCreacion;
 	
-	/* Categoría principal — determina el color de la tarjeta */
+	/* Categoría principal, determina el color de la tarjeta */
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "tipo_comida_id")
 	private TipoComida tipoComida;
@@ -87,9 +79,6 @@ public class Receta {
 	@JoinColumn(name = "tipo_comida3_id")
 	private TipoComida tipoComida3;
 	
-	/**
-	 * Usuario creador de la receta.
-	 */
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "usuario_creador_id", nullable = false)
 	private Usuario usuario;
@@ -106,7 +95,7 @@ public class Receta {
 	
 	
 	/* Número de usuarios que han marcado esta receta como favorita.
-	   Se calcula mediante subconsulta SQL — no es una columna real en la BD. */
+	   Se calcula mediante subconsulta SQL, no es una columna real en la BD. */
 	@Formula("(SELECT COUNT(*) FROM favorito_receta fr WHERE fr.receta_id = id)")
 	private long totalLikes;
 

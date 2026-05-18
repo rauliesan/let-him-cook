@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, OnInit, computed, signal } from '@angular/core';
+﻿import { Component, ElementRef, HostListener, OnInit, computed, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Revela } from '../../shared/revela/revela';
@@ -17,7 +17,7 @@ import { AuthService } from '../../services/auth.service';
 export class Landing implements OnInit {
   faqAbierta = signal<number | null>(null);
 
-  /* Métricas crudas — CountUp las anima y formatea en el template */
+  /* Métricas crudas, CountUp las anima y formatea en el template */
   totalUsuariosRaw = signal<number>(0);
   totalRecetasRaw  = signal<number>(0);
 
@@ -34,7 +34,7 @@ export class Landing implements OnInit {
     new Map(this.categorias().map(c => [c.nombre, c]))
   );
 
-  /* Recetas populares — las 6 más recientes de la BD */
+  /* Recetas populares, las 6 más recientes de la BD */
   recetasPopulares = signal<RecetaResponse[]>([]);
   cargandoRecetas  = signal(true);
 
@@ -88,7 +88,7 @@ export class Landing implements OnInit {
     });
   }
 
-  /* Emoji de la categoría — usa el iconoUrl almacenado en la BD */
+  /* Emoji de la categoría, usa el iconoUrl almacenado en la BD */
   emojiCategoria(nombre: string): string {
     return this.categoriasMapa().get(nombre)?.iconoUrl ?? '🍽️';
   }
@@ -141,7 +141,7 @@ export class Landing implements OnInit {
 
     const delta = this.esFavorito(recetaId) ? -1 : 1;
 
-    /* Actualizar contador en el array de recetas — CountUp lo animará */
+    /* Actualizar contador en el array de recetas, CountUp lo animará */
     this.recetasPopulares.update(lista =>
       lista.map(r => r.id === recetaId
         ? { ...r, totalLikes: Math.max(0, r.totalLikes + delta) }

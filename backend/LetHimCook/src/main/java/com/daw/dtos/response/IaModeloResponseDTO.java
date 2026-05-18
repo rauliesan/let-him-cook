@@ -1,4 +1,4 @@
-package com.daw.dtos.response;
+﻿package com.daw.dtos.response;
 
 import lombok.Data;
 import java.util.UUID;
@@ -6,7 +6,6 @@ import java.util.UUID;
 /**
  * ResponseDTO para la entidad IaModelo.
  *
- * @author IES Almudeyne - Raúl Liébana Sánchez
  */
 @Data
 public class IaModeloResponseDTO {

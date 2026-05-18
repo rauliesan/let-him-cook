@@ -10,15 +10,8 @@ import com.daw.repositories.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Implementación de UserDetailsService que carga usuarios desde la base
- * de datos
- * a través de UsuarioRepository.
- *
- * Spring Security invoca #loadUserByUsername(String) durante la
- * autenticación
- * y en el filtro JWT para reconstruir el contexto de seguridad.
- *
- * @author IES Almudeyne - Raúl Liébana Sánchez
+ * Carga usuarios desde la BD para Spring Security.
+ * Se invoca durante el login y en el filtro JWT para reconstruir el contexto de seguridad.
  */
 @Service
 @RequiredArgsConstructor
@@ -26,13 +19,6 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private final UsuarioRepository usuarioRepository;
 
-    /**
-     * Busca un usuario por email y lo envuelve en CustomUserDetails.
-     *
-     * @param email email del usuario (usado como username)
-     * @return UserDetails del usuario encontrado
-     * @throws UsernameNotFoundException si no existe un usuario con ese email
-     */
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return usuarioRepository.findByEmail(email)

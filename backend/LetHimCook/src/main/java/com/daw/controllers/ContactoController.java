@@ -13,10 +13,7 @@ import com.daw.dtos.request.ContactoRequestDTO;
 
 import jakarta.validation.Valid;
 
-/**
- * Endpoint público para recibir mensajes del formulario de contacto
- * y reenviarlos al correo de soporte mediante Gmail SMTP.
- */
+/** Recibe mensajes del formulario de contacto y los reenvía al correo de soporte (Gmail SMTP). */
 @RestController
 @RequestMapping("/contacto")
 public class ContactoController {

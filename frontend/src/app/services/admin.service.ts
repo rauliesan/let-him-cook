@@ -2,9 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-/* ═══════════════════════════════════════════
-   Interfaces de respuesta del backend
-   ═══════════════════════════════════════════ */
+// Interfaces de respuesta del backend
 
 export interface ApiResponse {
   id: string;
@@ -86,9 +84,7 @@ export interface Pagina<T> {
   number: number;
 }
 
-/* ═══════════════════════════════════════════
-   Interfaces de request
-   ═══════════════════════════════════════════ */
+// Interfaces de request
 
 export interface ApiRequest {
   nombreServicio: string;
@@ -143,11 +139,7 @@ export interface RecetaRequest {
 
 const API = 'http://localhost:9999';
 
-/**
- * Servicio consolidado para todas las operaciones de administración.
- * Agrupa los CRUDs de: APIs, Modelos IA, Logros, Recompensas,
- * Supermercados, Tipos de Comida, Usuarios y Recetas.
- */
+// CRUD consolidado para el panel de administración
 @Injectable({ providedIn: 'root' })
 export class AdminService {
 

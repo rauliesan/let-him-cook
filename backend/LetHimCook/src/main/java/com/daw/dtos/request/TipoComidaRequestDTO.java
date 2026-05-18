@@ -1,4 +1,4 @@
-package com.daw.dtos.request;
+﻿package com.daw.dtos.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -6,7 +6,6 @@ import lombok.Data;
 /**
  * RequestDTO para que un administrador pueda crear o editar los Tipos de Comida.
  *
- * @author IES Almudeyne - Raúl Liébana Sánchez
  */
 @Data
 public class TipoComidaRequestDTO {

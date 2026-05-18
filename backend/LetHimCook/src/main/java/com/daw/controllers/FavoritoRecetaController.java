@@ -1,4 +1,4 @@
-package com.daw.controllers;
+﻿package com.daw.controllers;
 
 import java.util.List;
 import java.util.UUID;
@@ -26,16 +26,6 @@ import com.daw.services.FavoritoRecetaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-/**
- * Controlador para la gestión de recetas favoritas.
- *
- * GET    /favoritos-recetas                  → admin, lista todos
- * GET    /favoritos-recetas/mis-favoritos    → favoritos del usuario autenticado (paginado)
- * POST   /favoritos-recetas                  → agrega una receta a favoritos
- * DELETE /favoritos-recetas/{recetaId}       → elimina una receta de favoritos (por recetaId)
- *
- * @author IES Almudeyne - Raúl Liébana Sánchez
- */
 @RestController
 @RequestMapping("/favoritos-recetas")
 @RequiredArgsConstructor

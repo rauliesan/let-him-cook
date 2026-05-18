@@ -1,4 +1,4 @@
-package com.daw.controllers;
+﻿package com.daw.controllers;
 
 import java.util.List;
 import java.util.UUID;
@@ -22,11 +22,6 @@ import com.daw.services.RecompensaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-/**
- * Controlador para la gestión de Recompensas.
- *
- * @author IES Almudeyne - Raúl Liébana Sánchez
- */
 @RestController
 @RequestMapping("/recompensas")
 @RequiredArgsConstructor

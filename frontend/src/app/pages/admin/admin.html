@@ -1,4 +1,4 @@
-<section class="admin-page">
+﻿<section class="admin-page">
   <div class="contenedor">
 
     <!-- Cabecera -->
@@ -75,7 +75,7 @@
           </div>
         }
 
-        <!-- ═══ TABLA USUARIOS ═══ -->
+        <!-- TABLA USUARIOS -->
         @if (tabActiva() === 'usuarios' && !cargando()) {
           <div class="admin-tabla-wrap">
             <table class="admin-tabla">
@@ -117,7 +117,7 @@
           </div>
         }
 
-        <!-- ═══ TABLA RECETAS ═══ -->
+        <!-- TABLA RECETAS -->
         @if (tabActiva() === 'recetas' && !cargando()) {
           <div class="admin-tabla-wrap">
             <table class="admin-tabla">
@@ -169,7 +169,7 @@
           </div>
         }
 
-        <!-- ═══ TABLA CATEGORÍAS ═══ -->
+        <!-- TABLA CATEGORÍAS -->
         @if (tabActiva() === 'categorias' && !cargando()) {
           <div class="admin-tabla-wrap">
             <table class="admin-tabla">
@@ -201,7 +201,7 @@
         }
 
 
-        <!-- ═══ TABLA LOGROS ═══ -->
+        <!-- TABLA LOGROS -->
         @if (tabActiva() === 'logros' && !cargando()) {
           <div class="admin-tabla-wrap">
             <table class="admin-tabla">
@@ -232,7 +232,7 @@
           </div>
         }
 
-        <!-- ═══ TABLA RECOMPENSAS ═══ -->
+        <!-- TABLA RECOMPENSAS -->
         @if (tabActiva() === 'recompensas' && !cargando()) {
           <div class="admin-tabla-wrap">
             <table class="admin-tabla">
@@ -263,7 +263,7 @@
           </div>
         }
 
-        <!-- ═══ TABLA APIs ═══ -->
+        <!-- TABLA APIs -->
         @if (tabActiva() === 'apis' && !cargando()) {
           <div class="admin-tabla-wrap">
             <table class="admin-tabla">
@@ -294,7 +294,7 @@
           </div>
         }
 
-        <!-- ═══ TABLA MODELOS IA ═══ -->
+        <!-- TABLA MODELOS IA -->
         @if (tabActiva() === 'modelos-ia' && !cargando()) {
           <div class="admin-tabla-wrap">
             <table class="admin-tabla">
@@ -330,9 +330,7 @@
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════════
-     MODAL DE FORMULARIO
-     ═══════════════════════════════════════════ -->
+<!-- MODAL DE FORMULARIO -->
 @if (modalAbierto()) {
   <div class="modal-backdrop" (click)="cerrarModal()"></div>
   <div class="modal">
@@ -343,7 +341,7 @@
 
     <div class="modal-body">
 
-      <!-- ── Form: Usuarios ── -->
+      <!-- Form: Usuarios -->
       @if (modalEntidad() === 'usuarios') {
         <label class="campo">
           <span>Nombre *</span>
@@ -359,7 +357,7 @@
         </label>
       }
 
-      <!-- ── Form: Recetas (solo editar) ── -->
+      <!-- Form: Recetas (solo editar) -->
       @if (modalEntidad() === 'recetas') {
         <label class="campo">
           <span>Nombre *</span>
@@ -405,7 +403,7 @@
         </label>
       }
 
-      <!-- ── Form: Categorías ── -->
+      <!-- Form: Categorías -->
       @if (modalEntidad() === 'categorias') {
         <label class="campo">
           <span>Nombre *</span>
@@ -422,7 +420,7 @@
       }
 
 
-      <!-- ── Form: Logros ── -->
+      <!-- Form: Logros -->
       @if (modalEntidad() === 'logros') {
         <label class="campo">
           <span>Nombre *</span>
@@ -438,7 +436,7 @@
         </label>
       }
 
-      <!-- ── Form: Recompensas ── -->
+      <!-- Form: Recompensas -->
       @if (modalEntidad() === 'recompensas') {
         <label class="campo">
           <span>Nombre *</span>
@@ -454,7 +452,7 @@
         </label>
       }
 
-      <!-- ── Form: APIs ── -->
+      <!-- Form: APIs -->
       @if (modalEntidad() === 'apis') {
         <label class="campo">
           <span>Nombre del servicio *</span>
@@ -470,7 +468,7 @@
         </label>
       }
 
-      <!-- ── Form: Modelos IA ── -->
+      <!-- Form: Modelos IA -->
       @if (modalEntidad() === 'modelos-ia') {
         <label class="campo">
           <span>Nombre del modelo *</span>

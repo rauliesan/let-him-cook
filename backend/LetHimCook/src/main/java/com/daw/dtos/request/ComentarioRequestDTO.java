@@ -1,4 +1,4 @@
-package com.daw.dtos.request;
+﻿package com.daw.dtos.request;
 
 import java.util.UUID;
 
@@ -11,7 +11,6 @@ import lombok.Data;
 /**
  * RequestDTO para que el usuario pueda crear o editar Comentarios.
  *
- * @author IES Almudeyne - Raúl Liébana Sánchez
  */
 @Data
 public class ComentarioRequestDTO {

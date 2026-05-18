@@ -1,11 +1,10 @@
-package com.daw.exceptions;
+﻿package com.daw.exceptions;
 
 /**
  * Excepción personalizada para operaciones que son lógicamente inválidas por
  * reglas de negocio,
  * pero que no necesariamente se deben a un recurso no encontrado o duplicado.
  *
- * @author IES Almudeyne - Raúl Liébana Sánchez
  */
 public class OperacionInvalidaException extends RuntimeException {
 

@@ -1,4 +1,4 @@
-package com.daw.entities;
+﻿package com.daw.entities;
 
 import java.util.Set;
 import java.util.UUID;
@@ -13,11 +13,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-/**
- * Clase para gestionar las recompensas que se pueden conseguir en la ruleta.
- *
- * @author IES Almudeyne - Raúl Liébana Sánchez
- */
 @Entity
 @Table(name = "recompensa")
 @Data
@@ -39,10 +34,7 @@ public class Recompensa {
 	@Column(nullable = true)
 	private String rareza;
 
-	/**
-     * Probabilidad de que este premio salga en la ruleta (0.0 a 1.0)
-     */
-	private Double probabilidad;
+	private Double probabilidad; // 0.0 a 1.0
 
 	@OneToMany(mappedBy = "recompensa", cascade = CascadeType.REMOVE)
 	private Set<UsuarioRecompensa> usuariosRecompensa;

@@ -1,4 +1,4 @@
-package com.daw.security;
+﻿package com.daw.security;
 
 import java.util.List;
 
@@ -24,18 +24,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Configuración central de Spring Security para la aplicación.
- *
- * Aspectos clave:
- * Sesiones stateless (API REST pura con JWT).
- * CORS habilitado para desarrollo frontend.
- * Rutas públicas: /auth/**, Swagger, OpenAPI docs.
- * Rutas de administrador:  /admin/**.
- * Filtro JWT registrado antes de
- * UsernamePasswordAuthenticationFilter.
- * Manejo de errores 401/403 con handlers personalizados.
- *
- * @author IES Almudeyne - Let Him Cook
+ * Configuración de Spring Security.
+ * Sesiones stateless con JWT, CORS permisivo para desarrollo.
+ * Rutas públicas en /auth/**, lectura de recetas/categorías/posts/recompensas y Swagger.
  */
 @Configuration
 @EnableWebSecurity
@@ -48,76 +39,38 @@ public class SecurityConfig {
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final CustomAccessDeniedHandler accessDeniedHandler;
 
-    // ========================
-    // Security Filter Chain
-    // ========================
-
-    /**
-     * Define la cadena de filtros de seguridad HTTP.
-     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // Deshabilitar CSRF (no necesario en APIs stateless con JWT)
                 .csrf(csrf -> csrf.disable())
-
-                // Configuración CORS
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-
-                // Gestión de sesiones stateless
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
-                // Reglas de autorización de rutas
                 .authorizeHttpRequests(auth -> auth
-                        // Rutas públicas (autenticación, documentación)
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/error").permitAll()
-
-                        // Lectura pública de recetas, categorías y posts del foro
                         .requestMatchers(HttpMethod.GET, "/recetas", "/recetas/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/tipos-comida", "/tipos-comida/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/posts", "/posts/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/recompensas", "/recompensas/**").permitAll()
-
-                        // Formulario de contacto — público
                         .requestMatchers(HttpMethod.POST, "/contacto").permitAll()
-
-                        // Listado de logros (lectura) accesible a cualquier usuario autenticado
+                        // logros es lectura pública para mostrar el catálogo a cualquier usuario autenticado
                         .requestMatchers(HttpMethod.GET, "/admin/logros", "/admin/logros/**").authenticated()
-
-                        // Rutas exclusivas de ADMIN
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-
-                        // Permitir OPTIONS para preflight CORS
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-
-                        // Todas las demás rutas requieren autenticación
                         .anyRequest().authenticated())
-
-                // Manejo de excepciones con respuestas JSON
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(authenticationEntryPoint)
                         .accessDeniedHandler(accessDeniedHandler))
-
-                // Registrar el proveedor de autenticación
                 .authenticationProvider(authenticationProvider())
-
-                // Registrar el filtro JWT antes del filtro de autenticación estándar
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    // ========================
-    // CORS
-    // ========================
-
     /**
-     * Configuración CORS permisiva para desarrollo.
-     * En producción se debe restringir {@code allowedOrigins} al dominio del
-     * frontend.
+     * CORS permisivo para desarrollo, en producción restringir allowedOrigins al dominio del frontend.
      */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -132,17 +85,6 @@ public class SecurityConfig {
         return source;
     }
 
-    // ========================
-    // Authentication Beans
-    // ========================
-
-    /**
-     * Proveedor de autenticación basado en DAO que usa:
-     * <ul>
-     * <li>{@link CustomUserDetailsService} para cargar usuarios.</li>
-     * <li>{@link BCryptPasswordEncoder} para verificar contraseñas.</li>
-     * </ul>
-     */
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -151,20 +93,11 @@ public class SecurityConfig {
         return provider;
     }
 
-    /**
-     * Expone el {@link AuthenticationManager} como bean para inyección
-     * en controllers de autenticación (login, registro, etc.).
-     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
-    /**
-     * Encoder de contraseñas BCrypt.
-     * Se usa tanto para codificar contraseñas en el registro como para verificarlas
-     * en el login.
-     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

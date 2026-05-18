@@ -1,15 +1,10 @@
-package com.daw.dtos.request;
+﻿package com.daw.dtos.request;
 
 import java.util.UUID;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
-/**
- * DTO para crear un post en el foro.
- *
- * @author IES Almudeyne - Let Him Cook
- */
 @Data
 public class PostRequestDTO {
 

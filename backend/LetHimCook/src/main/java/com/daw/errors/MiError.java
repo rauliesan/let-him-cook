@@ -1,4 +1,4 @@
-package com.daw.errors;
+﻿package com.daw.errors;
 
 import java.time.LocalDateTime;
 
@@ -10,7 +10,6 @@ import lombok.Data;
 /**
  * Clase para mostrar los errores.
  *
- * @author IES Almudeyne - Raúl Liébana Sánchez
  */
 @Data
 @AllArgsConstructor

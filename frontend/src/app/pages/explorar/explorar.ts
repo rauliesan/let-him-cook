@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed, OnDestroy } from '@angular/core';
+﻿import { Component, OnInit, signal, computed, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Revela } from '../../shared/revela/revela';
@@ -6,7 +6,7 @@ import { CountUp } from '../../shared/countup/countup';
 import { RecetaService, RecetaResponse, TipoComidaResponse } from '../../services/receta.service';
 import { FavoritoService } from '../../services/favorito.service';
 
-/* Agrupación de categorías en el acordeón — los nombres deben coincidir con la BD */
+/* Agrupación de categorías en el acordeón, los nombres deben coincidir con la BD */
 const GRUPOS: { nombre: string; emoji: string; cats: string[] }[] = [
   {
     nombre: 'Cocinas del Mundo', emoji: '🌍',
@@ -90,7 +90,7 @@ export class Explorar implements OnInit, OnDestroy {
   errorCarga = signal<string | null>(null);
 
   /* Filtros activos */
-  /* Set de categorías activas — vacío significa "Todas" */
+  /* Set de categorías activas, vacío significa "Todas" */
   filtrosActivos = signal<Set<string>>(new Set());
   dificultadActiva = signal('Cualquiera');
 
@@ -239,7 +239,7 @@ export class Explorar implements OnInit, OnDestroy {
     this.ordenActual.set(orden);
   }
 
-  /* Toggle de una categoría — si ya está activa la quita, si no la añade */
+  /* Toggle de una categoría, si ya está activa la quita, si no la añade */
   seleccionarFiltro(nombre: string) {
     this.modoAmigos.set(false);
     if (nombre === 'Todas') {
@@ -290,7 +290,7 @@ export class Explorar implements OnInit, OnDestroy {
     return nombres.filter(n => mapa.has(n)).map(n => mapa.get(n)!);
   }
 
-  /* Primeros 4 emojis del grupo — se muestran en el header colapsado */
+  /* Primeros 4 emojis del grupo, se muestran en el header colapsado */
   previewEmojisGrupo(nombres: string[]): string[] {
     return this.categoriasDeGrupo(nombres).slice(0, 5).map(c => c.iconoUrl ?? '🍽️');
   }

@@ -1,4 +1,4 @@
-package com.daw.controllers;
+﻿package com.daw.controllers;
 
 import java.util.List;
 import java.util.UUID;
@@ -24,19 +24,7 @@ import com.daw.services.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-/**
- * Endpoints del foro de la comunidad.
- *
- * GET    /posts                           → lista todos los posts (público)
- * GET    /posts/{id}                      → detalle de un post (público)
- * POST   /posts                           → crea un post (auth)
- * DELETE /posts/{id}                      → elimina un post (auth)
- * GET    /posts/{id}/comentarios          → comentarios de un post (público)
- * POST   /posts/{id}/comentarios          → comenta en un post (auth)
- * DELETE /posts/{id}/comentarios/{cId}    → elimina comentario (auth)
- *
- * @author IES Almudeyne - Let Him Cook
- */
+/** Foro de la comunidad: posts y comentarios de foro. */
 @RestController
 @RequestMapping("/posts")
 @RequiredArgsConstructor

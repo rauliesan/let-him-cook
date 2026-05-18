@@ -1,4 +1,4 @@
-package com.daw.controllers;
+﻿package com.daw.controllers;
 
 import java.util.List;
 import java.util.Map;
@@ -32,11 +32,6 @@ import com.daw.services.UsuarioService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-/**
- * Controlador para la gestión de usuarios.
- *
- * @author IES Almudeyne - Raúl Liébana Sánchez
- */
 @RestController
 @RequestMapping("/usuarios")
 @RequiredArgsConstructor
@@ -44,11 +39,6 @@ public class UsuarioController {
 
     private final UsuarioService usuarioService;
 
-    /**
-     * Lista todos los usuarios existentes.
-     *
-     * @return 200 OK con la lista de usuarios
-     */
     @GetMapping
     public ResponseEntity<List<UsuarioResponseDTO>> listarTodos() {
         return ResponseEntity.ok().body(usuarioService.listarTodos());
@@ -64,34 +54,16 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.buscarPaginado(nombre, pageable));
     }
 
-    /**
-     * Obtiene el perfil del usuario actualmente autenticado (vía JWT).
-     *
-     * @param userDetails detalles del usuario inyectados por Spring Security
-     * @return 200 OK con el perfil del usuario
-     */
     @GetMapping("/me")
     public ResponseEntity<UsuarioResponseDTO> obtenerMiPerfil(@AuthenticationPrincipal CustomUserDetails userDetails) {
         return ResponseEntity.ok().body(usuarioService.obtenerPerfil(userDetails.getUsuario().getId()));
     }
 
-    /**
-     * Busca un usuario por su ID.
-     *
-     * @param id identificador del usuario
-     * @return 200 OK con el usuario encontrado
-     */
     @GetMapping("/{id}")
     public ResponseEntity<UsuarioResponseDTO> buscarPorId(@PathVariable UUID id) {
         return ResponseEntity.ok().body(usuarioService.buscarPorId(id));
     }
 
-    /**
-     * Crea un nuevo usuario.
-     *
-     * @param dto datos del usuario a crear
-     * @return 201 Created con el usuario creado
-     */
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<UsuarioResponseDTO> crear(@Valid @RequestBody UsuarioRequestDTO dto) {
@@ -99,14 +71,7 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    /**
-     * Actualiza un usuario existente. En el PreAuthorize se comprueba si el usuario es ADMIN o si
-     * autenticado es el mismo que el que se quiere actualizar.
-     *
-     * @param id  identificador del usuario a actualizar
-     * @param dto nuevos datos del usuario
-     * @return 200 OK con el usuario actualizado
-     */
+    // solo ADMIN o el propio usuario pueden actualizarse
     @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.usuario.id")
     @PutMapping("/{id}")
     public ResponseEntity<UsuarioResponseDTO> actualizar(@PathVariable UUID id,
@@ -114,12 +79,6 @@ public class UsuarioController {
         return ResponseEntity.ok().body(usuarioService.actualizar(id, dto));
     }
 
-    /**
-     * Elimina un usuario por su ID.
-     *
-     * @param id identificador del usuario a eliminar
-     * @return 204 No Content
-     */
     @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.usuario.id")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable UUID id) {
@@ -154,7 +113,7 @@ public class UsuarioController {
     }
 
     /**
-     * Elimina la configuración de IA personalizada — vuelve a usar la IA por defecto.
+     * Elimina la configuración de IA personalizada, vuelve a usar la IA por defecto.
      */
     @DeleteMapping("/me/ia-config")
     public ResponseEntity<UsuarioResponseDTO> eliminarIaConfig(
@@ -173,8 +132,6 @@ public class UsuarioController {
         return ResponseEntity.ok(
                 usuarioService.actualizarFoto(userDetails.getUsuario().getId(), dto.getFotoUrl()));
     }
-
-    /* ── Amistad ── */
 
     @PostMapping("/{id}/amigos")
     public ResponseEntity<Void> agregarAmigo(
@@ -218,7 +175,7 @@ public class UsuarioController {
     }
 
     /**
-     * Heartbeat de presencia — actualiza ultimaConexion del usuario autenticado.
+     * Heartbeat de presencia, actualiza ultimaConexion del usuario autenticado.
      * El frontend lo llama cada ~60 segundos para indicar que sigue activo.
      */
     @PostMapping("/me/heartbeat")

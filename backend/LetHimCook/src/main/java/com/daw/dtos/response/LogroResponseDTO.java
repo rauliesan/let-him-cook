@@ -1,4 +1,4 @@
-package com.daw.dtos.response;
+﻿package com.daw.dtos.response;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -8,7 +8,6 @@ import lombok.Data;
 /**
  * ResponseDTO para la entidad Logro.
  *
- * @author IES Almudeyne - Raúl Liébana Sánchez
  */
 @Data
 public class LogroResponseDTO {

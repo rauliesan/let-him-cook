@@ -1,4 +1,4 @@
-package com.daw.controllers;
+﻿package com.daw.controllers;
 
 import java.util.List;
 import java.util.UUID;
@@ -21,11 +21,6 @@ import com.daw.services.IaModeloService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-/**
- * Controlador para la gestión de Modelos de IA.
- *
- * @author IES Almudeyne - Raúl Liébana Sánchez
- */
 @RestController
 @RequestMapping("/admin/ia-modelos")
 @RequiredArgsConstructor

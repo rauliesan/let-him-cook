@@ -1,4 +1,4 @@
-<div class="cocinar-page">
+﻿<div class="cocinar-page">
 
   <!-- ── Hero ── -->
   <section class="cocinar-hero">
@@ -46,9 +46,7 @@
 
   <div class="contenedor page-body">
 
-    <!-- ══════════════════════════════════════════
-         PASO 1 — Ingredientes
-    ══════════════════════════════════════════ -->
+    <!-- PASO 1 — Ingredientes -->
     @if (st.paso() === 'ingredientes') {
       <div class="wizard-card slide-up">
         <div class="wc-head">
@@ -123,9 +121,7 @@
       </div>
     }
 
-    <!-- ══════════════════════════════════════════
-         PASO 2 — Sugerencias
-    ══════════════════════════════════════════ -->
+    <!-- PASO 2 — Sugerencias -->
     @if (st.paso() === 'sugerencias') {
       <div class="slide-up">
         <div class="sec-nav">
@@ -167,9 +163,7 @@
       </div>
     }
 
-    <!-- ══════════════════════════════════════════
-         PASO 3 — Vista previa premium
-    ══════════════════════════════════════════ -->
+    <!-- PASO 3 — Vista previa premium -->
     @if (st.paso() === 'editor') {
       <div class="preview-wrap slide-up">
 
@@ -297,9 +291,7 @@
     }
 
 
-    <!-- ══════════════════════════════════════════
-         PASO 4 — Éxito
-    ══════════════════════════════════════════ -->
+    <!-- PASO 4 — Éxito -->
     @if (st.paso() === 'exito' && st.resultado()) {
       <div class="exito-wrap slide-up">
         <div class="confetti-layer">

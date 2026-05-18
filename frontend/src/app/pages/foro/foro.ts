@@ -361,7 +361,6 @@ export class Foro implements OnInit {
 
   readonly MAX_TITULO    = 120;
   readonly MAX_CONTENIDO = 2000;
-  // v2 — imagen + receta en nuevo post
 
   /* Lightbox */
   lightboxSrc = signal<string | null>(null);

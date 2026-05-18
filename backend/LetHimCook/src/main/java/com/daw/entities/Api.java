@@ -1,4 +1,4 @@
-package com.daw.entities;
+﻿package com.daw.entities;
 
 import java.util.Set;
 import java.util.UUID;
@@ -14,11 +14,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-/**
- * Clase para gestionar las APIs disponibles para los usuarios.
- * 
- * @author IES Almudeyne - Raúl Liébana Sánchez
- */
 @Entity
 @Table(name = "api")
 @Data

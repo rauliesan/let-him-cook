@@ -1,4 +1,4 @@
-package com.daw.services;
+﻿package com.daw.services;
 
 import java.util.List;
 import java.util.UUID;
@@ -23,11 +23,6 @@ import com.daw.repositories.UsuarioRepository;
 
 import lombok.RequiredArgsConstructor;
 
-/**
- * Servicio para la gestión de recetas favoritas (likes) de cada usuario.
- *
- * @author IES Almudeyne - Raúl Liébana Sánchez
- */
 @Service
 @Transactional
 @RequiredArgsConstructor

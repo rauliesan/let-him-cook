@@ -1,4 +1,4 @@
-package com.daw.controllers;
+﻿package com.daw.controllers;
 
 import java.util.List;
 import java.util.UUID;
@@ -29,12 +29,6 @@ import com.daw.services.RecetaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-/**
- * Controlador para la gestión de recetas.
- * Los endpoints GET son públicos. POST y DELETE requieren autenticación.
- *
- * @author IES Almudeyne - Raúl Liébana Sánchez
- */
 @RestController
 @RequestMapping("/recetas")
 @RequiredArgsConstructor
@@ -121,9 +115,7 @@ public class RecetaController {
         return ResponseEntity.ok(recetaService.listarPublicasPorUsuario(usuarioId));
     }
 
-    /**
-     * Marca una receta como completada (cocinada) por el usuario y devuelve las monedas ganadas.
-     */
+    /** Registra la receta como cocinada y devuelve las monedas ganadas. */
     @PostMapping("/{id}/completar")
     public ResponseEntity<Integer> completarReceta(
             @PathVariable UUID id,

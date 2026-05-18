@@ -1,4 +1,4 @@
-package com.daw.controllers;
+﻿package com.daw.controllers;
 
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -21,11 +21,6 @@ import com.daw.services.UsuarioRecompensaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-/**
- * Controlador para la gestión de las recompensas ganadas por el usuario.
- *
- * @author IES Almudeyne - Raúl Liébana Sánchez
- */
 @RestController
 @RequestMapping("/mis-recompensas")
 @RequiredArgsConstructor

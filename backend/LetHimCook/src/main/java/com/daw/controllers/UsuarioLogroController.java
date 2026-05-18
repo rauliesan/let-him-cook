@@ -1,4 +1,4 @@
-package com.daw.controllers;
+﻿package com.daw.controllers;
 
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -21,11 +21,6 @@ import com.daw.services.UsuarioLogroService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-/**
- * Controlador para la gestión de vitrina de logros del Usuario.
- *
- * @author IES Almudeyne - Raúl Liébana Sánchez
- */
 @RestController
 @RequestMapping("/mis-logros")
 @RequiredArgsConstructor

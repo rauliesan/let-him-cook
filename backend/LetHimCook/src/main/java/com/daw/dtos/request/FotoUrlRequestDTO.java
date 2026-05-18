@@ -1,13 +1,7 @@
-package com.daw.dtos.request;
+﻿package com.daw.dtos.request;
 
 import lombok.Data;
 
-/**
- * DTO para actualizar únicamente la foto de perfil del usuario.
- * Acepta una imagen en formato Base64 (data URI) o una URL externa.
- *
- * @author IES Almudeyne - Raúl Liébana Sánchez
- */
 @Data
 public class FotoUrlRequestDTO {
 

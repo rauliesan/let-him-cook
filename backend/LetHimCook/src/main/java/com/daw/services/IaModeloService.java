@@ -1,4 +1,4 @@
-package com.daw.services;
+﻿package com.daw.services;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,11 +17,6 @@ import com.daw.repositories.IaModeloRepository;
 
 import lombok.RequiredArgsConstructor;
 
-/**
- * Servicio para la gestión de Modelos de IA.
- *
- * @author IES Almudeyne - Raúl Liébana Sánchez
- */
 @Service
 @Transactional
 @RequiredArgsConstructor

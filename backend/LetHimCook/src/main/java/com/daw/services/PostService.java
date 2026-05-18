@@ -1,4 +1,4 @@
-package com.daw.services;
+﻿package com.daw.services;
 
 import java.util.List;
 import java.util.UUID;
@@ -27,7 +27,6 @@ import lombok.RequiredArgsConstructor;
 /**
  * Servicio para el foro: posts y sus comentarios.
  *
- * @author IES Almudeyne - Let Him Cook
  */
 @Service
 @Transactional
@@ -75,7 +74,7 @@ public class PostService {
         return postMapper.toResponseDTO(postRepository.save(post));
     }
 
-    /* Elimina un post (solo lo puede hacer su autor — validación en el controller) */
+    /* Elimina un post (solo lo puede hacer su autor, validación en el controller) */
     public void eliminar(UUID postId) {
         if (!postRepository.existsById(postId)) {
             throw new RecursoNoEncontradoException("Post no encontrado.");

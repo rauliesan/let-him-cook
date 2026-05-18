@@ -1,4 +1,4 @@
-package com.daw.entities;
+﻿package com.daw.entities;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -23,11 +23,6 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-/**
- * Clase para gestionar los usuarios.
- *
- * @author IES Almudeyne - Raúl Liébana Sánchez
- */
 @Entity
 @Table(name = "usuario")
 @Data
@@ -43,21 +38,14 @@ public class Usuario {
 	@Column(nullable = false, unique = true)
 	private String email;
 
-	/**
-	 * Contraseña encriptada.
-	 */
 	@Column(name = "password_hash", nullable = false)
 	private String passwordHash;
 
-	/**
-	 * Puntos que se van acumulando cada vez que el usuario consiga un logro.
-	 */
+	// puntos acumulados por logros
 	@Column(nullable = false)
 	private Integer puntos = 0;
 
-	/**
-	 * Nivel que va aumentando con los puntos.
-	 */
+	// nivel calculado a partir de puntos
 	@Column(nullable = false)
 	private Integer nivel = 1;
 
@@ -78,7 +66,7 @@ public class Usuario {
 	@Column(name = "fecha_expiracion_codigo")
 	private ZonedDateTime fechaExpiracionCodigo;
 
-	/* Modelo de IA preferido — opcional */
+	/* Modelo de IA preferido, opcional */
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
 	@JoinColumn(name = "ia_modelo_seleccionado_id", nullable = true)
 	private IaModelo iaModeloSeleccionado;

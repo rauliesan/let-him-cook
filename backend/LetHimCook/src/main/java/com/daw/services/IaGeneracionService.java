@@ -1,4 +1,4 @@
-package com.daw.services;
+﻿package com.daw.services;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -56,7 +56,7 @@ public class IaGeneracionService {
     private final ObjectMapper objectMapper;
     private final RestTemplate restTemplate;
 
-    /** Clave DeepSeek de la aplicación — cargada desde application-secret.properties */
+    /** Clave DeepSeek de la aplicación, cargada desde application-secret.properties */
     @Value("${deepseek.api.key:}")
     private String appDeepseekKey;
 

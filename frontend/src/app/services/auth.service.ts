@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+﻿import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
@@ -28,7 +28,7 @@ const CLAVE_SESION = 'lhc_user';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
-  /* Signal reactivo — true si hay sesión activa */
+  /* Signal reactivo, true si hay sesión activa */
   private _autenticado = signal<boolean>(this.hayToken());
 
   /* Signal con el nombre del usuario logueado (para la navbar) */
@@ -47,7 +47,7 @@ export class AuthService {
       .pipe(tap(res => this.guardarSesion(res)));
   }
 
-  /* Registro de cuenta nueva — iaModeloSeleccionadoId es opcional en el backend */
+  /* Registro de cuenta nueva, iaModeloSeleccionadoId es opcional en el backend */
   registro(nombre: string, email: string, password: string): Observable<AuthResponse> {
     return this.http
       .post<AuthResponse>(`${API}/auth/register`, { nombre, email, password })

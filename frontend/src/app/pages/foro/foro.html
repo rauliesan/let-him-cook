@@ -1,6 +1,4 @@
-<!-- ════════════════════════════════════
-     HERO
-════════════════════════════════════ -->
+﻿<!-- HERO -->
 <section class="foro-hero">
   <div class="hero-glow"></div>
   <div class="contenedor hero-inner">
@@ -37,9 +35,7 @@
   </div>
 </section>
 
-<!-- ════════════════════════════════════
-     MODAL — Nuevo post
-════════════════════════════════════ -->
+<!-- MODAL — Nuevo post -->
 @if (mostrarFormPost()) {
   <div class="modal-backdrop" (click)="cerrarForm()">
     <div class="modal" (click)="$event.stopPropagation()">
@@ -142,9 +138,7 @@
   </div>
 }
 
-<!-- ════════════════════════════════════
-     LIGHTBOX
-════════════════════════════════════ -->
+<!-- LIGHTBOX -->
 @if (lightboxSrc()) {
   <div class="lightbox-backdrop" (click)="cerrarLightbox()">
     <button class="lightbox-close" (click)="cerrarLightbox()" aria-label="Cerrar">✕</button>
@@ -152,9 +146,7 @@
   </div>
 }
 
-<!-- ════════════════════════════════════
-     FEED
-════════════════════════════════════ -->
+<!-- FEED -->
 <section class="foro-feed">
   <div class="contenedor">
 

@@ -1,4 +1,4 @@
-package com.daw.controllers;
+﻿package com.daw.controllers;
 
 import java.util.List;
 import java.util.UUID;
@@ -21,13 +21,6 @@ import com.daw.services.ApiService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-/**
- * Controlador para la gestión de APIs.
- *
- * Reservado para administradores.
- *
- * @author IES Almudeyne - Raúl Liébana Sánchez
- */
 @RestController
 @RequestMapping("/admin/apis")
 @RequiredArgsConstructor
@@ -45,12 +38,6 @@ public class ApiController {
         return ResponseEntity.ok().body(apiService.listarTodos());
     }
 
-    /**
-     * Busca una API por su ID.
-     *
-     * @param id identificador de la API
-     * @return 200 OK con la API encontrada
-     */
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponseDTO> buscarPorId(@PathVariable UUID id) {
         return ResponseEntity.ok().body(apiService.buscarPorId(id));
@@ -68,25 +55,12 @@ public class ApiController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    /**
-     * Actualiza una API existente.
-     *
-     * @param id  identificador de la API a actualizar
-     * @param dto nuevos datos de la API
-     * @return 200 OK con la API actualizada
-     */
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponseDTO> actualizar(@PathVariable UUID id,
             @Valid @RequestBody ApiRequestDTO dto) {
         return ResponseEntity.ok().body(apiService.actualizar(id, dto));
     }
 
-    /**
-     * Elimina una API por su ID.
-     *
-     * @param id identificador de la API a eliminar
-     * @return 204 No Content
-     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable UUID id) {
         apiService.eliminar(id);

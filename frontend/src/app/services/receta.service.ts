@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+﻿import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -49,7 +49,7 @@ const API = 'http://localhost:9999';
 @Injectable({ providedIn: 'root' })
 export class RecetaService {
 
-  /* ── Caché en memoria (5 minutos TTL) ─────────────────────────────── */
+  // caché en memoria, TTL 5 minutos
   private readonly CACHE_TTL = 5 * 60 * 1000;
   private cacheRecetas: RecetaResponse[] | null = null;
   private cacheCategorias: TipoComidaResponse[] | null = null;
@@ -60,7 +60,7 @@ export class RecetaService {
   /** Invalida la caché de recetas (llamar al crear/editar/borrar una receta) */
   invalidarCacheRecetas() { this.cacheRecetas = null; }
 
-  /* Lista todas las recetas — caché 5 min */
+  /* Lista todas las recetas, caché 5 min */
   getTodas(): Observable<RecetaResponse[]> {
     if (this.cacheRecetas && Date.now() - this.cacheRecetasTiempo < this.CACHE_TTL) {
       return of(this.cacheRecetas);
@@ -77,7 +77,7 @@ export class RecetaService {
     );
   }
 
-  /* Lista todas las categorías — caché permanente en sesión (raramente cambian) */
+  /* Lista todas las categorías, caché permanente en sesión (raramente cambian) */
   getCategorias(): Observable<TipoComidaResponse[]> {
     if (this.cacheCategorias) return of(this.cacheCategorias);
     return this.http.get<TipoComidaResponse[]>(`${API}/tipos-comida`).pipe(

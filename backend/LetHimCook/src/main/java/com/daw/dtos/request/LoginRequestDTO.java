@@ -1,15 +1,10 @@
-package com.daw.dtos.request;
+﻿package com.daw.dtos.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-/**
- * DTO para la petición de login.
- * 
- * @author IES Almudeyne - Let Him Cook
- */
 @Data
 public class LoginRequestDTO {
 

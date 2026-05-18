@@ -1,4 +1,4 @@
-package com.daw.entities;
+﻿package com.daw.entities;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -21,10 +21,9 @@ import lombok.Data;
 import org.hibernate.annotations.Formula;
 
 /**
- * Post del foro — publicación que puede iniciar un hilo de conversación.
+ * Post del foro, publicación que puede iniciar un hilo de conversación.
  * Los usuarios pueden compartir recetas, fotos o simplemente hablar.
  *
- * @author IES Almudeyne - Let Him Cook
  */
 @Entity
 @Table(name = "post")
@@ -52,7 +51,7 @@ public class Post {
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
-    /* Receta vinculada al post (opcional — un post puede no estar ligado a ninguna receta) */
+    /* Receta vinculada al post (opcional, un post puede no estar ligado a ninguna receta) */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "receta_id")
     private Receta recetaVinculada;

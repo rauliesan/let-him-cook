@@ -1,15 +1,10 @@
-package com.daw.dtos.response;
+﻿package com.daw.dtos.response;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import lombok.Data;
 
-/**
- * DTO de respuesta para un post del foro.
- *
- * @author IES Almudeyne - Let Him Cook
- */
 @Data
 public class PostResponseDTO {
 

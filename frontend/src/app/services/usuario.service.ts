@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+﻿import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
@@ -50,7 +50,7 @@ export class UsuarioService {
     });
   }
 
-  /** Elimina la configuración personalizada — vuelve al DeepSeek de la app */
+  /** Elimina la configuración personalizada, vuelve al DeepSeek de la app */
   eliminarIaConfig(): Observable<UsuarioResponse> {
     return this.http.delete<UsuarioResponse>(`${API}/usuarios/me/ia-config`);
   }
@@ -85,7 +85,7 @@ export class UsuarioService {
     return this.http.get<UsuarioResponse[]>(`${API}/usuarios/me/amigos`);
   }
 
-  /** Heartbeat de presencia — actualiza ultimaConexion en el servidor */
+  /** Heartbeat de presencia, actualiza ultimaConexion en el servidor */
   heartbeat(): Observable<void> {
     return this.http.post<void>(`${API}/usuarios/me/heartbeat`, {});
   }

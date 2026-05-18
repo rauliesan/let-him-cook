@@ -1,4 +1,4 @@
-package com.daw.security;
+﻿package com.daw.security;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -16,14 +16,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-/**
- * Handler personalizado para manejar errores de acceso denegado (HTTP 403).
- *
- * Se invoca cuando un usuario autenticado intenta acceder a un recurso
- * para el cual no tiene el rol/permiso necesario.
- *
- * @author IES Almudeyne - Raúl Liébana Sánchez
- */
+/** Devuelve 403 en JSON cuando el usuario autenticado no tiene el rol necesario. */
 @Component
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 

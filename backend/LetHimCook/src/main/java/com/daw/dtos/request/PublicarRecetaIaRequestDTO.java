@@ -1,4 +1,4 @@
-package com.daw.dtos.request;
+﻿package com.daw.dtos.request;
 
 import java.util.UUID;
 
@@ -7,10 +7,6 @@ import com.daw.entities.Dificultad;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
-/**
- * DTO de solicitud para publicar una receta generada por IA.
- * Incluye el nombre de categoría para encontrarla o crearla automáticamente.
- */
 @Data
 public class PublicarRecetaIaRequestDTO {
 
@@ -34,7 +30,7 @@ public class PublicarRecetaIaRequestDTO {
 
     private Boolean esPublica = true;
 
-    /** Nombre de la categoría — se busca en BD o se crea si no existe */
+    /** Nombre de la categoría, se busca en BD o se crea si no existe */
     private String categoriaNombre;
     private String categoriaEmoji;
     private String categoriaColor;

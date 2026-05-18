@@ -1,4 +1,4 @@
-package com.daw.entities;
+﻿package com.daw.entities;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -16,11 +16,6 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-/**
- * Clase para gestionar los comentarios de cada usuario a cada receta.
- * 
- * @author IES Almudeyne - Raúl Liébana Sánchez
- */
 @Entity
 @Table(name = "comentario")
 @Data
@@ -33,25 +28,16 @@ public class Comentario {
 	@Column(nullable = false, columnDefinition = "TEXT")
 	private String comentario;
 
-	/**
-	 * La valoración será de 1 a 5
-	 */
 	@Column(name = "valoracion")
-	private Integer valoracion;
+	private Integer valoracion; // 1 a 5
 
 	@Column(name = "fecha_creacion", nullable = false)
 	private ZonedDateTime fechaCreacion;
-	
-	/**
-	 * Usuario al que pertenece el comentario.
-	 */
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "usuario_id", nullable = false)
 	private Usuario usuario;
 
-	/**
-	 * Receta a la que va dirigido el comentario.
-	 */
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "receta_id", nullable = false)
 	private Receta receta;

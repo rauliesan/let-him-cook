@@ -1,4 +1,4 @@
-package com.daw.services;
+﻿package com.daw.services;
 
 import java.util.List;
 import java.util.UUID;
@@ -15,11 +15,6 @@ import com.daw.repositories.TipoComidaRepository;
 
 import lombok.RequiredArgsConstructor;
 
-/**
- * Servicio para la gestión de tipos de comida.
- *
- * @author IES Almudeyne - Raúl Liébana Sánchez
- */
 @Service
 @Transactional
 @RequiredArgsConstructor

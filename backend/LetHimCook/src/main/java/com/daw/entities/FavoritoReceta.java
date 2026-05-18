@@ -1,4 +1,4 @@
-package com.daw.entities;
+﻿package com.daw.entities;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -15,11 +15,6 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-/**
- * Clase para gestionar las recetas favoritas de los usuarios.
- *
- * @author IES Almudeyne - Raúl Liébana Sánchez
- */
 @Entity
 @Table(name = "favorito_receta")
 @Data
@@ -28,16 +23,10 @@ public class FavoritoReceta {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    /**
-     * Usuario que seleccionó como favorita la receta.
-     */
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
-    /**
-     * Receta que ha sido seleccionada como favorita.
-     */
     @ManyToOne
     @JoinColumn(name = "receta_id")
     private Receta receta;

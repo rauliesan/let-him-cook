@@ -1,4 +1,4 @@
-package com.daw.services;
+﻿package com.daw.services;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -26,11 +26,7 @@ import com.daw.repositories.UsuarioRepository;
 
 import lombok.RequiredArgsConstructor;
 
-/**
- * Servicio para la gestión de recetas.
- *
- * @author IES Almudeyne - Raúl Liébana Sánchez
- */
+/** Gestión de recetas: CRUD, búsqueda paginada y recompensa por cocinar. */
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -42,7 +38,7 @@ public class RecetaService {
     private final UsuarioRepository     usuarioRepository;
     private final RecetaMapper          recetaMapper;
 
-    /** Lista todas las recetas (sin paginar — usado por el frontend). */
+    /** Lista todas las recetas (sin paginar, usado por el frontend). */
     @Transactional(readOnly = true)
     public List<RecetaResponseDTO> listarTodas() {
         return recetaMapper.toListDTO(recetaRepository.findAll());

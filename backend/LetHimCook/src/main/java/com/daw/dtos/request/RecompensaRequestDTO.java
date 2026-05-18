@@ -1,4 +1,4 @@
-package com.daw.dtos.request;
+﻿package com.daw.dtos.request;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -8,7 +8,6 @@ import lombok.Data;
 /**
  * RequestDTO para que un administrador pueda crear o editar Recompensas.
  *
- * @author IES Almudeyne - Raúl Liébana Sánchez
  */
 @Data
 public class RecompensaRequestDTO {

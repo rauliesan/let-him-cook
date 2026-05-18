@@ -1,13 +1,10 @@
-package com.daw.dtos.request;
+﻿package com.daw.dtos.request;
 
 import java.util.List;
 
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
-/**
- * DTO de solicitud para generar sugerencias de recetas con IA.
- */
 @Data
 public class GenerarRecetasRequestDTO {
 

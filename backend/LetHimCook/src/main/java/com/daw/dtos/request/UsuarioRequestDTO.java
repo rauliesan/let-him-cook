@@ -1,4 +1,4 @@
-package com.daw.dtos.request;
+﻿package com.daw.dtos.request;
 
 
 import jakarta.validation.constraints.Email;
@@ -9,7 +9,6 @@ import lombok.Data;
 /**
  * RequestDTO para que el usuario pueda crear o editar su perfil.
  *
- * @author IES Almudeyne - Raúl Liébana Sánchez
  */
 @Data
 public class UsuarioRequestDTO {

@@ -1,4 +1,4 @@
-package com.daw.entities;
+﻿package com.daw.entities;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -15,11 +15,6 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-/**
- * Clase para gestionar los logros de los usuarios.
- *
- * @author IES Almudeyne - Raúl Liébana Sánchez
- */
 @Entity
 @Table(name = "usuario_logro")
 @Data
@@ -29,16 +24,10 @@ public class UsuarioLogro {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    /**
-     * Usuario que obtiene el logro.
-     */
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
-    /**
-     * Logro que se le asigna al usuario.
-     */
     @ManyToOne
     @JoinColumn(name = "logro_id")
     private Logro logro;

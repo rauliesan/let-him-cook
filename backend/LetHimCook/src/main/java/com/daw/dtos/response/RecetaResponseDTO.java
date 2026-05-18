@@ -1,4 +1,4 @@
-package com.daw.dtos.response;
+﻿package com.daw.dtos.response;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -10,7 +10,6 @@ import lombok.Data;
 /**
  * ResponseDTO para la entidad Receta.
  *
- * @author IES Almudeyne - Raúl Liébana Sánchez
  */
 @Data
 public class RecetaResponseDTO {
@@ -39,7 +38,7 @@ public class RecetaResponseDTO {
 
     private ZonedDateTime fechaCreacion;
 
-    // Relaciones aplanadas — hasta 3 categorías por receta
+    // Relaciones aplanadas, hasta 3 categorías por receta
     private UUID tipoComidaId;
     private String tipoComidaNombre;
     private String tipoComida2Nombre;

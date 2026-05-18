@@ -22,9 +22,6 @@ import com.daw.services.IaGeneracionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-/**
- * Controlador para la generación de recetas mediante IA y su publicación.
- */
 @RestController
 @RequestMapping("/ia")
 @RequiredArgsConstructor
@@ -32,10 +29,7 @@ public class IaGeneracionController {
 
     private final IaGeneracionService iaGeneracionService;
 
-    /**
-     * Genera 3 sugerencias de recetas a partir de los ingredientes dados.
-     * Usa el modelo de IA configurado en el perfil del usuario o una clave propia (BYOAI).
-     */
+    /** Genera 3 sugerencias usando el modelo del perfil o clave BYOAI del usuario. */
     @PostMapping("/generar")
     public ResponseEntity<List<RecetaSugerenciaDTO>> generar(
             @Valid @RequestBody GenerarRecetasRequestDTO dto,
@@ -44,9 +38,6 @@ public class IaGeneracionController {
         return ResponseEntity.ok(iaGeneracionService.generarSugerencias(dto, usuarioId));
     }
 
-    /**
-     * Genera instrucciones paso a paso para una receta usando la IA configurada.
-     */
     @PostMapping("/instrucciones")
     public ResponseEntity<Map<String, String>> instrucciones(
             @RequestBody Map<String, String> dto,
@@ -57,9 +48,7 @@ public class IaGeneracionController {
         return ResponseEntity.ok(iaGeneracionService.generarInstrucciones(nombre, ingredientes, usuarioId));
     }
 
-    /**
-     * Publica la receta generada por IA. Crea la categoría si no existe y suma puntos al usuario.
-     */
+    /** Crea la receta en BD, crea la categoría si no existe y suma puntos al usuario. */
     @PostMapping("/publicar")
     public ResponseEntity<PublicarRecetaResponseDTO> publicar(
             @Valid @RequestBody PublicarRecetaIaRequestDTO dto,

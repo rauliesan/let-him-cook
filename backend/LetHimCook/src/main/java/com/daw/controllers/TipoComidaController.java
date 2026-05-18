@@ -1,4 +1,4 @@
-package com.daw.controllers;
+﻿package com.daw.controllers;
 
 import java.util.List;
 import java.util.UUID;
@@ -22,12 +22,6 @@ import com.daw.services.TipoComidaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-/**
- * Controlador para la gestión de tipos de comida (categorías).
- * Los GET son públicos. POST/PUT/DELETE requieren rol ADMIN.
- *
- * @author IES Almudeyne - Raúl Liébana Sánchez
- */
 @RestController
 @RequestMapping("/tipos-comida")
 @RequiredArgsConstructor

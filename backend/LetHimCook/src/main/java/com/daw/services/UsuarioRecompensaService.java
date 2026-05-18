@@ -1,4 +1,4 @@
-package com.daw.services;
+﻿package com.daw.services;
 
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -19,11 +19,6 @@ import com.daw.repositories.UsuarioRecompensaRepository;
 
 import lombok.RequiredArgsConstructor;
 
-/**
- * Servicio para la gestión de las recompensas ganadas por el usuario.
- *
- * @author IES Almudeyne - Raúl Liébana Sánchez
- */
 @Service
 @Transactional
 @RequiredArgsConstructor

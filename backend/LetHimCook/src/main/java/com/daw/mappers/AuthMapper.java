@@ -1,4 +1,4 @@
-package com.daw.mappers;
+﻿package com.daw.mappers;
 
 import com.daw.dtos.response.AuthResponseDTO;
 import com.daw.entities.Usuario;
@@ -15,7 +15,6 @@ import org.mapstruct.ReportingPolicy;
  * se inyecta a través del método {@code default} que añade el token
  * al DTO ya mapeado.
  *
- * @author IES Almudeyne - Let Him Cook
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface AuthMapper {

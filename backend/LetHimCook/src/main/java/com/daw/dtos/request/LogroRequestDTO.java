@@ -1,4 +1,4 @@
-package com.daw.dtos.request;
+﻿package com.daw.dtos.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -6,7 +6,6 @@ import lombok.Data;
 /**
  * RequestDTO para que el administrador pueda crear o editar Logros.
  *
- * @author IES Almudeyne - Raúl Liébana Sánchez
  */
 @Data
 public class LogroRequestDTO {
