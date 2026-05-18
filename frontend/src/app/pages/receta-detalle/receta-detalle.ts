@@ -6,7 +6,6 @@ import { RecetaService, RecetaResponse } from '../../services/receta.service';
 import { FavoritoService } from '../../services/favorito.service';
 import { AuthService } from '../../services/auth.service';
 import { IaService } from '../../services/ia.service';
-import { LogroService } from '../../services/logro.service';
 
 @Component({
   selector: 'app-receta-detalle',
@@ -79,7 +78,6 @@ export class RecetaDetalle implements OnInit {
     private favoritoService: FavoritoService,
     public  auth: AuthService,
     private iaService: IaService,
-    private logroService: LogroService,
   ) {}
 
   ngOnInit() {
@@ -179,9 +177,13 @@ export class RecetaDetalle implements OnInit {
     }
     this.pasosCompletados.set(nuevos);
 
-    // Si acaba de completar todo y no ha reclamado en esta sesión
-    if (this.todoCompletado() && !this.recompensaReclamada()) {
-      this.reclamarRecompensa();
+    if (this.todoCompletado()) {
+      if (!this.recompensaReclamada()) {
+        this.reclamarRecompensa();
+      } else if (this.yaCompletadaAntes()) {
+        // Ya la había cocinado: avisa sin hacer nada más
+        this.lanzarToast('¡Buen trabajo! Ya habías cocinado esta receta 🍳');
+      }
     }
   }
 
@@ -190,7 +192,7 @@ export class RecetaDetalle implements OnInit {
     if (!id) return;
 
     this.recetaService.completarReceta(id).subscribe({
-      next: (monedas) => {
+      next: ({ monedas, logrosNuevos }) => {
         this.monedasGanadas.set(monedas);
         this.recompensaReclamada.set(true);
 
@@ -202,14 +204,9 @@ export class RecetaDetalle implements OnInit {
           if (monedas > 0) {
             this.lanzarToast(`+${monedas} 🪙`);
           }
-          // Verificar logros y mostrar notificación si se ha desbloqueado alguno
-          this.logroService.verificarLogros().subscribe({
-            next: (nuevos) => {
-              nuevos.forEach((nombre, i) => {
-                setTimeout(() => this.lanzarToast(`🏆 Logro desbloqueado: ${nombre}`), i * 1800);
-              });
-            },
-            error: () => {}
+          // Mostrar logros desbloqueados que devuelve el backend en la misma respuesta
+          logrosNuevos.forEach((nombre, i) => {
+            setTimeout(() => this.lanzarToast(`🏆 Logro desbloqueado: ${nombre}`), (monedas > 0 ? 1800 : 0) + i * 1800);
           });
         }
       },

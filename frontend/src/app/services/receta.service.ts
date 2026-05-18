@@ -107,9 +107,9 @@ export class RecetaService {
     return this.http.get<Pagina<RecetaResponse>>(url);
   }
 
-  /* Registra que se ha completado la receta y devuelve las monedas ganadas (-1 = ya cocinada antes) */
-  completarReceta(id: string): Observable<number> {
-    return this.http.post<number>(`${API}/recetas/${id}/completar`, {});
+  /* Registra que se ha completado la receta. Devuelve monedas + logros nuevos en un paso. */
+  completarReceta(id: string): Observable<{ monedas: number; logrosNuevos: string[] }> {
+    return this.http.post<{ monedas: number; logrosNuevos: string[] }>(`${API}/recetas/${id}/completar`, {});
   }
 
   /* Comprueba si el usuario ya completó esta receta */

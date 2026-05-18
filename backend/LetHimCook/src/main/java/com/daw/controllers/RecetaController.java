@@ -25,6 +25,7 @@ import com.daw.dtos.response.RecetaResponseDTO;
 import com.daw.entities.Dificultad;
 import com.daw.security.CustomUserDetails;
 import com.daw.services.RecetaService;
+import com.daw.services.UsuarioLogroService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,7 @@ import lombok.RequiredArgsConstructor;
 public class RecetaController {
 
     private final RecetaService recetaService;
+    private final UsuarioLogroService usuarioLogroService;
 
     /** Lista todas las recetas sin paginar (usado por el frontend de explorar). */
     @GetMapping("/todas")
@@ -115,15 +117,20 @@ public class RecetaController {
         return ResponseEntity.ok(recetaService.listarPublicasPorUsuario(usuarioId));
     }
 
-    /** Registra la receta como cocinada y devuelve las monedas ganadas (-1 si ya cocinada). */
+    /** Registra la receta como cocinada y devuelve monedas ganadas + logros nuevos en un solo paso. */
     @PostMapping("/{id}/completar")
-    public ResponseEntity<Integer> completarReceta(
+    public ResponseEntity<CompletarRecetaResponse> completarReceta(
             @PathVariable UUID id,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         UUID usuarioId = userDetails.getUsuario().getId();
         int monedas = recetaService.completarReceta(usuarioId, id);
-        return ResponseEntity.ok(monedas);
+        List<String> logrosNuevos = monedas != -1
+                ? usuarioLogroService.verificarLogros(usuarioId)
+                : List.of();
+        return ResponseEntity.ok(new CompletarRecetaResponse(monedas, logrosNuevos));
     }
+
+    record CompletarRecetaResponse(int monedas, List<String> logrosNuevos) {}
 
     /** Comprueba si el usuario autenticado ya completó esta receta. */
     @GetMapping("/{id}/completada")
