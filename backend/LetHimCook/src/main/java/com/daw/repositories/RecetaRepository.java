@@ -21,7 +21,7 @@ public interface RecetaRepository extends JpaRepository<Receta, UUID> {
     @Query("SELECT DISTINCT r FROM Receta r " +
            "LEFT JOIN r.tipoComida2 tc2 " +
            "LEFT JOIN r.tipoComida3 tc3 " +
-           "WHERE " +
+           "WHERE r.esPublica = true AND " +
            "(LOWER(r.nombre) LIKE LOWER(CONCAT('%', :termino, '%')) OR " +
            "LOWER(r.descripcion) LIKE LOWER(CONCAT('%', :termino, '%')) OR " +
            "LOWER(r.ingredientes) LIKE LOWER(CONCAT('%', :termino, '%'))) AND " +

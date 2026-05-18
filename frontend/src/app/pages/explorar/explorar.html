@@ -20,13 +20,6 @@
         }
       </button>
     </div>
-    <div class="hero-tags" revela [retardo]="300">
-      <span class="hero-tag">Pasta</span>
-      <span class="hero-tag">Postres</span>
-      <span class="hero-tag">Vegano</span>
-      <span class="hero-tag">Sin gluten</span>
-      <span class="hero-tag">Rápido</span>
-    </div>
   </div>
 </section>
 
@@ -145,13 +138,16 @@
       }
     </div>
 
-    <!-- Contador de resultados -->
+    <!-- Contador + ordenación -->
     <div class="resultados-header" revela [retardo]="80">
       <span class="resultados-total">{{ recetasFiltradas().length }} recetas encontradas</span>
-      <select class="orden-selector">
-        <option>Más recientes</option>
-        <option>Menor tiempo</option>
-      </select>
+      <div class="orden-btns">
+        <button class="orden-btn" [class.activo]="ordenActual() === 'reciente'"  (click)="cambiarOrden('reciente')">🕐 Recientes</button>
+        <button class="orden-btn" [class.activo]="ordenActual() === 'tiempo'"    (click)="cambiarOrden('tiempo')">⏱ Menos tiempo</button>
+        <button class="orden-btn" [class.activo]="ordenActual() === 'likes'"     (click)="cambiarOrden('likes')">❤️ Más populares</button>
+        <button class="orden-btn" [class.activo]="ordenActual() === 'facil'"     (click)="cambiarOrden('facil')">😊 Más fácil</button>
+        <button class="orden-btn" [class.activo]="ordenActual() === 'dificil'"   (click)="cambiarOrden('dificil')">🔥 Más difícil</button>
+      </div>
     </div>
 
     <!-- Estado de carga -->

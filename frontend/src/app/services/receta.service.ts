@@ -97,7 +97,7 @@ export class RecetaService {
 
   /* Búsqueda dinámica en el servidor */
   buscarDinamico(termino: string, dificultad?: string, categorias?: string[], pagina = 0, tam = 12): Observable<Pagina<RecetaResponse>> {
-    let url = `${API}/recetas/busqueda?termino=${termino}&page=${pagina}&size=${tam}`;
+    let url = `${API}/recetas/busqueda?termino=${encodeURIComponent(termino)}&page=${pagina}&size=${tam}`;
     if (dificultad && dificultad !== 'Cualquiera') {
       url += `&dificultad=${dificultad}`;
     }

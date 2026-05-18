@@ -121,7 +121,7 @@
         </label>
         @if (!recetaSeleccionadaPost()) {
           <button class="modal-attach-btn" type="button"
-                  (click)="mostrarBuscadorRecetaPost.set(!mostrarBuscadorRecetaPost())">
+                  (click)="toggleBuscadorRecetaPost()">
             🍳 Receta
           </button>
         }
@@ -362,7 +362,7 @@
 
                   <div class="reply-actions">
                     @if (!recetaSeleccionadaComentario()) {
-                      <button class="reply-attach-btn" (click)="mostrarBuscadorReceta.set(!mostrarBuscadorReceta())"
+                      <button class="reply-attach-btn" (click)="toggleBuscadorReceta()"
                               title="Adjuntar receta">
                         🍳 Adjuntar receta
                       </button>

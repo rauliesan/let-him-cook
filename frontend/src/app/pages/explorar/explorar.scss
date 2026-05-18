@@ -682,7 +682,36 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: .75rem;
   margin-bottom: 20px;
+}
+
+.orden-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+}
+
+.orden-btn {
+  padding: .38rem .85rem;
+  border: 1.5px solid var(--gris-borde);
+  border-radius: var(--radio-full);
+  background: var(--blanco);
+  font-family: var(--fuente-base);
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--gris);
+  cursor: pointer;
+  transition: all .18s;
+  white-space: nowrap;
+
+  &:hover { border-color: var(--primario); color: var(--primario); }
+  &.activo {
+    background: var(--primario);
+    border-color: var(--primario);
+    color: #fff;
+  }
 }
 
 .resultados-total {

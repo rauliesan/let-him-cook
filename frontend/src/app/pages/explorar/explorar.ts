@@ -109,6 +109,9 @@ export class Explorar implements OnInit, OnDestroy {
   terminoBusqueda = signal('');
   buscando        = signal(false);
 
+  /* Ordenación */
+  ordenActual = signal<'reciente' | 'tiempo' | 'likes' | 'facil' | 'dificil'>('reciente');
+
   constructor(
     private recetaService: RecetaService,
     private favoritoService: FavoritoService,
@@ -182,7 +185,16 @@ export class Explorar implements OnInit, OnDestroy {
     if (event) event.preventDefault();
     this.modoAmigos.set(false);
     const termino = this.terminoBusqueda().trim();
-    
+
+    // Término vacío sin filtros → recarga todas (usa caché)
+    if (!termino && this.filtrosActivos().size === 0 && this.dificultadActiva() === 'Cualquiera') {
+      this.recetaService.getTodas().subscribe({
+        next: r => { this.todasRecetas.set(r); this.buscando.set(false); },
+        error: () => this.buscando.set(false),
+      });
+      return;
+    }
+
     // Convertir nombres de categorías activas a sus IDs reales de la BD
     const categoriasIds = [...this.filtrosActivos()]
       .map(nombre => this.categoriasMapa().get(nombre)?.id)
@@ -194,9 +206,7 @@ export class Explorar implements OnInit, OnDestroy {
         this.todasRecetas.set(res.content);
         this.buscando.set(false);
       },
-      error: () => {
-        this.buscando.set(false);
-      }
+      error: () => this.buscando.set(false),
     });
   }
 
@@ -206,10 +216,28 @@ export class Explorar implements OnInit, OnDestroy {
     // Podríamos añadir debounce aquí, pero por ahora lo dejamos con el botón y Enter
   }
 
-  /* Las recetas se cargan directamente desde el servidor según los filtros aplicados en buscar() */
-  recetasFiltradas = computed(() =>
-    this.modoAmigos() ? this.recetasAmigos() : this.todasRecetas()
-  );
+  /* Las recetas se cargan directamente desde el servidor; aquí sólo aplicamos orden local */
+  recetasFiltradas = computed(() => {
+    const lista = this.modoAmigos() ? this.recetasAmigos() : [...this.todasRecetas()];
+    const orden = this.ordenActual();
+    const DIFICULTAD_ORDEN: Record<string, number> = { BAJA: 0, MEDIA: 1, ALTA: 2 };
+    switch (orden) {
+      case 'tiempo':
+        return lista.sort((a, b) => (a.tiempoPreparacion ?? 999) - (b.tiempoPreparacion ?? 999));
+      case 'likes':
+        return lista.sort((a, b) => b.totalLikes - a.totalLikes);
+      case 'facil':
+        return lista.sort((a, b) => (DIFICULTAD_ORDEN[a.dificultad ?? ''] ?? 1) - (DIFICULTAD_ORDEN[b.dificultad ?? ''] ?? 1));
+      case 'dificil':
+        return lista.sort((a, b) => (DIFICULTAD_ORDEN[b.dificultad ?? ''] ?? 1) - (DIFICULTAD_ORDEN[a.dificultad ?? ''] ?? 1));
+      default: // reciente
+        return lista.sort((a, b) => new Date(b.fechaCreacion).getTime() - new Date(a.fechaCreacion).getTime());
+    }
+  });
+
+  cambiarOrden(orden: 'reciente' | 'tiempo' | 'likes' | 'facil' | 'dificil') {
+    this.ordenActual.set(orden);
+  }
 
   /* Toggle de una categoría — si ya está activa la quita, si no la añade */
   seleccionarFiltro(nombre: string) {

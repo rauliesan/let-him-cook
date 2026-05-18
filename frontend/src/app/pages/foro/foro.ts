@@ -160,12 +160,44 @@ export class Foro implements OnInit {
 
   quitarImagenPost() { this.nuevoPostImagen.set(null); }
 
+  /* Carga las recetas propias del usuario para mostrar por defecto */
+  private cargarRecetasPropias(
+    destino: (r: RecetaResponse[]) => void,
+    cargando: (v: boolean) => void
+  ) {
+    const uid = this.auth.sesion()?.usuarioId;
+    if (!uid) return;
+    cargando(true);
+    this.recetaService.getRecetasDeUsuario(uid).subscribe({
+      next: r => { destino(r.slice(0, 6)); cargando(false); },
+      error: () => cargando(false),
+    });
+  }
+
+  /* Abre el buscador del post y precarga las recetas propias */
+  toggleBuscadorRecetaPost() {
+    const abriendo = !this.mostrarBuscadorRecetaPost();
+    this.mostrarBuscadorRecetaPost.set(abriendo);
+    if (abriendo && !this.busquedaRecetaPost.trim()) {
+      this.cargarRecetasPropias(
+        r => this.resultadosBusquedaPost.set(r),
+        v => this.buscandoRecetaPost.set(v)
+      );
+    }
+  }
+
   /* Búsqueda de recetas para adjuntar al post */
   onBusquedaRecetaPostInput(event: Event) {
     const val = (event.target as HTMLInputElement).value;
     this.busquedaRecetaPost = val;
     clearTimeout(this.debounceTimerPost);
-    if (!val.trim()) { this.resultadosBusquedaPost.set([]); return; }
+    if (!val.trim()) {
+      this.cargarRecetasPropias(
+        r => this.resultadosBusquedaPost.set(r),
+        v => this.buscandoRecetaPost.set(v)
+      );
+      return;
+    }
     this.debounceTimerPost = setTimeout(() => {
       this.buscandoRecetaPost.set(true);
       this.recetaService.buscarDinamico(val, 'Cualquiera', []).subscribe({
@@ -210,12 +242,30 @@ export class Foro implements OnInit {
     });
   }
 
+  /* Abre el buscador del comentario y precarga las recetas propias */
+  toggleBuscadorReceta() {
+    const abriendo = !this.mostrarBuscadorReceta();
+    this.mostrarBuscadorReceta.set(abriendo);
+    if (abriendo && !this.busquedaRecetaComentario.trim()) {
+      this.cargarRecetasPropias(
+        r => this.resultadosBusqueda.set(r),
+        v => this.buscandoReceta.set(v)
+      );
+    }
+  }
+
   /* Búsqueda de recetas para adjuntar */
   onBusquedaRecetaInput(event: Event) {
     const val = (event.target as HTMLInputElement).value;
     this.busquedaRecetaComentario = val;
     clearTimeout(this.debounceTimer);
-    if (!val.trim()) { this.resultadosBusqueda.set([]); return; }
+    if (!val.trim()) {
+      this.cargarRecetasPropias(
+        r => this.resultadosBusqueda.set(r),
+        v => this.buscandoReceta.set(v)
+      );
+      return;
+    }
     this.debounceTimer = setTimeout(() => {
       this.buscandoReceta.set(true);
       this.recetaService.buscarDinamico(val, 'Cualquiera', []).subscribe({
