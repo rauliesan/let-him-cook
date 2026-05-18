@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Revela } from '../../shared/revela/revela';
 import { RecompensaService, RecompensaResponse, UsuarioRecompensaResponse } from '../../services/recompensa.service';
 import { UsuarioService } from '../../services/usuario.service';
-import { LogroService, LogroResponse, UsuarioLogroResponse } from '../../services/logro.service';
+import { LogroService } from '../../services/logro.service';
 import { finalize } from 'rxjs';
 
 @Component({
@@ -25,20 +25,16 @@ export class Rewards implements OnInit {
   coins = signal(0);
 
   /* Estado de la tragaperras */
-  girando       = signal(false);
-  reels         = [signal('❓'), signal('❓'), signal('❓')];
-  premioGanado  = signal<RecompensaResponse | null>(null);
-  mostrarPremio = signal(false);
+  girando        = signal(false);
+  reels          = [signal('❓'), signal('❓'), signal('❓')];
+  premioGanado   = signal<RecompensaResponse | null>(null);
+  mostrarPremio  = signal(false);
+  mostrarSinPremio = signal(false);
 
   /* Datos de la API */
   catalogoPremios = signal<RecompensaResponse[]>([]);
   misPremios      = signal<RecompensaResponse[]>([]);
   cargandoMisPremios = signal(false);
-
-  /* Logros */
-  todosLogros     = signal<LogroResponse[]>([]);
-  misLogrosIds    = signal<Set<string>>(new Set());
-  cargandoLogros  = signal(false);
 
   puedeGirar = computed(() => this.coins() >= this.COSTE_TIRADA && !this.girando());
 
@@ -52,7 +48,6 @@ export class Rewards implements OnInit {
     this.cargarUsuario();
     this.cargarCatalogo();
     this.cargarMisPremios();
-    this.cargarLogros();
   }
 
   private cargarUsuario() {
@@ -184,10 +179,7 @@ export class Rewards implements OnInit {
       this.recompensaService.concederRecompensa(premio.id).subscribe({
         next: () => {
           this.cargarMisPremios(true);
-          this.logroService.verificarLogros().subscribe({
-            next: () => this.cargarLogros(),
-            error: () => {},
-          });
+          this.logroService.verificarLogros().subscribe({ error: () => {} });
         },
         error: (err) => {
           if (err.status === 409) {
@@ -196,28 +188,12 @@ export class Rewards implements OnInit {
           this.logroService.verificarLogros().subscribe({ error: () => {} });
         }
       });
+    } else {
+      this.mostrarSinPremio.set(true);
     }
   }
 
-  cargarLogros() {
-    this.cargandoLogros.set(true);
-    this.logroService.getTodosLogros().subscribe({
-      next: (todos) => {
-        this.todosLogros.set(todos);
-        // Cargar cuáles tiene el usuario
-        this.logroService.getMisLogros(0, 200).subscribe({
-          next: (res) => {
-            this.misLogrosIds.set(new Set(res.content.map(ul => ul.logro.id)));
-            this.cargandoLogros.set(false);
-          },
-          error: () => this.cargandoLogros.set(false),
-        });
-      },
-      error: () => this.cargandoLogros.set(false),
-    });
-  }
-
-  tieneLogro(id: string): boolean { return this.misLogrosIds().has(id); }
+  cerrarSinPremio(): void { this.mostrarSinPremio.set(false); }
 
   recogerPremio(): void {
     this.mostrarPremio.set(false);

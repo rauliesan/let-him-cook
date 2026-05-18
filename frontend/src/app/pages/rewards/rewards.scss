@@ -444,89 +444,36 @@
   padding: 4rem 0;
 }
 
-/* ══════════════ LOGROS ══════════════ */
-.logros-seccion {
-  padding: 4rem 0;
-  background: rgba(0,0,0,.02);
-}
-
-.logros-subtitulo {
+/* Sin premio overlay */
+.sin-premio-card {
+  background: #1a1a1a;
+  border: 2px solid #555;
+  border-radius: 24px;
+  padding: 3rem;
+  width: 90%;
+  max-width: 400px;
   text-align: center;
-  color: #6b7280;
-  margin: -.5rem 0 2rem;
-  font-size: .9rem;
-}
+  animation: pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 
-.logros-cargando,
-.logros-vacio {
-  text-align: center;
-  color: #9ca3af;
-  padding: 2rem 0;
-}
-
-.logros-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-  gap: 1rem;
-}
-
-.logro-card {
-  display: flex;
-  align-items: center;
-  gap: .85rem;
-  padding: 1rem 1.2rem;
-  border-radius: 14px;
-  border: 1.5px solid #e8e8ec;
-  transition: all .2s;
-
-  &.logro-obtenido {
-    border-color: #E8B84B;
-    background: linear-gradient(135deg, #fffdf0, #fff9e0);
-    box-shadow: 0 2px 12px rgba(232,184,75,.18);
-
-    .logro-icono { filter: none; }
-    .logro-nombre { color: #92670a; font-weight: 700; }
+  .sin-premio-emoji {
+    font-size: 5rem;
+    display: block;
+    margin-bottom: 1.25rem;
+    animation: floating 3s ease-in-out infinite;
   }
 
-  &.logro-bloqueado {
-    background: #f9f9fb;
-    opacity: .55;
-    filter: grayscale(1);
+  .sin-premio-titulo {
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: #fff;
+    margin: 0 0 0.5rem;
   }
-}
 
-.logro-icono {
-  font-size: 2rem;
-  min-width: 2.2rem;
-  text-align: center;
-}
-
-.logro-info {
-  display: flex;
-  flex-direction: column;
-  gap: .15rem;
-  overflow: hidden;
-}
-
-.logro-nombre {
-  font-size: .9rem;
-  font-weight: 600;
-  color: #1a1a2e;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.logro-nombre-desc {
-  font-size: .75rem;
-  color: #6b7280;
-}
-
-.logro-badge-ok {
-  font-size: .72rem;
-  font-weight: 700;
-  color: #92670a;
-  letter-spacing: .5px;
+  .sin-premio-desc {
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 2rem;
+    font-size: 1rem;
+  }
 }
 
 .catalogo-header {
