@@ -10,6 +10,7 @@ import {
 } from '../../services/ia.service';
 import { CocinarStateService } from '../../services/cocinar-state.service';
 import { ForoService } from '../../services/foro.service';
+import { RecetaService } from '../../services/receta.service';
 
 @Component({
   selector: 'app-cocinar',
@@ -30,7 +31,7 @@ export class Cocinar {
   /** Toggle del paso 3: publicar automáticamente en el foro al guardar */
   compartirEnForoAlPublicar = false;
 
-  constructor(private iaService: IaService, public st: CocinarStateService, private foroService: ForoService) {}
+  constructor(private iaService: IaService, public st: CocinarStateService, private foroService: ForoService, private recetaService: RecetaService) {}
 
   /* ── Ingredientes ── */
   agregarIngrediente() {
@@ -126,6 +127,7 @@ export class Cocinar {
         this.st.resultado.set(res);
         this.st.publicando.set(false);
         this.st.paso.set('exito');
+        this.recetaService.invalidarCacheRecetas(); // Para que explorar recargue
 
         // Si el toggle de foro estaba activo, publicamos automáticamente
         if (this.compartirEnForoAlPublicar) {

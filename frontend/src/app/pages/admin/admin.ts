@@ -1,6 +1,7 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RecetaService } from '../../services/receta.service';
 import {
   AdminService,
   ApiResponse, ApiRequest,
@@ -73,7 +74,7 @@ export class Admin implements OnInit {
     'modelos-ia':  this.modelosIa().length,
   }));
 
-  constructor(private adminService: AdminService) {}
+  constructor(private adminService: AdminService, private recetaService: RecetaService) {}
 
   ngOnInit() {
     this.cargarTab('usuarios');
@@ -244,7 +245,10 @@ export class Admin implements OnInit {
         break;
       case 'recetas':
         if (modo === 'editar') {
-          this.adminService.actualizarReceta(id!, this.form as RecetaRequest).subscribe({ next: onOk, error: onErr });
+          this.adminService.actualizarReceta(id!, this.form as RecetaRequest).subscribe({
+            next: () => { this.recetaService.invalidarCacheRecetas(); onOk(); },
+            error: onErr
+          });
         }
         break;
       case 'categorias':
@@ -302,7 +306,7 @@ export class Admin implements OnInit {
 
     switch (entidad) {
       case 'usuarios':      this.adminService.eliminarUsuario(id).subscribe({ next: onOk, error: onErr }); break;
-      case 'recetas':       this.adminService.eliminarReceta(id).subscribe({ next: onOk, error: onErr }); break;
+      case 'recetas':       this.adminService.eliminarReceta(id).subscribe({ next: () => { this.recetaService.invalidarCacheRecetas(); onOk(); }, error: onErr }); break;
       case 'categorias':    this.adminService.eliminarTipoComida(id).subscribe({ next: onOk, error: onErr }); break;
       case 'logros':        this.adminService.eliminarLogro(id).subscribe({ next: onOk, error: onErr }); break;
       case 'recompensas':   this.adminService.eliminarRecompensa(id).subscribe({ next: onOk, error: onErr }); break;
